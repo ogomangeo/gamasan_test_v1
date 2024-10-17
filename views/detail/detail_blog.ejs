@@ -1,0 +1,38 @@
+<div class="detail-container">
+    <div class="detail-header">
+        <h1 class="detail-title">
+            <%= blog.title %>
+        </h1>
+        <span class="detail-date">
+            <%= formatDate(blog.createdAt) %>
+        </span>
+    </div>
+
+    <div class="detail-nav-buttons">
+        <% if (previousBlog) { %>
+            <a href="/blog/<%= previousBlog._id %>" class="detail-nav-button">이전글</a>
+        <% } %>
+        <% if (nextBlog) { %>
+            <a href="/blog/<%= nextBlog._id %>" class="detail-nav-button">다음글</a>
+        <% } %>
+        <a href="/blog" class="detail-nav-button">목록</a>
+    </div>
+
+    <div class="detail-thumbnail-container">
+        <img src="<%= blog.thumbnail %>" alt="<%= blog.title %> Thumbnail" class="detail-thumbnail">
+    </div>
+    <div class="detail-script">
+        <%- blog.script %>
+    </div>
+</div>
+
+<%
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${month}/${day} ${hours}:${minutes}`;
+}
+%>

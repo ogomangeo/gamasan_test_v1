@@ -1,0 +1,23 @@
+<a href="/allArchives">&larr; 뒤로</a>
+<div class="admin-title">
+  <h2>
+    <%= locals.title %>
+  </h2>
+  <form action="/delete_archive/<%= archive._id %>?_method=DELETE" method="POST">
+    <input type="submit" value="삭제" class="btn-delete btn">
+  </form>
+
+</div>
+
+<form action="/edit_archive/<%= archive._id %>?_method=PUT" method="POST">
+  <label for="thumbnail"><b>썸네일</b></label>
+  <input type="text" placeholder="썸네일 이미지 URL" name="thumbnail" id="thumbnail" value="<%= archive.thumbnail %>">
+
+  <label for="title"><b>제목</b></label>
+  <input type="text" placeholder="게시물 제목" name="title" id="title" value="<%= archive.title %>">
+
+  <label for="script"><b>내용</b></label>
+  <textarea placeholder="게시물 내용" name="script" cols="50" rows="10"><%= archive.script %></textarea>
+  <input type="submit" value="수정" class="btn">
+</form>
+

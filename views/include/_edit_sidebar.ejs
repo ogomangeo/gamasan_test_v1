@@ -1,0 +1,27 @@
+<!-- views/include/_sidebar.ejs -->
+<div class="sidebar">
+    <h2><a href="/allArchive">Gamasan <br> Admin</a></h2>
+    <ul>
+        <li><a href="/allPrograms" class="<%= locals.title === 'Program' ? 'active' : '' %>">프로그램즈</a></li>
+        <li><a href="/allBlogs" class="<%= locals.title === 'Blog' ? 'active' : '' %>">블로깅</a></li>
+        <li><a href="/allArchive" class="<%= locals.title === 'archive' ? 'active' : '' %>">아카이빙</a></li>
+        <li><a href="https://shopping.naver.com/home" target="_blank" rel="noopener noreferrer">가마산마트</a></li>
+        <li><a href="/allNotices" class="<%= locals.title === 'Notice' ? 'active' : '' %>">공지사항</a></li>
+        <li><a href="/allAbout" class="<%= locals.title === 'About' ? 'active' : '' %>">About</a></li>
+    </ul>
+    <div class="instagram-feed">
+        <p>@123456789</p>
+        <div class="instagram-grid">
+            <img src="https://picsum.photos/id/0/300/300" alt="Product 1">
+            <img src="https://picsum.photos/id/1/300/300" alt="Product 2">
+            <img src="https://picsum.photos/id/2/300/300" alt="Product 3">
+            <img src="https://picsum.photos/id/3/300/300" alt="Product 4">
+            <img src="https://picsum.photos/id/4/300/300" alt="Product 5">
+            <img src="https://picsum.photos/id/5/300/300" alt="Product 6">
+        </div>
+    </div>
+    <div class="search-bar">
+        <input type="text" placeholder="Search">
+        <button>🔍</button>
+    </div>
+</div>

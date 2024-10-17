@@ -1,0 +1,57 @@
+<!-- GPT 오름차순 -->
+<% data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); %>
+
+<div class="blog-header">
+    <div class="header-thumbnail">썸네일</div>
+    <div class="header-title">제목</div>
+    <div class="header-script">내용</div>
+    <div class="header-date">작성일시</div>
+</div>
+
+<ul class="blog-list">
+    <% data.forEach(blog => { %>
+        <li class="blog-item">
+            <a href="/blog/<%= blog._id %>">
+                <img src="<%= blog.thumbnail %>" alt="Thumbnail" class="thumbnail">
+                <div class="title"><%= blog.title %></div>
+                <div class="script"><%= blog.script %></div>
+                <div class="timestamp"><%= formatDate(blog.createdAt) %></div>
+            </a>
+        </li>
+    <% }) %>
+</ul>
+
+<div class="pagination">
+    <% if (currentPage> 1) { %>
+        <a href="?page=<%= currentPage - 1 %>" class="page-link">&laquo; 이전</a>
+        <% } %>
+
+            <% for (let i=1; i <=totalPages; i++) { %>
+                <% if (i===currentPage) { %>
+                    <span class="page-link current">
+                        <%= i %>
+                    </span>
+                    <% } else { %>
+                        <a href="?page=<%= i %>" class="page-link">
+                            <%= i %>
+                        </a>
+                        <% } %>
+                            <% } %>
+
+                                <% if (currentPage < totalPages) { %>
+                                    <a href="?page=<%= currentPage + 1 %>" class="page-link">다음
+                                        &raquo;</a>
+                                    <% } %>
+</div>
+
+<!-- 작성 일시 형식 변경 함수 -->
+<%
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${month}/${day} ${hours}:${minutes}`;
+}
+%>

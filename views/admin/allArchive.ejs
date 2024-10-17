@@ -1,0 +1,43 @@
+<div class="admin-title">
+    <h2>
+        <%= locals.title %>
+    </h2>
+    <a href="/add_archive" class="button">+ 새 게시물</a>
+</div>
+
+<ul class="admin-archives">
+    <% data.forEach(archive=> {
+        const date = new Date(archive.createdAt);
+        const formattedDate = date.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        weekday: 'short'
+        });
+        const formattedTime = date.toLocaleTimeString('ko-KR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+        });
+        %>
+        <li>
+            <div class="archive-content">
+                <a href="/archive/<%= archive._id %>">
+                    <%= archive.title %>
+                </a>
+                <div class="archive-datetime">
+                    <%= formattedDate %><br>
+                        <%= formattedTime %>
+                </div>
+            </div>
+            <div class="admin-archive-controls">
+                <form action="/edit_archive/<%= archive._id %>" method="GET" style="display: inline;">
+                    <button type="submit" class="btn btn-edit">편집</button>
+                </form>
+                <form action="/delete_archive/<%= archive._id %>?_method=DELETE" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-delete">삭제</button>
+                </form>
+            </div>
+        </li>
+        <% }) %>
+</ul>

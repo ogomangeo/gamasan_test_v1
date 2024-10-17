@@ -1,0 +1,34 @@
+<!-- views/include/_sidebar.ejs -->
+<div class="sidebar">
+    <div class="sidebar-top">
+        <h2><a href="/home">Gamasan</a></h2>
+        <ul>
+            <li><a href="/program" class="<%= locals.title === 'Program' ? 'active' : '' %>">프로그램즈</a></li>
+            <li><a href="/blog" class="<%= locals.title === 'Blog' ? 'active' : '' %>">블로깅</a></li>
+            <li><a href="/archive" class="<%= locals.title === 'Archive' ? 'active' : '' %>">아카이빙</a></li>
+            <li><a href="/mart" class="<%= locals.title === 'Mart' ? 'active' : '' %>">가마산마트</a></li>
+            <li><a href="/notice" class="<%= locals.title === 'Notice' ? 'active' : '' %>">공지사항</a></li>
+            <li><a href="/about" class="<%= locals.title === 'About' ? 'active' : '' %>">ABOUT</a></li>
+        </ul>
+        <!-- <div class="instagram-feed">
+            <p>@123456789</p>
+            <div class="instagram-grid">
+                <img src="https://picsum.photos/id/0/300/300" alt="Product 1">
+                <img src="https://picsum.photos/id/1/300/300" alt="Product 2">
+                <img src="https://picsum.photos/id/2/300/300" alt="Product 3">
+                <img src="https://picsum.photos/id/3/300/300" alt="Product 4">
+                <img src="https://picsum.photos/id/4/300/300" alt="Product 5">
+                <img src="https://picsum.photos/id/5/300/300" alt="Product 6">
+            </div>
+        </div> -->
+        <!-- <div class="search-bar">
+            <input type="text" placeholder="Search">
+            <button>🔍</button>
+        </div> -->
+        <div class="side-ad-banner">
+            <a href="#">
+                <img src="/img/sidebar-banner-2.png" alt="광고 배너">
+            </a>
+        </div>
+    </div>
+</div>

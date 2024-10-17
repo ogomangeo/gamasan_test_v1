@@ -1,0 +1,39 @@
+<div class="admin-title">
+    <h2><%= locals.title %></h2>
+    <a href="/add_notice" class="button">+ 새 게시물</a>
+</div>
+
+<ul class="admin-notices">
+    <% data.forEach(notice => {
+        const date = new Date(notice.createdAt);
+        const formattedDate = date.toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            weekday: 'short'
+        });
+        const formattedTime = date.toLocaleTimeString('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    %>
+    <li>
+        <div class="notice-content">
+            <a href="/notice/<%= notice._id %>"><%= notice.title %></a>
+            <div class="notice-datetime">
+                <%= formattedDate %><br>
+                <%= formattedTime %>
+            </div>
+        </div>
+        <div class="admin-notice-controls">
+            <form action="/edit_notice/<%= notice._id %>" method="GET" style="display: inline;">
+                <button type="submit" class="btn btn-edit">편집</button>
+            </form>
+            <form action="/delete_notice/<%= notice._id %>?_method=DELETE" method="POST" style="display: inline;">
+                <button type="submit" class="btn btn-delete">삭제</button>
+            </form>
+        </div>
+    </li>
+    <% }) %>
+</ul>

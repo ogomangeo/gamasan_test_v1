@@ -1,0 +1,33 @@
+.colored-box {
+  position: fixed;
+  z-index: 999;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+  text-decoration: none;
+  width: 160px;
+  height: 300px;
+}
+
+.adbanner1 {
+  background-color: #FF6347;
+  top: 120px;
+  right: 30px;
+}
+
+.adbanner2 {
+  background-color: #4682B4;
+  top: 430px;
+  right: 30px;
+}
+
+.adbanner3 {
+  background-color: #32CD32;
+  height: 600px;
+  top: 120px;
+  left: 30px;
+}

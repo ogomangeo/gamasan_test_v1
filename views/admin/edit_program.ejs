@@ -1,0 +1,23 @@
+<a href="/allPrograms">&larr; 뒤로</a>
+<div class="admin-title">
+  <h2>
+    <%= locals.title %>
+  </h2>
+  <form action="/delete_program/<%= program._id %>?_method=DELETE" method="POST">
+    <input type="submit" value="삭제" class="btn-delete btn">
+  </form>
+
+</div>
+
+<form action="/edit_program/<%= program._id %>?_method=PUT" method="POST">
+  <label for="thumbnail"><b>썸네일</b></label>
+  <input type="text" placeholder="썸네일 이미지 URL" name="thumbnail" id="thumbnail" value="<%= program.thumbnail %>">
+
+  <label for="title"><b>제목</b></label>
+  <input type="text" placeholder="게시물 제목" name="title" id="title" value="<%= program.title %>">
+
+  <label for="script"><b>내용</b></label>
+  <textarea placeholder="게시물 내용" name="script" cols="50" rows="10"><%= program.script %></textarea>
+  <input type="submit" value="수정" class="btn">
+</form>
+

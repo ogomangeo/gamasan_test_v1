@@ -1,0 +1,28 @@
+/* 페이지네이션 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .page-link {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    margin: 0 5px;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+  
+  .page-link:hover {
+    background-color: #efefef;
+    cursor: pointer;
+  }
+  
+  .page-link.current {
+    background-color: #cfd0d1;
+    border-color: #cfd0d1;
+  }
+  

@@ -1,0 +1,27 @@
+.header {
+    background-color: #333;
+    color: white;
+    width: 100%;
+}
+
+.header-content {
+    width: 1230px;
+    margin: 0 auto;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.sale-banner {
+    font-weight: bold;
+}
+
+.user-actions a {
+    color: white;
+    text-decoration: none;
+}
+
+.user-actions span {
+    margin: 0 10px;
+    color: #666;
+}

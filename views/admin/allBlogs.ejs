@@ -1,0 +1,43 @@
+<div class="admin-title">
+    <h2>
+        <%= locals.title %>
+    </h2>
+    <a href="/add_blog" class="button">+ 새 게시물</a>
+</div>
+
+<ul class="admin-blogs">
+    <% data.forEach(blog=> {
+        const date = new Date(blog.createdAt);
+        const formattedDate = date.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        weekday: 'short'
+        });
+        const formattedTime = date.toLocaleTimeString('ko-KR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+        });
+        %>
+        <li>
+            <div class="blog-content">
+                <a href="/blog/<%= blog._id %>">
+                    <%= blog.title %>
+                </a>
+                <div class="blog-datetime">
+                    <%= formattedDate %><br>
+                        <%= formattedTime %>
+                </div>
+            </div>
+            <div class="admin-blog-controls">
+                <form action="/edit_blog/<%= blog._id %>" method="GET" style="display: inline;">
+                    <button type="submit" class="btn btn-edit">편집</button>
+                </form>
+                <form action="/delete_blog/<%= blog._id %>?_method=DELETE" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-delete">삭제</button>
+                </form>
+            </div>
+        </li>
+        <% }) %>
+</ul>

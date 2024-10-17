@@ -1,0 +1,92 @@
+<!-- 날짜순 정렬 (최신순) -->
+<% data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); %>
+
+<div class="mart-list-container">
+  <% data.forEach(function(mart) { %>
+    <div class="mart-container" data-mart-id="<%= mart._id %>">
+      <a href="#" class="mart-link">
+        <div class="mart-image-box">
+          <img src="<%= mart.thumbnail1 %>" alt="이미지1">
+          <img src="<%= mart.thumbnail2 %>" alt="이미지2">
+          <img src="<%= mart.thumbnail3 %>" alt="이미지3">
+        </div>
+
+        <div class="mart-right-box">
+          <div class="mart-brand-category">
+            <span class="category1"><%= mart.category1 %></span>
+            <span class="category-separator">&gt;</span>
+            <span class="category2"><%= mart.category2 %></span>
+          </div>
+          <div class="mart-brand-title">
+            [<span class="mart-brand"><%= mart.brand %></span>] <%= mart.title %>
+          </div>
+          <div class="mart-script">
+            <%= mart.script %>
+          </div>
+          <div class="mart-price-delivery-links">
+            <div class="mart-price-delivery">
+              <span class="mart-price" id="selectedPrice_<%= mart._id %>">
+                <%= Math.floor(mart.options[0].price).toLocaleString() %>
+              </span>
+              <span class="mart-delivery">
+                배송비 : <%= Number(mart.delivery).toLocaleString() %>
+              </span>
+            </div>
+            <span class="mart-link-buttons">
+              <a href="#" class="mart-link-button">#스마트스토어</a>
+              <a href="#" class="mart-link-button">#쿠팡</a>
+            </span>
+          </div>
+          <div class="mart-option">
+            <span class="option-label">옵션 :</span>
+            <select id="optionSelect_<%= mart._id %>" class="option-select" data-mart-id="<%= mart._id %>">
+              <% mart.options.forEach(function(option) { %>
+                <option value="<%= option.name %>" data-price="<%= option.price %>">
+                  <%= option.name %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+        </div>
+      </a>
+    </div>
+  <% }); %>
+
+
+  <div class="pagination">
+    <% if (currentPage > 1) { %>
+      <a href="/mart?page=<%= currentPage - 1 %>" class="page-link">&laquo; 이전</a>
+    <% } %>
+
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <% if (i === currentPage) { %>
+        <span class="page-link current"><%= i %></span>
+      <% } else { %>
+        <a href="/mart?page=<%= i %>" class="page-link"><%= i %></a>
+      <% } %>
+    <% } %>
+
+    <% if (currentPage < totalPages) { %>
+      <a href="/mart?page=<%= currentPage + 1 %>" class="page-link">다음 &raquo;</a>
+    <% } %>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const optionSelects = document.querySelectorAll('.option-select');
+
+  optionSelects.forEach(select => {
+    select.addEventListener('change', function() {
+      const martId = this.getAttribute('data-mart-id');
+      const selectedOption = this.options[this.selectedIndex];
+      const price = selectedOption.getAttribute('data-price');
+      const priceElement = document.getElementById(`selectedPrice_${martId}`);
+
+      if (priceElement) {
+        priceElement.textContent = Number(price).toLocaleString();
+      }
+    });
+  });
+});
+</script>

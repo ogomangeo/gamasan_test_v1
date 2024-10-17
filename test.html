@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>등급별 랜덤 값 생성기</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .item {
+      display: flex;
+      flex-direction: column;
+    }
+    input[type="number"] {
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>등급별 랜덤 값 생성기</h1>
+
+  <label for="gradeSelect">등급 선택:</label>
+  <select id="gradeSelect">
+    <option value="1000">S등급 (1000)</option>
+    <option value="900">A등급 (900)</option>
+    <option value="800">B등급 (800)</option>
+    <option value="700">C등급 (700)</option>
+    <option value="600">D등급 (600)</option>
+  </select>
+
+  <div id="itemsContainer" class="grid"></div>
+
+  <div class="result">
+    <p>현재 합계: <span id="currentSum">0</span></p>
+    <p id="message"></p>
+  </div>
+</div>
+
+<script>
+  const itemsContainer = document.getElementById('itemsContainer');
+  const gradeSelect = document.getElementById('gradeSelect');
+  const currentSum = document.getElementById('currentSum');
+  const message = document.getElementById('message');
+
+  // 항목 및 값 생성 함수
+  function generateRandomValues(maxSum) {
+    let remainingSum = maxSum;
+    const values = [];
+
+    // 랜덤 값 생성 (항목 15개)
+    for (let i = 0; i < 15; i++) {
+      const maxVal = Math.min(remainingSum, 100); // 각 항목 최대 100 제한
+      const randomVal = Math.floor(Math.random() * (maxVal + 1));
+      values.push(randomVal);
+      remainingSum -= randomVal;
+    }
+
+    // 남은 합계를 0으로 맞추기 위해 셔플
+    while (remainingSum > 0) {
+      for (let i = 0; i < values.length && remainingSum > 0; i++) {
+        const increment = Math.min(remainingSum, 1); // 남은 값 배분
+        values[i] += increment;
+        remainingSum -= increment;
+      }
+    }
+
+    return values;
+  }
+
+  // 4열로 표시되는 항목 UI 생성
+  function createItemsGrid(values) {
+    itemsContainer.innerHTML = ''; // 기존 항목 초기화
+
+    values.forEach((value, index) => {
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('item');
+
+      const label = document.createElement('label');
+      label.textContent = `항목 ${index + 1}:`;
+
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.value = value;
+      input.readOnly = true; // 값 수정 불가
+
+      itemDiv.appendChild(label);
+      itemDiv.appendChild(input);
+      itemsContainer.appendChild(itemDiv);
+    });
+  }
+
+  // 등급 선택 시 랜덤 값 생성 및 합산 업데이트
+  function updateItems() {
+    const maxSum = parseInt(gradeSelect.value);
+    const values = generateRandomValues(maxSum);
+    createItemsGrid(values);
+
+    const sum = values.reduce((acc, val) => acc + val, 0);
+    currentSum.textContent = sum;
+
+    if (sum === maxSum) {
+      message.textContent = '✅ 합계가 정확합니다!';
+      message.style.color = 'green';
+    } else {
+      message.textContent = '⚠️ 오류: 합계가 잘못되었습니다!';
+      message.style.color = 'red';
+    }
+  }
+
+  // 초기 실행 및 등급 변경 이벤트 설정
+  gradeSelect.addEventListener('change', updateItems);
+  window.onload = updateItems; // 페이지 로드 시 초기화
+</script>
+
+</body>
+</html>

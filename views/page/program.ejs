@@ -1,0 +1,50 @@
+<!-- GPT 오름차순 -->
+<% data.sort((a, b)=> new Date(b.createdAt) - new Date(a.createdAt)); // 최근 작성된 순으로 정렬
+    %>
+
+    <ul class="program-list">
+        <% data.forEach(program => { %>
+            <li class="program-item">
+                <a href="/program/<%= program._id %>">
+                    <img src="<%= program.thumbnail %>" alt="Thumbnail">
+                    <div class="content">
+                        <div class="date"><%= formatDate(program.createdAt) %></div>
+                        <h3><%= program.title %></h3>
+                        <p><%= program.script.length > 70 ? program.script.slice(0, 70) + '...' : program.script %></p>
+                    </div>
+                </a>
+            </li>
+        <% }) %>
+    </ul>
+    <div class="pagination">
+        <% if (currentPage> 1) { %>
+          <a href="?page=<%= currentPage - 1 %>" class="page-link">&laquo; 이전</a>
+          <% } %>
+      
+            <% for (let i=1; i <=totalPages; i++) { %>
+              <% if (i===currentPage) { %>
+                <span class="page-link current">
+                  <%= i %>
+                </span>
+                <% } else { %>
+                  <a href="?page=<%= i %>" class="page-link">
+                    <%= i %>
+                  </a>
+                  <% } %>
+                    <% } %>
+      
+                      <% if (currentPage < totalPages) { %>
+                        <a href="?page=<%= currentPage + 1 %>" class="page-link">다음 &raquo;</a>
+                        <% } %>
+      </div>
+      
+      <!-- 작성 일시 형식 변경 함수 -->
+      <% function formatDate(dateString) {
+          const date = new Date(dateString);
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          const hours = String(date.getHours()).padStart(2, '0');
+          const minutes = String(date.getMinutes()).padStart(2, '0');
+          return `${month}/${day} ${hours}:${minutes}`;
+        }
+        %>

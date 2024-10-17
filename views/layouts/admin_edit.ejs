@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gamasan <%-locals.title %></title>
+  <link rel="stylesheet" href="/css/relayout.css">
+  <link rel="stylesheet" href="/css/sidebar.css">
+  <link rel="stylesheet" href="/css/footer.css">
+  <link rel="stylesheet" href="/css/form.css">
+  <link rel="stylesheet" href="/css/edit-page/admin-edit.css">
+  <link rel="stylesheet" href="/css/edit-page/edit_notice.css">
+  <link rel="stylesheet" href="/css/edit-page/edit_program.css">
+  <link rel="stylesheet" href="/css/edit-page/edit_blog.css">
+  <link rel="stylesheet" href="/css/edit-page/edit_archive.css">
+</head>
+<body>
+  <div id="app">
+    <div class="container">
+      <!-- header header header header  -->
+      <%- include('../include/_header') %>
+        <div class="main-content">
+          <!-- sidebar sidebar sidebar sidebar  -->
+          <%- include('../include/_edit_sidebar') %>
+            <!-- product product product product  -->
+            <div class="content-wrapper">
+              <ul class="product-grid">
+                <%- body %>
+              </ul>
+              <a href="admin">Admin Logout</a>
+              <!-- footer footer footer footer  -->
+              <%- include('../include/_footer') %>
+            </div>
+        </div>
+    </div>
+  </div>
+</body>
+</html>

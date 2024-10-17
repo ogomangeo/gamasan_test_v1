@@ -1,0 +1,48 @@
+/* 전체 공통 스타일 */
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  background-color: #f9f9f9;
+}
+
+h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* admin-title 스타일 */
+.admin-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admin-title h2 {
+  margin: 0;
+}
+
+.admin-title .button {
+  background-color: #08ca5f;
+  color: white;
+  padding: 10px 15px;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.admin-title .button:hover {
+  opacity: 0.8;
+}
+
+/* 제목과 폼 사이의 간격 */
+.admin-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+form {
+  margin: 0;
+}
+

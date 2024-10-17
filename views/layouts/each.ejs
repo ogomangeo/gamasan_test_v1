@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%-locals.title %> Gamasan</title>
+  <link rel="stylesheet" href="/css/home_board.css">
+  <link rel="stylesheet" href="/css/relayout.css">
+  <link rel="stylesheet" href="/css/sidebar.css">
+  <link rel="stylesheet" href="/css/footer.css">
+  <link rel="stylesheet" href="/css/adbanner.css">
+  <link rel="stylesheet" href="/css/homelayout.css">
+  <script src="/public/js/each_sidebar.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <div class="container">
+      <!-- adbanner adbanner adbanner adbanner  -->
+      <%- include('../include/_adbanner') %>
+        <!-- header header header header  -->
+        <%- include('../include/_header') %>
+          <div class="main-content">
+            <!-- sidebar sidebar sidebar sidebar  -->
+            <%- include('../include/_sidebar') %>
+              <!-- product product product product  -->
+              <div class="content-wrapper">
+                  <%- body %>
+                    <!-- footer footer footer footer  -->
+                    <%- include('../include/_footer') %>
+              </div>
+          </div>
+    </div>
+  </div>
+</body>
+
+</html>
