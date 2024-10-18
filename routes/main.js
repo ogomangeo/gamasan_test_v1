@@ -15,11 +15,11 @@ router.get(
     const locals = {
       title: "Home",
     };
-    const notices = await Notice.find({}).limit(6);  // 최신 3개만 가져옴
-    const programs = await Program.find({}).limit(6);  // 최신 9개만 가져옴
-    const blogs = await Blog.find({}).limit(6);  // 최신 3개만 가져옴
-    const archives = await Archive.find({}).limit(14);  // 최신 3개만 가져옴
-    const marts = await Mart.find({}).limit(6);  // 최신 3개만 가져옴
+    const notices = await Notice.find({}).limit(8);  // 최신 3개만 가져옴
+    const programs = await Program.find({}).limit(8);  // 최신 9개만 가져옴
+    const blogs = await Blog.find({}).limit(8);  // 최신 3개만 가져옴
+    const archives = await Archive.find({}).limit(18);  // 최신 3개만 가져옴
+    const marts = await Mart.find({}).limit(8);  // 최신 3개만 가져옴
 
     res.render("page/index", {
       locals,

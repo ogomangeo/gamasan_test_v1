@@ -4,7 +4,7 @@
 <div class="mart-list-container">
   <% data.forEach(function(mart) { %>
     <div class="mart-container" data-mart-id="<%= mart._id %>">
-      <a href="#" class="mart-link">
+      <a href="/mart/<%= mart._id %>" class="mart-link">
         <div class="mart-image-box">
           <img src="<%= mart.thumbnail1 %>" alt="이미지1">
           <img src="<%= mart.thumbnail2 %>" alt="이미지2">

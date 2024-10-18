@@ -59,7 +59,7 @@
 /* 게시판별 스타일 */
 .home_index_board_container.board3 {
   width: 48%;
-  height: 630px;
+  height: 620px;
 }
 
 .home_index_board_container.board1,
@@ -84,11 +84,12 @@
 
 .home_index_board_item:hover {
   background-color: #f9f9f9;
+  font-weight: bold;
 }
 
 .home_index_thumbnail {
   width: 40px;
-  height: 40px;
+  height: 30px;
   background-color: #e0e0e0;
   margin-right: 15px;
   flex-shrink: 0;
@@ -107,6 +108,10 @@
   font-weight: 500;
   color: #333;
   margin-right: 15px;
+}
+
+.home_index_title:hover {
+  font-weight: bold;
 }
 
 .home_index_meta {

@@ -5,6 +5,8 @@ const Notice = require("../models/Notice");
 const Program = require("../models/Program");
 const Blog = require("../models/Blog");
 const Archive = require("../models/Archive");
+const Mart = require("../models/Mart");
+
 
 const homeLayout = "../views/layouts/home.ejs";
 
@@ -117,6 +119,34 @@ router.get('/archive/:id', asyncHandler(async (req, res) => {
         archive,
         previousArchive,
         nextArchive
+    });
+}));
+
+// Mart 상세 페이지 라우트
+router.get('/mart/:id', asyncHandler(async (req, res) => {
+    const mart = await Mart.findById(req.params.id);
+    if (!mart) {
+        return res.status(404).render('error', { 
+            layout: homeLayout, 
+            message: '마트 상품을 찾을 수 없습니다.' 
+        });
+    }
+
+    // 이전 마트 상품 찾기
+    const previousMart = await Mart.findOne({
+        createdAt: { $lt: mart.createdAt }
+    }).sort({ createdAt: -1 });
+
+    // 다음 마트 상품 찾기
+    const nextMart = await Mart.findOne({
+        createdAt: { $gt: mart.createdAt }
+    }).sort({ createdAt: 1 });
+
+    res.render('detail/detail_mart', { 
+        layout: homeLayout, 
+        mart,
+        previousMart,
+        nextMart
     });
 }));
 
