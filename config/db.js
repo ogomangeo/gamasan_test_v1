@@ -7,9 +7,8 @@ const connectDb = asyncHandler(async () => {
         const connect = await mongoose.connect(process.env.MONGODB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            ssl: true,  // MongoDB Atlas에서 SSL이 필요한 경우
-            sslValidate: true, // 인증서 검증 활성화 (필요한 경우)
-            // sslCA: 'path_to_certificate.pem', // 인증서가 필요한 경우 경로 설정 (옵션)
+            ssl: true,  // MongoDB Atlas는 기본적으로 SSL을 사용
+            // sslCA: 'path_to_certificate.pem', // 인증서가 필요한 경우 경로 추가
         });
         console.log(`DB Connected: ${connect.connection.host}`);
     } catch (err) {
