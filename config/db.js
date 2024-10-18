@@ -5,8 +5,6 @@ require("dotenv").config();
 const connectDb = asyncHandler(async () => {
     try {
         const connect = await mongoose.connect(process.env.MONGODB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
             ssl: true,  // MongoDB Atlas는 기본적으로 SSL을 사용
             // sslCA: 'path_to_certificate.pem', // 인증서가 필요한 경우 경로 추가
         });
