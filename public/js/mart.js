@@ -1,3 +1,5 @@
+// 상품의 옵션에 따라 가격이 변하게 하는 JS 코드
+
 function updatePrice(martIndex) {
     const select = document.getElementById(`optionSelect-${martIndex}`);
     const priceSpan = document.getElementById(`selectedPrice-${martIndex}`);

@@ -277,4 +277,11 @@ router.get("/event", asyncHandler(async (req, res) => {
   });
 }));
 
+router.get("/join", asyncHandler(async (req, res) => {
+  res.render("page/join", {
+    title: "Join",
+    layout: mainLayout
+  });
+}));
+
 module.exports = router;

@@ -1,230 +1,129 @@
-<style>
-  .manyopen-container {
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 20px;
-    box-sizing: border-box;
-  }
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+        }
+        .form-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        .form-group label {
+            width: 30%;
+            margin-right: 10px;
+            text-align: right;
+        }
+        .form-group input, .form-group select {
+            width: 65%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .required-section, .optional-section {
+            border-bottom: 1px dotted #cccccc;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            font-size: 1.1em;
+            color: #555;
+            margin-top: 20px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #000080;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
 
-  .manyopen-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 80px;
-    padding-bottom: 20px;
-  }
+<h2>회원가입</h2>
 
-  .manyopen-h1 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #333;
-  }
+<div class="required-section">
+    <h3>필수 정보</h3>
+    <form id="signupForm">
+        <div class="form-group">
+            <label for="email">이메일 주소:</label>
+            <input type="email" id="email" required>
+        </div>
 
-  .manyopen-textarea {
-    width: 100%;
-    max-width: 500px;
-    height: 150px;
-    margin-bottom: 20px;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    resize: both;
-    overflow: auto;
-  }
+        <div class="form-group">
+            <label for="password">비밀번호:</label>
+            <input type="password" id="password" required>
+        </div>
 
-  .manyopen-info {
-    width: 100%;
-    max-width: 500px;
-    margin: 10px 0;
-    font-size: 12px;
-    color: #555;
-    transition: color 0.3s;
-  }
+        <div class="form-group">
+            <label for="confirmPassword">비밀번호 확인:</label>
+            <input type="password" id="confirmPassword" required>
+        </div>
 
-  .manyopen-buttons {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  }
+        <div class="form-group">
+            <label for="username">활동명:</label>
+            <input type="text" id="username" required>
+        </div>
+    </div>
 
-  .manyopen-button {
-    width: 200px;
-    padding: 10px;
-    margin: 5px;
-    font-size: 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    word-break: break-word;
-  }
+    <div class="optional-section">
+        <h3>선택 정보</h3>
+        
+        <div class="form-group">
+            <label for="birthdate">생년월일:</label>
+            <input type="date" id="birthdate" required>
+        </div>
 
-  .manyopen-open-tab {
-    background-color: #4CAF50;
-    color: white;
-  }
+        <div class="form-group">
+            <label for="gender">성별:</label>
+            <select id="gender" required>
+                <option value="male">남성</option>
+                <option value="female">여성</option>
+                <option value="other">기타</option>
+            </select>
+        </div>
 
-  .manyopen-open-window {
-    background-color: #008CBA;
-    color: white;
-  }
+        <div class="form-group">
+            <label for="name">이름:</label>
+            <input type="text" id="name" required>
+        </div>
 
-  .manyopen-clear {
-    background-color: #f44336;
-    color: white;
-  }
+        <div class="form-group">
+            <label for="phone">휴대폰 번호:</label>
+            <input type="tel" id="phone" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" placeholder="010-1234-5678" required>
+        </div>
 
-  .manyopen-open-tab:hover {
-    background-color: #45a049;
-  }
+        <div class="form-group">
+            <label for="address">주소:</label>
+            <input type="text" id="address" required>
+        </div>
+    </div>
 
-  .manyopen-open-window:hover {
-    background-color: #007bb5;
-  }
-
-  .manyopen-clear:hover {
-    background-color: #e53935;
-  }
-
-  .manyopen-open-tab:active {
-    background-color: #3e8e41;
-  }
-
-  .manyopen-open-window:active {
-    background-color: #005f75;
-  }
-
-  .manyopen-clear:active {
-    background-color: #d32f2f;
-  }
-
-  @media (max-width: 768px) {
-    .manyopen-buttons {
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .manyopen-button {
-      width: 100%;
-      max-width: 300px;
-    }
-  }
-</style>
-
-<h1 class="manyopen-h1">🏍️여러 URL 한 번에 열기~🚀</h1>
-<div class="manyopen-info" id="manyopen-infoText">
-  * 대부분의 브라우저는 한 번에 많은 새 탭을 여는 것을 제한합니다.<br>
-  * 2~30개 정도의 URL 수가 적당합니다.<br>
-  * 많은 URL을 한 번에 열면 시스템 성능이 저하될 수 있습니다.<br>
-  * 많은 URL을 열어야 한다면, 나누어 여는 것이 좋습니다.
-</div>
-<textarea id="manyopen-inputText" class="manyopen-textarea" placeholder="Enter URLs here, each on a new line..." oninput="manyopenUpdateButtons()"></textarea>
-
-<div class="manyopen-buttons">
-  <button id="manyopen-openTabButton" class="manyopen-button manyopen-open-tab" onclick="manyopenOpenUrls('tab')">Open URLs in<br>new Tab</button>
-  <button id="manyopen-openWindowButton" class="manyopen-button manyopen-open-window" onclick="manyopenOpenUrls('window')">Open URLs in<br>new Window</button>
-  <button id="manyopen-clearButton" class="manyopen-button manyopen-clear" onclick="manyopenClearText()">Clear</button>
-</div>
+    <button type="button" onclick="validateForm()">회원가입</button>
+</form>
 
 <script>
-  const MANYOPEN_MAX_URLS = 40;
-
-  function manyopenOpenUrls(target) {
-    const text = document.getElementById("manyopen-inputText").value;
-    const urls = text
-      .split("\n")
-      .map((url) => url.trim())
-      .filter((url) => url);
-
-    if (urls.length > MANYOPEN_MAX_URLS) {
-      alert("나눠서 열어주세요ㅠ");
-      return;
-    }
-
-    urls.forEach((url) => {
-      if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        url = "http://" + url;
-      }
-      if (manyopenIsValidUrl(url)) {
-        if (target === "tab") {
-          window.open(url, "_blank");
-        } else if (target === "window") {
-          window.open(url, "_blank", "width=600,height=400");
+    function validateForm() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        if (password !== confirmPassword) {
+            alert("비밀번호가 일치하지 않습니다.");
+            return;
         }
-      } else {
-        alert(`Invalid URL: ${url}`);
-      }
-    });
-  }
 
-  function manyopenClearText() {
-    document.getElementById("manyopen-inputText").value = "";
-    manyopenUpdateButtons();
-  }
-
-  function manyopenIsValidUrl(string) {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
+        alert("회원가입이 완료되었습니다!");
     }
-  }
-
-  function manyopenUpdateButtons() {
-    const text = document.getElementById("manyopen-inputText").value;
-    const urls = text
-      .split("\n")
-      .map((url) => url.trim())
-      .filter((url) => url);
-    const openTabButton = document.getElementById("manyopen-openTabButton");
-    const openWindowButton = document.getElementById("manyopen-openWindowButton");
-    openTabButton.innerHTML = `${urls.length} URL${urls.length !== 1 ? "s" : ""}<br>OPEN new Tab`;
-    openWindowButton.innerHTML = `${urls.length} URL${urls.length !== 1 ? "s" : ""}<br>OPEN new Window`;
-  }
-
-  document.addEventListener("DOMContentLoaded", manyopenUpdateButtons);
-
-  const manyopenOpenTabButton = document.getElementById("manyopen-openTabButton");
-  const manyopenOpenWindowButton = document.getElementById("manyopen-openWindowButton");
-  const manyopenClearButton = document.getElementById("manyopen-clearButton");
-  const manyopenInputText = document.getElementById("manyopen-inputText");
-  const manyopenInfoText = document.getElementById("manyopen-infoText");
-
-  manyopenOpenTabButton.addEventListener("mouseover", () => {
-    manyopenInfoText.style.color = "#4CAF50";
-  });
-
-  manyopenOpenTabButton.addEventListener("mouseout", () => {
-    manyopenInfoText.style.color = "#555";
-  });
-
-  manyopenOpenWindowButton.addEventListener("mouseover", () => {
-    manyopenInfoText.style.color = "#008CBA";
-  });
-
-  manyopenOpenWindowButton.addEventListener("mouseout", () => {
-    manyopenInfoText.style.color = "#555";
-  });
-
-  manyopenClearButton.addEventListener("mouseover", () => {
-    manyopenInfoText.style.color = "#f44336";
-  });
-
-  manyopenClearButton.addEventListener("mouseout", () => {
-    manyopenInfoText.style.color = "#555";
-  });
-
-  manyopenInputText.addEventListener("mouseover", () => {
-    manyopenInfoText.style.color = "#ff9800";
-  });
-
-  manyopenInputText.addEventListener("mouseout", () => {
-    manyopenInfoText.style.color = "#555";
-  });
 </script>
+
+</body>
+</html>

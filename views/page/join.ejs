@@ -1,0 +1,141 @@
+<style>
+  /* 전체 폼을 감싸는 컨테이너 스타일 추가 */
+  .join-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    color: #666;
+  }
+
+  .join-form-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+    max-width: 600px;
+    /* 입력 폼 영역 너비 조정 */
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .join-form-group label {
+    width: 25%;
+    margin-right: 20px;
+    text-align: right;
+  }
+
+  .join-form-group input,
+  .join-form-group select {
+    width: 70%;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+
+  .join-required-section,
+  .join-optional-section {
+    border-bottom: 1px dotted #cccccc;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+  }
+
+  .join-h3 {
+    font-size: 1.1em;
+    color: #555;
+    margin-top: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .join-h2 {
+    text-align: center;
+  }
+
+  .join-button {
+    width: 600px;
+    /* 버튼 너비 조정 */
+    padding: 10px;
+    background-color: #000080;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto 50px auto;
+  }
+</style>
+
+<div class="join-container">
+  <h2 class="join-h2">회원가입</h2>
+
+  <div class="join-required-section">
+    <h3 class="join-h3">필수 정보</h3>
+    <form id="join-signupForm">
+      <div class="join-form-group">
+        <label for="join-email">이메일 주소:</label>
+        <input type="email" id="join-email" required>
+      </div>
+
+      <div class="join-form-group">
+        <label for="join-password">비밀번호:</label>
+        <input type="password" id="join-password" required>
+      </div>
+
+      <div class="join-form-group">
+        <label for="join-confirmPassword">비밀번호 확인:</label>
+        <input type="password" id="join-confirmPassword" required>
+      </div>
+
+      <div class="join-form-group">
+        <label for="join-username">활동명:</label>
+        <input type="text" id="join-username" required>
+      </div>
+  </div>
+
+  <div class="join-optional-section">
+    <h3 class="join-h3">선택 정보</h3>
+
+    <div class="join-form-group">
+      <label for="join-birthdate">생년월일:</label>
+      <input type="date" id="join-birthdate" required>
+    </div>
+
+    <div class="join-form-group">
+      <label for="join-gender">성별:</label>
+      <select id="join-gender" required>
+        <option value="male">남성</option>
+        <option value="female">여성</option>
+        <option value="other">기타</option>
+      </select>
+    </div>
+
+    <div class="join-form-group">
+      <label for="join-name">이름:</label>
+      <input type="text" id="join-name" required>
+    </div>
+
+    <div class="join-form-group">
+      <label for="join-phone">휴대폰 번호:</label>
+      <input type="tel" id="join-phone" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" placeholder="010-1234-5678" required>
+    </div>
+
+    <div class="join-form-group">
+      <label for="join-address">주소:</label>
+      <input type="text" id="join-address" required>
+    </div>
+  </div>
+</div>
+
+<button type="button" class="join-button" onclick="joinValidateForm()">회원가입</button>
+</form>
+
+<script>
+  function joinValidateForm() {
+    const password = document.getElementById('join-password').value;
+    const confirmPassword = document.getElementById('join-confirmPassword').value;
+
+    if (password !== confirmPassword) {
+      alert("비밀번호가 일치하지 않습니다..?");
+      return;
+    }
+  }
+</script>
