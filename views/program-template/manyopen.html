@@ -17,16 +17,17 @@
   }
 
   .manyopen-h1 {
-    margin-bottom: 20px;
+    margin: 20px 0;
     font-size: 24px;
     color: #333;
+    text-align: center;
   }
 
   .manyopen-textarea {
-    width: 100%;
-    max-width: 500px;
+    width: 100%;        /* 전체 너비 설정 */
+    max-width: 500px;   /* 최대 너비 제한 */
     height: 150px;
-    margin-bottom: 20px;
+    margin: 0 auto 20px auto;  /* 상하 0, 좌우 자동 마진으로 중앙 정렬 */
     padding: 10px;
     font-size: 16px;
     border: 1px solid #ccc;
@@ -34,19 +35,20 @@
     box-sizing: border-box;
     resize: both;
     overflow: auto;
-  }
+    text-align: center;  /* 내부 텍스트 중앙 정렬 */
+    display: block;      /* 블록 레벨 요소로 설정 */
+}
 
-  .manyopen-info {
-    width: 100%;
-    max-width: 500px;
-    margin: 10px 0;
-    font-size: 12px;
+  .manyopen-info {    
+    margin: 20px 0;
+    font-size: 13px;
     color: #555;
     transition: color 0.3s;
+    text-align: center;
   }
 
   .manyopen-buttons {
-    margin-top: 20px;
+    margin: 20px 0;
     display: flex;
     justify-content: center;
     gap: 10px;

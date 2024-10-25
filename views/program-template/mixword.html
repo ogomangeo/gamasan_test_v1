@@ -1,0 +1,266 @@
+<style>
+.mixword-container {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.mixword-word-shuffle-container {
+  font-family: Arial, sans-serif;
+  color: #000000;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.mixword-word-shuffle-container .mixword.container {
+  text-align: center;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 700px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.mixword-word-shuffle-container h1 {
+  color: #000000;
+  font-size: 18px;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.mixword-word-shuffle-container .mixword.input-section,
+.mixword-word-shuffle-container .mixword.output-section {
+  margin-bottom: 20px;
+  text-align: left;
+
+}
+
+.mixword-word-shuffle-container label {
+  display: block;
+  margin-bottom: 10px;
+  text-align: left;
+  color: black;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.mixword-word-shuffle-container textarea.mixword {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+  box-sizing: border-box;
+  font-size: 12px;
+  background-color: #ffffff;
+}
+
+.mixword-word-shuffle-container button.mixword {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  color: #000000;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 12px;
+  margin: 5px;
+  font-weight: bold;
+}
+
+.mixword-word-shuffle-container button.mixword:hover {
+  background-color: #e0e0e0;
+}
+
+.mixword-word-shuffle-container #mixword-result {
+  margin-top: 15px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-height: 50px;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background-color: #ffffcc;
+  font-size: 12px;
+  color: #000080;
+}
+
+.mixword-word-shuffle-container #mixword-copyButton {
+  background-color: #000080;
+  color: #ffffff;
+}
+
+.mixword-word-shuffle-container #mixword-copyButton:hover {
+  background-color: #0000a0;
+}
+
+.mixword-word-shuffle-container #mixword-errorMessage {
+  color: red;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+@media (max-width: 1200px) {
+  .mixword-word-shuffle-container .mixword.container {
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 768px) {
+  .mixword-word-shuffle-container {
+    padding: 10px;
+  }
+
+  .mixword-word-shuffle-container .mixword.container {
+    padding: 15px;
+  }
+
+  .mixword-word-shuffle-container h1 {
+    font-size: 16px;
+  }
+
+  .mixword-word-shuffle-container button.mixword,
+  .mixword-word-shuffle-container textarea.mixword {
+    font-size: 12px;
+  }
+}
+</style>
+
+<div class="mixword-word-shuffle-container">
+  <div class="mixword-container">
+    <div class="mixword-input-section">
+      <label for="mixword-inputText">한글 문장 입력:</label>
+      <textarea id="mixword-inputText" class="mixword" placeholder="한글 문장을 입력하세요 (최대 1000자)" aria-label="입력할 한글 문장"
+        maxlength="1000"></textarea>
+    </div>
+    <div class="button-container">
+      <button id="mixword-shuffleButton" class="mixword" aria-label="단어 섞기">섞기</button>
+    </div>
+    <div class="mixword output-section">
+      <h3>결과:</h3>
+      <div id="mixword-result" class="mixword" aria-live="polite" aria-label="섞인 단어 결과"></div>
+      <div class="button-container">
+        <button id="mixword-copyButton" class="mixword" aria-label="결과 복사">결과 복사</button>
+      </div>
+    </div>
+    <div id="mixword-errorMessage" class="mixword" aria-live="assertive"></div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const inputText = document.getElementById('mixword-inputText');
+    const shuffleButton = document.getElementById('mixword-shuffleButton');
+    const result = document.getElementById('mixword-result');
+    const copyButton = document.getElementById('mixword-copyButton');
+    const errorMessage = document.getElementById('mixword-errorMessage');
+
+    shuffleButton.addEventListener('click', shuffleWords);
+    copyButton.addEventListener('click', copyResult);
+
+    function shuffleWords() {
+      errorMessage.textContent = '';
+      const input = inputText.value.trim();
+      if (input.length === 0) {
+        showError('문장을 입력해주세요.');
+        return;
+      }
+      if (input.length > 1000) {
+        showError('입력은 1000자를 초과할 수 없습니다.');
+        return;
+      }
+
+      try {
+        const sentences = input.split(/([.!?]+)/);
+        const shuffledSentences = sentences.map((part, index) => {
+          return index % 2 === 0 ? shuffleSentence(part) : part;
+        });
+        result.textContent = shuffledSentences.join('');
+      } catch (error) {
+        showError('단어 섞기 중 오류가 발생했습니다.');
+        console.error('Error in shuffleWords:', error);
+      }
+    }
+
+    function shuffleSentence(sentence) {
+      return sentence.split(/\s+/).map(shuffleWord).join(' ');
+    }
+
+    function shuffleWord(word) {
+      if (word.length <= 2) return word;
+
+      const firstChar = word[0];
+      const lastChar = word[word.length - 1];
+      let middlePart = word.slice(1, -1);
+
+      const koreanRegex = /[가-힣]/;
+      const koreanChars = middlePart.split('').filter(char => koreanRegex.test(char));
+      const nonKoreanChars = middlePart.split('').filter(char => !koreanRegex.test(char));
+
+      if (koreanChars.length >= 2) {
+        const shuffledKorean = shuffleArray(koreanChars);
+        let shuffledMiddle = '';
+        let koreanIndex = 0;
+        let nonKoreanIndex = 0;
+
+        for (let i = 0; i < middlePart.length; i++) {
+          if (koreanRegex.test(middlePart[i])) {
+            shuffledMiddle += shuffledKorean[koreanIndex++];
+          } else {
+            shuffledMiddle += nonKoreanChars[nonKoreanIndex++];
+          }
+        }
+
+        return firstChar + shuffledMiddle + lastChar;
+      }
+
+      return word;
+    }
+
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function copyResult() {
+      if (!result.textContent) {
+        showError('복사할 결과가 없습니다.');
+        return;
+      }
+      navigator.clipboard.writeText(result.textContent).then(() => {
+        showError('결과가 클립보드에 복사되었습니다!', false);
+      }).catch(err => {
+        showError('클립보드 복사 실패');
+        console.error('클립보드 복사 실패:', err);
+      });
+    }
+
+    function showError(message, isError = true) {
+      errorMessage.textContent = message;
+      errorMessage.style.color = isError ? 'red' : 'green';
+    }
+  });
+</script>

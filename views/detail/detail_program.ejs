@@ -1,11 +1,7 @@
 <div class="detail-container">
     <div class="detail-header">
-        <h1 class="detail-title">
-            <%= program.title %>
-        </h1>
-        <span class="detail-date">
-            <%= formatDate(program.createdAt) %>
-        </span>
+        <h1 class="detail-title"><%= program.title %></h1>
+        <span class="detail-date"><%= formatDate(program.createdAt) %></span>
     </div>
 
     <div class="detail-nav-buttons">
@@ -18,12 +14,9 @@
         <a href="/program" class="detail-nav-button">목록</a>
     </div>
 
-    <div class="detail-thumbnail-container">
-        <img src="<%= program.thumbnail %>" alt="<%= program.title %> Thumbnail" class="detail-thumbnail">
-    </div>
-    <div class="detail-script">
-        <%- program.script %>
-    </div>
+    <div class="detail-script"><%- program.script %></div>
+    <div class="template-container"><%- templateContent %></div>
+    <div class="detail-thumbnail-container"><img src="<%= program.thumbnail %>" alt="<%= program.title %> Thumbnail" class="detail-thumbnail"></div>
 </div>
 
 <%

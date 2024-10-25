@@ -3,28 +3,468 @@
     <div class="sidebar-top">
         <h2><a href="/home">Gamasan</a></h2>
         <ul>
-            <li><a href="/program" class="<%= locals.title === 'Program' ? 'active' : '' %>">프로그램즈</a></li>
-            <li><a href="/blog" class="<%= locals.title === 'Blog' ? 'active' : '' %>">블로깅</a></li>
-            <li><a href="/archive" class="<%= locals.title === 'Archive' ? 'active' : '' %>">아카이빙</a></li>
-            <li><a href="/mart" class="<%= locals.title === 'Mart' ? 'active' : '' %>">가마산마트</a></li>
-            <li><a href="/notice" class="<%= locals.title === 'Notice' ? 'active' : '' %>">공지사항</a></li>
-            <li><a href="/about" class="<%= locals.title === 'About' ? 'active' : '' %>">ABOUT</a></li>
+            <li><a href="/program" class="<%= (locals.path?.startsWith('/program') || locals.title === 'Program') ? 'active' : '' %>">프로그램즈</a></li>
+            <li><a href="/blog" class="<%= (locals.path?.startsWith('/blog') || locals.title === 'Blog') ? 'active' : '' %>">블로깅</a></li>
+            <li><a href="/archive" class="<%= (locals.path?.startsWith('/archive') || locals.title === 'Archive') ? 'active' : '' %>">아카이빙</a></li>
+            <li><a href="/mart" class="<%= (locals.path?.startsWith('/mart') || locals.title === 'Mart') ? 'active' : '' %>">가마산마트</a></li>
+            <li><a href="/event" class="<%= (locals.path?.startsWith('/event') || locals.title === 'Event') ? 'active' : '' %>">이벤트</a></li>
+            <li><a href="/notice" class="<%= (locals.path?.startsWith('/notice') || locals.title === 'Notice') ? 'active' : '' %>">공지사항</a></li>
+            <li><a href="/about" class="<%= (locals.path?.startsWith('/about') || locals.title === 'About') ? 'active' : '' %>">ABOUT</a></li>
         </ul>
-        <!-- <div class="instagram-feed">
-            <p>@123456789</p>
-            <div class="instagram-grid">
-                <img src="https://picsum.photos/id/0/300/300" alt="Product 1">
-                <img src="https://picsum.photos/id/1/300/300" alt="Product 2">
-                <img src="https://picsum.photos/id/2/300/300" alt="Product 3">
-                <img src="https://picsum.photos/id/3/300/300" alt="Product 4">
-                <img src="https://picsum.photos/id/4/300/300" alt="Product 5">
-                <img src="https://picsum.photos/id/5/300/300" alt="Product 6">
-            </div>
-        </div> -->
-        <!-- <div class="search-bar">
-            <input type="text" placeholder="Search">
-            <button>🔍</button>
-        </div> -->
+        <!-- 슬롯머신 코드 시작 -->
+        <div class="side-ad-banner" id="slot-machine">
+                <style>
+                    * {
+                        box-sizing: border-box;
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    .slot-machine {
+                        background: linear-gradient(145deg, #282828, #1a1a1a);
+                        border-radius: 3px;
+                        padding: 5px;
+                        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+                        text-align: center;
+                        width: 200px;
+                        height: 300px;
+                        position: relative;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: space-between;
+                        overflow: hidden;
+                        margin-top: 10px;
+                    }
+
+                    .slot-slot-title {
+                        color: gold;
+                    }
+
+                    .slot-reels {
+                        display: grid;
+                        grid-template-columns: repeat(3, 42px);
+                        grid-template-rows: repeat(3, 42px);
+                        gap: 2px;
+                        margin: 2px auto;
+                        justify-content: center;
+                    }
+
+                    .slot-reel,
+                    .slot-header {
+                        width: 36px;
+                        height: 36px;
+                        background: #fff;
+                        border-radius: 4px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        font-size: 16px;
+                        color: #333;
+                        box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+
+                    .slot-header {
+                        background: none;
+                        box-shadow: none;
+                        font-weight: bold;
+                        color: #ffd700;
+                        font-size: 14px;
+                    }
+
+                    .slot-header-bar {
+                        width: 95%;
+                        height: 4px;
+                        background: #555;
+                        border-radius: 2px;
+                        overflow: hidden;
+                        position: relative;
+                        margin: 2px 0;
+                    }
+
+                    .slot-header-bar-inner {
+                        height: 100%;
+                        background: linear-gradient(145deg, #ffd700, #ffaa00);
+                        border-radius: 2px;
+                        width: 0;
+                        transition: width 3s linear;
+                    }
+
+                    .slot-results {
+                        display: grid;
+                        grid-template-columns: repeat(4, 1fr);
+                        grid-template-rows: repeat(2, auto);
+                        gap: 2px;
+                        font-size: 10px;
+                        width: 95%;
+                        margin: 2px auto;
+                    }
+
+                    .slot-results p {
+                        margin: 0;
+                        padding: 1px;
+                        color: white;
+                    }
+
+                    .slot-button-group {
+                        display: flex;
+                        gap: 8px;
+                        margin: 2px 0;
+                        justify-content: center;
+                        width: 95%;
+                    }
+
+                    .slot-btn-spin,
+                    .slot-btn-reset {
+                        flex: 1;
+                        color: #fff;
+                        border: none;
+                        border-radius: 4px;
+                        padding: 4px 8px;
+                        font-size: 12px;
+                        cursor: pointer;
+                        transition: background 0.3s;
+                        min-width: 60px;
+                    }
+
+                    .slot-btn-spin {
+                        background: linear-gradient(145deg, #0066cc, #0044aa);
+                    }
+
+                    .slot-btn-spin:hover {
+                        background: linear-gradient(145deg, #0044aa, #0066cc);
+                    }
+
+                    .slot-btn-reset {
+                        background: linear-gradient(145deg, #dc3545, #c82333);
+                    }
+
+                    .slot-btn-reset:hover {
+                        background: linear-gradient(145deg, #c82333, #dc3545);
+                    }
+
+                    .slot-btn-spin:disabled,
+                    .slot-btn-reset:disabled {
+                        background: #ccc;
+                        cursor: not-allowed;
+                    }
+
+                    .slot-spin-count {
+                        font-size: 10px;
+                        margin: 2px 0;
+                        color: #fff;
+                    }
+
+                    .slot-result {
+                        min-height: 12px;
+                        margin: 2px 0;
+                        font-size: 10px;
+                        color: #fff;
+                    }
+
+                    .slot-highlight {
+                        animation: slot-pulse 1s infinite;
+                    }
+
+                    @keyframes slot-pulse {
+                        0% {
+                            transform: scale(1);
+                        }
+
+                        50% {
+                            transform: scale(1.05);
+                        }
+
+                        100% {
+                            transform: scale(1);
+                        }
+                    }
+
+                    .slot-flash {
+                        animation: slot-flash 1s forwards;
+                    }
+
+                    @keyframes slot-flash {
+
+                        0%,
+                        100% {
+                            background-color: #ffd700;
+                        }
+
+                        50% {
+                            background-color: #ffea00;
+                        }
+                    }
+
+                    @keyframes slot-colorChange {
+                        0% {
+                            background: linear-gradient(145deg, #ff6b6b, #ff4757);
+                        }
+
+                        12.5% {
+                            background: linear-gradient(145deg, #feca57, #ff9ff3);
+                        }
+
+                        25% {
+                            background: linear-gradient(145deg, #54a0ff, #5f27cd);
+                        }
+
+                        37.5% {
+                            background: linear-gradient(145deg, #2ecc71, #1abc9c);
+                        }
+
+                        50% {
+                            background: linear-gradient(145deg, #f1c40f, #e67e22);
+                        }
+
+                        62.5% {
+                            background: linear-gradient(145deg, #9b59b6, #8e44ad);
+                        }
+
+                        75% {
+                            background: linear-gradient(145deg, #3498db, #2980b9);
+                        }
+
+                        87.5% {
+                            background: linear-gradient(145deg, #e74c3c, #c0392b);
+                        }
+
+                        100% {
+                            background: linear-gradient(145deg, #2ecc71, #00ffab);
+                        }
+                    }
+
+                    .slot-machine.slot-win {
+                        animation: slot-colorChange 8s linear infinite;
+                    }
+                </style>
+                <div class="slot-machine">
+                    <h3 class="slot-slot-title">Mini-SlotMachine</h3>
+                    <div class="slot-header-bar">
+                        <div class="slot-header-bar-inner" id="headerBarInner"></div>
+                    </div>
+                    <div class="slot-reels">
+                        <div class="slot-reel" id="reel1">🍒</div>
+                        <div class="slot-reel" id="reel2">🍒</div>
+                        <div class="slot-reel" id="reel3">🍒</div>
+                        <div class="slot-reel" id="reel4">🍒</div>
+                        <div class="slot-reel" id="reel5">🍒</div>
+                        <div class="slot-reel" id="reel6">🍒</div>
+                        <div class="slot-reel" id="reel7">🍒</div>
+                        <div class="slot-reel" id="reel8">🍒</div>
+                        <div class="slot-reel" id="reel9">🍒</div>
+                    </div>
+                    <div class="slot-button-group">
+                        <button class="slot-btn-spin" id="spinButton">스핀!</button>
+                        <button class="slot-btn-reset" id="resetButton">초기화</button>
+                    </div>
+                    <span class="slot-spin-count" id="spinCount">0번 스핀</span>
+                    <p class="slot-result" id="result"></p>
+                    <div class="slot-results" id="results">
+                        <p>🍒: <span id="cherryCount">0</span></p>
+                        <p>🍋: <span id="lemonCount">0</span></p>
+                        <p>🍉: <span id="watermelonCount">0</span></p>
+                        <p>🍀: <span id="cloverCount">0</span></p>
+                        <p>🌈: <span id="rainbowCount">0</span></p>
+                        <p>🚀: <span id="rocketCount">0</span></p>
+                        <p>🎁: <span id="giftCount">0</span></p>
+                        <p>🐋: <span id="whaleCount">0</span></p>
+                    </div>
+                </div>
+                <script>
+                    const reelSymbols = ["🍒", "🍋", "🍉", "🍀", "🌈", "🚀", "🎁", "🐋"];
+                    const spinButton = document.getElementById("spinButton");
+                    const resetButton = document.getElementById("resetButton"); // 추가
+                    const result = document.getElementById("result");
+                    const reels = Array.from(document.getElementsByClassName("slot-reel"));
+                    const spinCountElement = document.getElementById("spinCount");
+                    const headerBarInner = document.getElementById("headerBarInner");
+                    const spinSound = new Audio("audio/spin-sound.mp3");
+
+                    const symbolCounts = {
+                        "🍒": 0, "🍋": 0, "🍉": 0, "🍀": 0,
+                        "🌈": 0, "🚀": 0, "🎁": 0, "🐋": 0,
+                    };
+
+                    const symbolCountElements = {
+                        "🍒": document.getElementById("cherryCount"),
+                        "🍋": document.getElementById("lemonCount"),
+                        "🍉": document.getElementById("watermelonCount"),
+                        "🍀": document.getElementById("cloverCount"),
+                        "🌈": document.getElementById("rainbowCount"),
+                        "🚀": document.getElementById("rocketCount"),
+                        "🎁": document.getElementById("giftCount"),
+                        "🐋": document.getElementById("whaleCount"),
+                    };
+
+                    let spinCounter = 0;
+                    let isWinState = false;
+                    let winAnimationTimeout;
+
+                    function resetCounters() {
+                        spinCounter = 0;
+                        updateSpinCount();
+                        for (let symbol in symbolCounts) {
+                            symbolCounts[symbol] = 0;
+                            symbolCountElements[symbol].textContent = "0";
+                        }
+                    }
+
+                    function updateSpinCount() {
+                        spinCountElement.textContent = `${spinCounter}번 스핀`;
+                    }
+
+                    function spinReels() {
+                        return new Promise((resolve) => {
+                            const spinDuration = 1000;
+                            const startTime = Date.now();
+
+                            function updateReels() {
+                                const elapsedTime = Date.now() - startTime;
+                                const progress = Math.min(elapsedTime / spinDuration, 1);
+                                const speed = Math.sin(progress * Math.PI);
+
+                                reels.forEach((reel) => {
+                                    if (Math.random() < speed) {
+                                        const randomSymbol = reelSymbols[Math.floor(Math.random() * reelSymbols.length)];
+                                        reel.textContent = randomSymbol;
+                                    }
+                                });
+
+                                if (progress < 1) {
+                                    requestAnimationFrame(updateReels);
+                                } else {
+                                    resolve();
+                                }
+                            }
+
+                            updateReels();
+                        });
+                    }
+
+                    function animateHeaderBar() {
+                        headerBarInner.style.transition = 'none';
+                        headerBarInner.style.width = "0";
+                        headerBarInner.classList.remove('slot-flash');
+                        setTimeout(() => {
+                            headerBarInner.style.transition = 'width 1s linear';
+                            headerBarInner.style.width = "100%";
+                            headerBarInner.addEventListener('transitionend', () => {
+                                headerBarInner.classList.add('slot-flash');
+                            }, { once: true });
+                        }, 50);
+                    }
+
+                    async function spin() {
+                        if (isWinState) {
+                            document.querySelector('.slot-machine').classList.remove('slot-win');
+                        }
+
+                        if (winAnimationTimeout) {
+                            clearTimeout(winAnimationTimeout);
+                        }
+
+                        spinButton.disabled = true;
+                        result.textContent = "";
+                        reels.forEach(reel => reel.classList.remove("slot-highlight"));
+                        spinSound.play();
+
+                        animateHeaderBar();
+                        await spinReels();
+
+                        const finalSymbols = reels.map(reel => reel.textContent);
+                        updateSymbolCounts(finalSymbols);
+
+                        spinCounter++;
+                        updateSpinCount();
+
+                        checkWin(finalSymbols);
+
+                        spinButton.disabled = false;
+                    }
+
+                    function updateSymbolCounts(symbols) {
+                        symbols.forEach(symbol => {
+                            symbolCounts[symbol]++;
+                            symbolCountElements[symbol].textContent = symbolCounts[symbol];
+                        });
+                    }
+
+                    function checkWin(symbols) {
+                        const winningCombination = [
+                            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                            [0, 4, 8], [2, 4, 6],
+                        ];
+
+                        const isWin = winningCombination.some(combination =>
+                            combination.every(index => symbols[index] === symbols[combination[0]])
+                        );
+
+                        if (isWin) {
+                            result.textContent = "축하합니다! 승리했습니다!🎉";
+                            highlightWinningCombination(symbols, winningCombination);
+                            isWinState = true;
+                            document.querySelector('.slot-machine').classList.add('slot-win');
+                        } else {
+                            result.textContent = "다시 시도해보세요!🔥";
+                        }
+                    }
+
+                    function highlightWinningCombination(symbols, winningCombination) {
+                        winningCombination.forEach(combination => {
+                            if (combination.every(index => symbols[index] === symbols[combination[0]])) {
+                                combination.forEach(index => reels[index].classList.add("slot-highlight"));
+                            }
+                        });
+                    }
+
+                    function resetGame() {
+                        // 기존 카운터 초기화
+                        resetCounters();
+                        isWinState = false;
+
+                        // 슬롯머신 효과 제거
+                        document.querySelector('.slot-machine').classList.remove('slot-win');
+
+                        // 모든 릴 초기 상태로
+                        reels.forEach(reel => {
+                            reel.textContent = "🍒";
+                            reel.classList.remove("slot-highlight");
+                        });
+
+                        // 결과 텍스트 초기화
+                        result.textContent = "";
+
+                        // 헤더바 초기화
+                        headerBarInner.style.transition = 'none';
+                        headerBarInner.style.width = "0";
+                        headerBarInner.classList.remove('slot-flash');
+
+                        // 버튼 상태 초기화
+                        spinButton.disabled = false;
+                    }
+
+                    window.onload = function () {
+                        resetGame();
+                    };
+
+                    spinButton.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        spin();
+                    });
+
+                    // 초기화 버튼 이벤트 리스너 추가
+                    resetButton.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        resetGame();
+                    });
+                </script>
+        </div>
+        <!-- 슬롯머신 코드 끝 -->
         <div class="side-ad-banner">
             <a href="#">
                 <img src="/img/sidebar-banner-2.png" alt="광고 배너">

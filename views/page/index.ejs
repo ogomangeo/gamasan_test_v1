@@ -6,7 +6,8 @@
     <div class="home_index_row">
         <!-- 왼쪽: ㅋㅋㅋ 게시판 -->
         <div class="home_index_board_container board3">
-            <h2 class="home_index_board_title"><a href="/archive">아카이빙</a><a href="/archive" class="home_more_info">더보기</a></h2>
+            <h2 class="home_index_board_title"><a href="/archive">아카이빙</a><a href="/archive"
+                    class="home_more_info">더보기</a></h2>
             <div class="home_index_board">
                 <% archives.forEach(archive=> { %>
                     <a href="/archive/<%= archive._id %>" class="home_index_board_item_link">
@@ -31,7 +32,8 @@
         <div class="home_index_column">
             <!-- 쓸만한 프로그램 게시판 -->
             <div class="home_index_board_container board1">
-                <h2 class="home_index_board_title"><a href="/program">프로그램즈</a><a href="/program" class="home_more_info">더보기</a></h2>
+                <h2 class="home_index_board_title"><a href="/program">프로그램즈</a><a href="/program"
+                        class="home_more_info">더보기</a></h2>
                 <div class="home_index_board">
                     <% programs.forEach(program=> { %>
                         <a href="/program/<%= program._id %>" class="home_index_board_item_link">
@@ -54,7 +56,8 @@
 
             <!-- 이야기바구니 게시판 -->
             <div class="home_index_board_container board2">
-                <h2 class="home_index_board_title"><a href="/blog">블로깅</a><a href="/blog" class="home_more_info">더보기</a></h2>
+                <h2 class="home_index_board_title"><a href="/blog">블로깅</a><a href="/blog" class="home_more_info">더보기</a>
+                </h2>
                 <div class="home_index_board">
                     <% blogs.forEach(blog=> { %>
                         <a href="/blog/<%= blog._id %>" class="home_index_board_item_link">
@@ -78,15 +81,18 @@
     </div>
 
     <!-- 두 번째 배너 -->
-    <div class="home_index_banner">
-        <img src="https://picsum.photos/id/31/1000/200" alt="home_banner_2">
+    <div class="detail-banner">
+        <a href="#">
+            <img src="/img/main-banner-3-1.png" alt="배너">
+        </a>
     </div>
-
+    
     <!-- 하단 행 -->
     <div class="home_index_row">
         <!-- 가마산마트 게시판 -->
         <div class="home_index_board_container board4">
-            <h2 class="home_index_board_title"><a href="/mart">가마산마트</a><a href="/mart" class="home_more_info">더보기</a></h2>
+            <h2 class="home_index_board_title"><a href="/mart">가마산마트</a><a href="/mart" class="home_more_info">더보기</a>
+            </h2>
             <div class="home_index_board">
                 <% marts.forEach(mart=> { %>
                     <a href="/mart/<%= mart._id %>" class="home_index_board_item_link">
@@ -108,7 +114,8 @@
         </div>
         <!-- 공지사항 게시판 -->
         <div class="home_index_board_container board5">
-            <h2 class="home_index_board_title"><a href="/notice">공지사항</a><a href="/notice" class="home_more_info">더보기</a></h2>
+            <h2 class="home_index_board_title"><a href="/notice">공지사항</a><a href="/notice"
+                    class="home_more_info">더보기</a></h2>
             <div class="home_index_board">
                 <% notices.forEach(notice=> { %>
                     <a href="/notice/<%= notice._id %>" class="home_index_board_item_link">

@@ -5,7 +5,7 @@ const expressLayouts = require("express-ejs-layouts");
 const connectDb = require("./config/db");
 const cookieParser = require("cookie-parser");
 const methodOverride = require("method-override");
-const martRouter = require('./routes/mart-product-image');
+const martRouter = require("./routes/mart-product-image");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -15,6 +15,13 @@ connectDb();
 app.use(expressLayouts);
 app.set("view engine", "ejs");
 app.set("views", "./views");
+
+app.use((req, res, next) => {
+  res.locals.path = req.path;
+  const pathSegments = req.path.split('/');
+  res.locals.title = pathSegments[1] ? pathSegments[1].charAt(0).toUpperCase() + pathSegments[1].slice(1) : 'Home';
+  next();
+});
 
 app.use(express.static("public"));
 
@@ -28,7 +35,7 @@ app.use("/", require("./routes/main"));
 app.use("/", require("./routes/admin"));
 app.use("/", require("./routes/detail"));
 
-app.use('/mart', martRouter);
+app.use("/mart", martRouter);
 
 app.listen(port, () => {
   console.log(`app listenling on port ${port}`);

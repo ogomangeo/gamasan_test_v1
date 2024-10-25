@@ -43,7 +43,7 @@
 }
 
 .detail-script {
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.6;
     background-color: #f0f0f0;
     border-radius: 5px;
@@ -66,7 +66,8 @@
 .detail-nav-buttons {
     display: flex;
     justify-content: flex-end;
-    margin-top: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .detail-nav-button {

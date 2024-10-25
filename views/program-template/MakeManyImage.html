@@ -1,0 +1,546 @@
+<style>
+  .m-m-image-content-wrapper {
+  width: 980px;
+}
+
+.m-m-image-instructions {
+  width: 980px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.m-m-image-generator-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 980px;
+  height: 800px;   
+}
+
+.m-m-image-control-panel,
+.m-m-image-image-container {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.m-m-image-control-panel {
+  flex: 0 0 40%;
+  margin-right: 20px;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.m-m-image-image-container {
+  flex: 1;
+  background-color: #e2e2e2;
+  border-radius: 5px;
+  padding: 10px;
+  display: block; /* flex에서 block으로 변경 */
+  overflow-x: auto; /* 가로 스크롤 추가 */
+  overflow-y: auto;
+  box-sizing: border-box;
+  min-height: 100%;
+}
+
+/* 이미지를 감싸는 새로운 래퍼 추가 */
+.m-m-image-wrapper {
+  display: inline-flex;
+  flex-wrap: wrap;
+  min-width: min-content;
+  gap: 10px;
+}
+
+.m-m-image-static-content {
+  flex: 0 0 auto;
+}
+
+.m-m-image-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+.m-m-image-col {
+  flex: 1;
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+}
+
+.m-m-image-col:last-child {
+  margin-right: 0;
+}
+
+.m-m-image-col.m-m-image-center {
+  justify-content: center;
+}
+
+.m-m-image-control-panel input[type="text"],
+.m-m-image-control-panel input[type="number"] {
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 12px;
+}
+
+.m-m-image-control-panel button {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  transition: background-color 0.1s, transform 0.1s;
+  font-size: 12px;
+}
+
+.m-m-image-control-panel button.m-m-image-active {
+  background-color: #000080;
+  color: white;
+}
+
+.m-m-image-control-panel button:hover {
+  background-color: #e0e0e0;
+}
+
+.m-m-image-control-panel button:active {
+  transform: scale(0.98);
+}
+
+.m-m-image-text-position {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.m-m-image-text-position input[type="radio"] {
+  display: none;
+}
+
+.m-m-image-text-position label {
+  display: block;
+  width: 20px;
+  height: 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.m-m-image-text-position input[type="radio"]:checked+label {
+  background-color: #000080;
+}
+
+.m-m-image-disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+#m-m-image-dynamicRows {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.m-m-image-dynamic-input-row {
+  height: 40px;
+  margin-bottom: 10px;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+#m-m-image-dynamicRows .m-m-image-row {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.m-m-image-download-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.m-m-image-download-buttons button {
+  width: 48%;
+}
+
+.m-m-image-generated-image {
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px black;
+  overflow: hidden;
+  flex-shrink: 0; /* 이미지가 축소되지 않도록 설정 */
+}
+
+.m-m-image-generated-image div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .m-m-image-generator-container {
+    flex-direction: column;
+  }
+
+  .m-m-image-control-panel,
+  .m-m-image-image-container {
+    width: 100%;
+  }
+}
+</style>
+<div class="main-content">
+  <div class="content-wrapper">
+    <div class="m-m-image-instructions" aria-label="사용 안내">
+      <strong>* 사용안내</strong><br>
+      1) 필요수량을 입력해주세요<br>
+      2) 버튼을 클릭하면서, 색깔을 랜덤으로 세팅할수도 있고, 직접 입력할 수도 있습니다. <br>
+      3) 이미지 사이즈를 픽셀(px)기준 100*100, 150*100 형식으로 입력해주세요.<br>
+      4) 이미지 사이즈를 입력한 값으로 일괄 적용할수도, 개별적으로 설정할 수도 있습니다.<br>
+      5) 텍스트 있음 버튼을 클릭하면, 하단 텍스트 입력란에 이미지에 넣고 싶은 텍스트를 입력 할 수 있습니다<br>
+      6) 색상코드 입력 버튼을 누르면, 색깔의 헥스코드가 이미지에 입력됩니다.<br>
+      7) 넘버링은 텍스트_1, 텍스트_2.. 이렇게 _n 형식으로 텍스트 뒤에 숫자가 입력됩니다. <br>
+      8) 텍스트 위치 중 하나를 선택함으로 입력한 텍스트가 이미지 어느곳에 위치하는지를 정할 수 있습니다.<br>
+      9) 이미지 새로고침을 누르면 색이 랜덤으로 변하고, 이미지 다운로드를 누르면 만든 이미지들이 다운로드 됩니다.
+    </div>
+    <div class="m-m-image-generator-container">
+      <div class="m-m-image-control-panel">
+        <div class="m-m-image-static-content">
+          <div class="m-m-image-row m-m-image-quantity-row">
+            <label for="m-m-image-quantityInput" class="m-m-image-col m-m-image-center">필요수량</label>
+            <div class="m-m-image-col"><input type="number" id="m-m-image-quantityInput" placeholder="N" min="1"
+                aria-label="이미지 수량"></div>
+          </div>
+          <div class="m-m-image-row m-m-image-color-setting-row">
+            <div class="m-m-image-col"><button id="m-m-image-randomButton" class="m-m-image-active"
+                aria-pressed="true">색깔 랜덤 세팅</button></div>
+            <div class="m-m-image-col"><button id="m-m-image-directButton" aria-pressed="false">색깔 직접 선택</button></div>
+          </div>
+          <div class="m-m-image-row m-m-image-image-size-row">
+            <label for="m-m-image-sizeInput" class="m-m-image-col m-m-image-center">이미지 사이즈 (가로*세로)</label>
+            <div class="m-m-image-col"><input type="text" id="m-m-image-sizeInput" placeholder="사이즈 입력 가로px*세로px"
+                aria-label="이미지 크기"></div>
+          </div>
+          <div class="m-m-image-row m-m-image-apply-setting-row">
+            <div class="m-m-image-col"><button id="m-m-image-bulkButton" class="m-m-image-toggle-apply m-m-image-active"
+                aria-pressed="true">일괄적용</button></div>
+            <div class="m-m-image-col"><button id="m-m-image-individualButton" class="m-m-image-toggle-apply"
+                aria-pressed="false">개별설정</button></div>
+          </div>
+          <div class="m-m-image-row m-m-image-text-toggle-row">
+            <div class="m-m-image-col"><button id="m-m-image-textOnButton" class="m-m-image-toggle-text"
+                aria-pressed="false">텍스트 있음</button></div>
+            <div class="m-m-image-col"><button id="m-m-image-textOffButton"
+                class="m-m-image-toggle-text m-m-image-active" aria-pressed="true">텍스트 없음</button></div>
+          </div>
+          <div class="m-m-image-row m-m-image-text-input-row m-m-image-disabled">
+            <div class="m-m-image-col"><input type="text" id="m-m-image-textInput" placeholder="텍스트 입력"
+                aria-label="이미지 텍스트"></div>
+            <div class="m-m-image-col"><button id="m-m-image-colorCodeButton" class="m-m-image-toggle-colorcode"
+                aria-pressed="false">색상코드 입력</button></div>
+            <div class="m-m-image-col"><button id="m-m-image-numberingButton" class="m-m-image-toggle-numbering"
+                aria-pressed="false">넘버링</button></div>
+          </div>
+          <div class="m-m-image-row m-m-image-text-position-row m-m-image-disabled">
+            <div class="m-m-image-col m-m-image-center">텍스트 위치</div>
+            <div class="m-m-image-col m-m-image-text-position">
+              <input type="radio" name="m-m-image-v-cell" value="left top" id="m-m-image-pos1" aria-label="왼쪽 상단"><label
+                for="m-m-image-pos1"></label>
+              <input type="radio" name="m-m-image-v-cell" value="center top" id="m-m-image-pos2"
+                aria-label="중앙 상단"><label for="m-m-image-pos2"></label>
+              <input type="radio" name="m-m-image-v-cell" value="right top" id="m-m-image-pos3"
+                aria-label="오른쪽 상단"><label for="m-m-image-pos3"></label>
+              <input type="radio" name="m-m-image-v-cell" value="left center" id="m-m-image-pos4"
+                aria-label="왼쪽 중앙"><label for="m-m-image-pos4"></label>
+              <input type="radio" name="m-m-image-v-cell" value="center center" id="m-m-image-pos5" checked
+                aria-label="중앙"><label for="m-m-image-pos5"></label>
+              <input type="radio" name="m-m-image-v-cell" value="right center" id="m-m-image-pos6"
+                aria-label="오른쪽 중앙"><label for="m-m-image-pos6"></label>
+              <input type="radio" name="m-m-image-v-cell" value="left bottom" id="m-m-image-pos7"
+                aria-label="왼쪽 하단"><label for="m-m-image-pos7"></label>
+              <input type="radio" name="m-m-image-v-cell" value="center bottom" id="m-m-image-pos8"
+                aria-label="중앙 하단"><label for="m-m-image-pos8"></label>
+              <input type="radio" name="m-m-image-v-cell" value="right bottom" id="m-m-image-pos9"
+                aria-label="오른쪽 하단"><label for="m-m-image-pos9"></label>
+            </div>
+          </div>
+          <div class="m-m-image-row m-m-image-action-buttons-row">
+            <div class="m-m-image-col"><button id="m-m-image-generateImageButton" class="m-m-image-generate-button">이미지
+                생성하기</button></div>
+            <div class="m-m-image-col"><button id="m-m-image-refreshImageButton" class="m-m-image-refresh-button">이미지
+                새로고침</button></div>
+            <div class="m-m-image-col"><button id="m-m-image-downloadButton" class="m-m-image-download-button">이미지
+                다운로드</button></div>
+          </div>
+        </div>
+        <div id="m-m-image-dynamicRows">
+          <!-- 동적으로 생성되는 행들이 여기에 추가됩니다 -->
+        </div>
+      </div>
+      <div class="m-m-image-image-container" aria-label="생성된 이미지 영역">
+        <!-- 이미지 또는 다른 콘텐츠가 들어갈 공간 -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', initialize);
+
+function initialize() {
+  updateRows();
+  handleApplySetting('bulk');
+  setupEventListeners();
+}
+
+function setupEventListeners() {
+  document.getElementById('m-m-image-sizeInput').addEventListener('input', updateDynamicInputs);
+  document.getElementById('m-m-image-generateImageButton').addEventListener('click', generateImages);
+  document.getElementById('m-m-image-refreshImageButton').addEventListener('click', refreshImages);
+  document.getElementById('m-m-image-downloadButton').addEventListener('click', downloadImages);
+  document.getElementById('m-m-image-textOnButton').addEventListener('click', () => toggleGroup('m-m-image-toggle-text', 'm-m-image-textOnButton'));
+  document.getElementById('m-m-image-textOffButton').addEventListener('click', () => toggleGroup('m-m-image-toggle-text', 'm-m-image-textOffButton'));
+  document.getElementById('m-m-image-numberingButton').addEventListener('click', toggleNumbering);
+  document.getElementById('m-m-image-textInput').addEventListener('input', generateImages);
+  document.getElementById('m-m-image-randomButton').addEventListener('click', () => toggleButtons('m-m-image-randomButton', 'm-m-image-directButton'));
+  document.getElementById('m-m-image-directButton').addEventListener('click', () => toggleButtons('m-m-image-directButton', 'm-m-image-randomButton'));
+  document.getElementById('m-m-image-bulkButton').addEventListener('click', () => handleApplySetting('bulk'));
+  document.getElementById('m-m-image-individualButton').addEventListener('click', () => handleApplySetting('individual'));
+  document.getElementById('m-m-image-quantityInput').addEventListener('change', updateRows);
+  document.getElementById('m-m-image-colorCodeButton').addEventListener('click', toggleColorCode);
+
+  document.querySelectorAll('input[name="m-m-image-v-cell"]').forEach(radio => {
+    radio.addEventListener('change', generateImages);
+  });
+}
+
+function toggleButtons(activeButton, inactiveButton) {
+  document.getElementById(activeButton).classList.add('m-m-image-active');
+  document.getElementById(activeButton).setAttribute('aria-pressed', 'true');
+  document.getElementById(inactiveButton).classList.remove('m-m-image-active');
+  document.getElementById(inactiveButton).setAttribute('aria-pressed', 'false');
+  if (activeButton === 'm-m-image-randomButton') {
+    applyRandomColors();
+  } else if (activeButton === 'm-m-image-directButton') {
+    resetColors();
+  }
+}
+
+function resetColors() {
+  document.querySelectorAll('#m-m-image-dynamicRows .m-m-image-colorInput').forEach(input => {
+    input.value = '';
+  });
+}
+
+function toggleGroup(group, selected) {
+  document.querySelectorAll(`.${group}`).forEach(button => {
+    button.classList.remove('m-m-image-active');
+    button.setAttribute('aria-pressed', 'false');
+  });
+  const selectedButton = document.getElementById(selected);
+  selectedButton.classList.add('m-m-image-active');
+  selectedButton.setAttribute('aria-pressed', 'true');
+
+  if (group === 'm-m-image-toggle-text') {
+    toggleTextInput(selected === 'm-m-image-textOnButton');
+  }
+  generateImages();
+}
+
+function toggleTextInput(isEnabled) {
+  const textInputRow = document.querySelector('.m-m-image-text-input-row');
+  const textPositionRow = document.querySelector('.m-m-image-text-position-row');
+  [textInputRow, textPositionRow].forEach(row => {
+    row.classList.toggle('m-m-image-disabled', !isEnabled);
+  });
+}
+
+function handleApplySetting(applyType) {
+  const bulkButton = document.getElementById('m-m-image-bulkButton');
+  const individualButton = document.getElementById('m-m-image-individualButton');
+  const sizeInput = document.getElementById('m-m-image-sizeInput');
+  const dynamicInputs = document.querySelectorAll('#m-m-image-dynamicRows input[type="text"]:not(.m-m-image-colorInput)');
+
+  const isBulk = applyType === 'bulk';
+  sizeInput.disabled = !isBulk;
+  sizeInput.classList.toggle('m-m-image-disabled', !isBulk);
+  bulkButton.classList.toggle('m-m-image-active', isBulk);
+  bulkButton.setAttribute('aria-pressed', isBulk);
+  individualButton.classList.toggle('m-m-image-active', !isBulk);
+  individualButton.setAttribute('aria-pressed', !isBulk);
+
+  dynamicInputs.forEach(input => {
+    input.disabled = isBulk;
+    input.classList.toggle('m-m-image-disabled', isBulk);
+    if (isBulk) input.value = sizeInput.value;
+  });
+}
+
+function updateRows() {
+  const quantity = document.getElementById('m-m-image-quantityInput').value;
+  const dynamicRows = document.getElementById('m-m-image-dynamicRows');
+  const sizeInput = document.getElementById('m-m-image-sizeInput');
+  dynamicRows.innerHTML = '';
+
+  for (let i = 1; i <= quantity; i++) {
+    const row = document.createElement('div');
+    row.className = 'm-m-image-row m-m-image-dynamic-input-row';
+    const isDisabled = document.getElementById('m-m-image-bulkButton').classList.contains('m-m-image-active');
+    row.innerHTML = `
+      <div class="m-m-image-col m-m-image-center">${i}</div>
+      <div class="m-m-image-col"><input type="text" value="${isDisabled ? sizeInput.value : '100*100'}" ${isDisabled ? 'disabled class="m-m-image-disabled"' : ''}></div>
+      <div class="m-m-image-col"><input type="text" class="m-m-image-colorInput" placeholder="#RRGGBB" maxlength="7" onchange="validateHexColor(this)"></div>
+    `;
+    dynamicRows.appendChild(row);
+  }
+  if (document.getElementById('m-m-image-randomButton').classList.contains('m-m-image-active')) {
+    applyRandomColors();
+  }
+}
+
+function toggleNumbering() {
+  const numberingButton = document.getElementById('m-m-image-numberingButton');
+  numberingButton.classList.toggle('m-m-image-active');
+  numberingButton.setAttribute('aria-pressed', numberingButton.classList.contains('m-m-image-active'));
+  generateImages();
+}
+
+function generateRandomColor() {
+  return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+}
+
+function applyRandomColors() {
+  document.querySelectorAll('#m-m-image-dynamicRows .m-m-image-colorInput').forEach(input => {
+    input.value = generateRandomColor();
+  });
+  generateImages();
+}
+
+function getTextPosition() {
+  const checkedRadio = document.querySelector('input[name="m-m-image-v-cell"]:checked');
+  return checkedRadio ? checkedRadio.value : 'center center';
+}
+
+function toggleColorCode() {
+  const colorCodeButton = document.getElementById('m-m-image-colorCodeButton');
+  colorCodeButton.classList.toggle('m-m-image-active');
+  colorCodeButton.setAttribute('aria-pressed', colorCodeButton.classList.contains('m-m-image-active'));
+  generateImages();
+}
+
+function generateImages() {
+  const imageContainer = document.querySelector('.m-m-image-image-container');
+  imageContainer.innerHTML = '';
+  
+  // 이미지를 감싸는 래퍼 div 추가
+  const wrapper = document.createElement('div');
+  wrapper.className = 'm-m-image-wrapper';
+  imageContainer.appendChild(wrapper);
+  
+  const rows = document.querySelectorAll('.m-m-image-dynamic-input-row');
+  const textContent = document.getElementById('m-m-image-textInput').value;
+  const isColorCodeActive = document.getElementById('m-m-image-colorCodeButton').classList.contains('m-m-image-active');
+  const isNumberingActive = document.getElementById('m-m-image-numberingButton').classList.contains('m-m-image-active');
+  const isTextEnabled = document.getElementById('m-m-image-textOnButton').classList.contains('m-m-image-active');
+  const textPosition = getTextPosition();
+
+  rows.forEach((row, index) => {
+    const sizeInput = row.querySelector('input[type="text"]:not(.m-m-image-colorInput)');
+    const colorInput = row.querySelector('.m-m-image-colorInput');
+    const [width, height] = sizeInput.value.split('*').map(num => parseInt(num));
+    const color = colorInput.value || '#cccccc';
+
+    const imageDiv = document.createElement('div');
+    imageDiv.className = 'm-m-image-generated-image';
+    imageDiv.style.width = `${width}px`;
+    imageDiv.style.height = `${height}px`;
+    imageDiv.style.backgroundColor = color;
+    imageDiv.style.position = 'relative';
+
+    if (isTextEnabled) {
+      const textDiv = document.createElement('div');
+      textDiv.style.position = 'absolute';
+      textDiv.style.padding = '5px';
+      textDiv.style.maxWidth = '100%';
+
+      const [horizontalAlign, verticalAlign] = textPosition.split(' ');
+      textDiv.style.textAlign = horizontalAlign;
+      textDiv.style[verticalAlign] = '0';
+      if (horizontalAlign === 'center') {
+        textDiv.style.left = '50%';
+        textDiv.style.transform = 'translateX(-50%)';
+      } else {
+        textDiv.style[horizontalAlign] = '0';
+      }
+
+      let text = textContent;
+      if (isColorCodeActive) {
+        text += (text ? ' ' : '') + color;
+      }
+      if (isNumberingActive) {
+        text += (text ? '_' : '') + (index + 1);
+      }
+      textDiv.textContent = text;
+      imageDiv.appendChild(textDiv);
+    }
+
+    wrapper.appendChild(imageDiv);
+  });
+}
+
+function refreshImages() {
+  applyRandomColors();
+}
+
+function downloadImages() {
+  document.querySelectorAll('.m-m-image-generated-image').forEach((image, index) => {
+    html2canvas(image).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `image_${index + 1}.jpg`;
+      link.href = canvas.toDataURL('image/jpeg');
+      link.click();
+    });
+  });
+}
+
+function updateDynamicInputs() {
+  if (document.getElementById('m-m-image-bulkButton').classList.contains('m-m-image-active')) {
+    const sizeValue = document.getElementById('m-m-image-sizeInput').value;
+    document.querySelectorAll('#m-m-image-dynamicRows input[type="text"]:not(.m-m-image-colorInput)').forEach(input => {
+      input.value = sizeValue;
+    });
+  }
+}
+
+// 추가: 16진수 색상 코드 유효성 검사 함수
+function validateHexColor(input) {
+  const hexPattern = /^#[0-9A-Fa-f]{6}$/;
+  if (!hexPattern.test(input.value)) {
+    input.value = '#000000';
+  }
+}  
+</script>

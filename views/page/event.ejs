@@ -1,25 +1,19 @@
-<!-- GPT 오름차순 -->
+<!-- GPT 내림차순 -->
 <% data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); %>
-<h1>Archive</h1>
-<div class="archive-header">
-  <div class="header-thumbnail">썸네일</div>
-  <div class="header-title">제목</div>
-  <div class="header-script">내용</div>
-  <div class="header-date">작성일시</div>
-</div>
 
-<ul class="archive-list">
-  <% data.forEach(archive => { %>
-    <li class="archive-item">
-      <a href="/archive/<%= archive._id %>">
-        <img src="<%= archive.thumbnail %>" alt="Thumbnail" class="thumbnail">
-        <div class="title"><%= archive.title %></div>
-        <div class="script"><%= archive.script %></div>
-        <div class="timestamp"><%= formatDate(archive.createdAt) %></div>
-      </a>
-    </li>
-  <% }) %>
-</ul>
+<h1>Events</h1>
+<div class="event-container">
+  <% data.forEach(event => { %>
+    <div class="event-card">
+      <img src="<%= event.thumbnail %>" alt="<%= event.title %>">
+      <div class="event-content">
+        <h2><%= event.title %></h2>
+        <p class="event-script"><%= event.script %></p>
+        <p class="event-date"><%= formatDate(event.createdAt) %></p>
+      </div>
+    </div>
+  <% }); %>
+</div>
 
 <div class="pagination">
   <% if (currentPage> 1) { %>
@@ -43,7 +37,6 @@
                   <% } %>
 </div>
 
-<!-- 작성 일시 형식 변경 함수 -->
 <%
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -51,6 +44,6 @@ function formatDate(dateString) {
   const day = String(date.getDate()).padStart(2, '0');
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${month}/${day} ${hours}:${minutes}`;
+  return month + '/' + day + ' ' + hours + ':' + minutes;
 }
 %>
