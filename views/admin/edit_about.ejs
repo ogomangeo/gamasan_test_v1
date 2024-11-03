@@ -1,3 +1,4 @@
+<script src="/js/DeleteCheck.js"></script>
 <style>
   /* 제목 영역 */
   .admin-title {
@@ -75,27 +76,34 @@
     box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
   }
   </style>
-<script src="/js/DeleteCheck.js"></script>
-<a href="/allBlogs">&larr; 뒤로</a>
+<a href="/allAbout">&larr; 뒤로</a>
 <div class="admin-title">
   <h2>
     <%= locals.title %>
   </h2>
-  <form action="/delete_blog/<%= blog._id %>?_method=DELETE" method="POST" style="display: inline;">
-    <button type="submit" class="btn btn-delete" onclick="return deleteConfirm('<%= blog._id %>', 'blog')">삭제</button>
-</form>
-
+  <form action="/delete-about/<%= about._id %>?_method=DELETE" method="POST" style="display: inline;">
+    <button type="submit" class="btn btn-delete" onclick="return deleteConfirm('<%= about._id %>', 'about')">삭제</button>
+  </form>
 </div>
 
-<form action="/edit_blog/<%= blog._id %>?_method=PUT" method="POST">
-  <label for="thumbnail"><b>썸네일</b></label>
-  <input type="text" placeholder="썸네일 이미지 URL" name="thumbnail" id="thumbnail" value="<%= blog.thumbnail %>">
+<form action="/edit-about/<%= about._id %>?_method=PUT" method="POST">
+  <label for="email"><b>이메일</b></label>
+  <input type="email" placeholder="이메일 주소" name="email" id="email" value="<%= about.email %>" required>
 
   <label for="title"><b>제목</b></label>
-  <input type="text" placeholder="게시물 제목" name="title" id="title" value="<%= blog.title %>">
+  <input type="text" placeholder="문의 제목" name="title" id="title" value="<%= about.title %>" required>
 
-  <label for="script"><b>내용</b></label>
-  <textarea placeholder="게시물 내용" name="script" cols="50" rows="10"><%= blog.script %></textarea>
-  <input type="submit" value="수정" class="btn">
+  <label for="content"><b>내용</b></label>
+  <textarea placeholder="문의 내용" name="content" id="content" cols="50" rows="10" required><%= about.content %></textarea>
+
+  <div class="form-group">
+    <label for="isRead"><b>읽음 상태</b></label>
+    <select name="isRead" id="isRead">
+      <option value="false" <%=about.isRead ? '' : 'selected' %>>안읽음</option>
+      <option value="true" <%=about.isRead ? 'selected' : '' %>>읽음</option>
+    </select>
+  </div>
+
+  <a href="/allAbout"
+    style="background-color: rgb(112, 112, 192);width: 50px;color: white;margin-top: 10px;padding: 5px;display: inline-block;">목록</a>
 </form>
-

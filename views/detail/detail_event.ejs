@@ -1,0 +1,32 @@
+<div class="detail-container">
+  <div class="detail-header">
+      <h1 class="detail-title">
+          <%= event.title %>
+      </h1>
+      <span class="detail-date">
+          <%= formatDate(event.createdAt) %>
+      </span>
+  </div>
+
+  <div class="detail-nav-buttons">
+      <% if (previousEvent) { %>
+          <a href="/event/<%= previousEvent._id %>" class="detail-nav-button">이전글</a>
+      <% } %>
+      <% if (nextEvent) { %>
+          <a href="/event/<%= nextEvent._id %>" class="detail-nav-button">다음글</a>
+      <% } %>
+      <a href="/event" class="detail-nav-button">목록</a>
+  </div>
+  
+  <div class="detail-thumbnail-container">
+      <img src="<%= event.thumbnail %>" alt="<%= event.title %> Thumbnail" class="detail-thumbnail">
+  </div>
+  <div class="detail-script">
+      <%- event.script %>
+  </div>
+</div>
+
+<% function formatDate(dateString) { const date=new Date(dateString); const month=String(date.getMonth() +
+  1).padStart(2, '0' ); const day=String(date.getDate()).padStart(2, '0' ); const
+  hours=String(date.getHours()).padStart(2, '0' ); const minutes=String(date.getMinutes()).padStart(2, '0' ); return
+  `${month}/${day} ${hours}:${minutes}`; } %>

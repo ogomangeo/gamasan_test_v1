@@ -1,9 +1,52 @@
 <!-- views/include/_header.ejs -->
-<div class="header">
-  <div class="header-content">
-      <div class="sale-banner">Welcome Gamasan page</div>
-      <div class="user-actions">
-          <a href="#">Login</a><span>|</span><a href="join">Join</a><span>|</span><a href="#">Cart</a>
+<%# console.log('Header member:', locals.member) %>
+  <%# console.log('Direct member:', member) %>
+    <style>
+      .user-info {
+        color: #000080;
+        font-weight: 500;
+      }
+
+      .username-link {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .username-link:hover {
+        text-decoration: underline;
+      }
+    </style>
+
+    <div class="header">
+      <div class="header-content">
+        <div class="sale-banner">Welcome Gamasan page</div>
+        <div class="user-actions">
+          <% if (member) { %>
+            <!-- 로그인 상태 -->
+            <span class="user-info">
+              <a href="/<%= member.username %>" class="username-link">
+                <%= member.username %>
+                  (<%= member.email %>)
+              </a>
+            </span>
+            <span>|</span>
+            <a href="/logout">Logout</a>
+            <span>|</span>
+            <a href="#" onclick="showAlert(); return false;">Cart</a>
+            <% } else { %>
+              <!-- 비로그인 상태 -->
+              <a href="/login">Login</a>
+              <span>|</span>
+              <a href="/join">Join</a>
+              <span>|</span>
+              <a href="#" onclick="showAlert(); return false;">Cart</a>
+              <% } %>
+        </div>
       </div>
-  </div>
-</div>
+    </div>
+
+    <script>
+      function showAlert() {
+        alert('준비중입니다..!');
+      }
+    </script>

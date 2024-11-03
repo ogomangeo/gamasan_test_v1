@@ -1,9 +1,29 @@
 <section id="gamasan-about">
   <h1>GAMASAN</h1>
 
+  <section id="contact-form">
+    <h2>문의하기</h2>
+    <form id="contactForm" action="/about/submit" method="POST">
+      <div>
+        <label for="email">이메일</label>
+        <input type="text" id="email" name="email" required placeholder="답변 받으실 메일 주소를 입력하세요">
+      </div>
+      <div>
+        <label for="title">제목</label>
+        <input type="text" id="title" name="title" required placeholder="제목을 입력하세요">
+      </div>
+      <div>
+        <label for="content">내용</label>
+        <textarea id="content" name="content" rows="5" required placeholder="문의 내용을 입력하세요"></textarea>
+      </div>
+
+      <button type="submit">보내기</button>
+    </form>
+  </section>
+
   <h2>회사소개</h2>
   <p>
-    가마산은 창의적이고 혁신적인 웹 솔루션을 제공합니다.  
+    가마산은 창의적이고 혁신적인 웹 솔루션을 제공합니다.
     최신 기술과 디자인으로 고객의 요구를 충족하며 지속적인 성장을 추구합니다.
   </p>
 
@@ -60,24 +80,4 @@
       <span>래스앤모어</span> - 라이프스타일 제품 전문 협력업체
     </li>
   </ul>
-</section>
-
-<section id="contact-form">
-  <h2>문의하기</h2>
-  <form action="/submit" method="POST">
-    <div>
-      <label for="email">이메일</label>
-      <input type="text" id="email" name="email" required placeholder="답변 받으실 메일 주소를 입력하세요">
-    </div>
-    <div>
-      <label for="title">제목</label>
-      <input type="text" id="title" name="title" required placeholder="제목을 입력하세요">
-    </div>
-    <div>
-      <label for="content">내용</label>
-      <textarea id="content" name="content" rows="5" required placeholder="내용을 입력하세요"></textarea>
-    </div>
-
-    <button type="submit">보내기</button>
-  </form>
 </section>

@@ -76,10 +76,10 @@
 
 /* 문의하기 섹션 스타일 */
 #contact-form {
-  max-width: 600px;
+  max-width: 700px;
   width: 100%;
-  margin: 30px auto;
-  padding: 40px;
+  margin: 30px auto 70px;
+  padding: 30px 20px;
   background-color: #f4f4f4;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -104,14 +104,22 @@
   color: #555;
 }
 
-#contact-form input,
-#contact-form textarea {
+#contact-form input {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 1rem;
-  resize: none;
+}
+
+#contact-form textarea {
+  width: 100%;
+  min-height: 200px;  /* textarea 높이 증가 */
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  resize: vertical;  /* 수직으로만 크기 조절 가능 */
 }
 
 #contact-form input:focus,

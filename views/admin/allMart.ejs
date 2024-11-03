@@ -1,0 +1,147 @@
+<script src="/js/DeleteCheck.js"></script>
+
+<div class="admin-title">
+    <h2><%= locals.title %></h2>
+    <a href="/add_mart" class="button">+ 새 상품</a>
+</div>
+
+<div class="admin-mart-container">
+  <!-- 상품 목록 테이블 -->
+  <table class="admin-mart-table">
+    <thead>
+      <tr>
+        <th>카테고리1</th>
+        <th>카테고리2</th>
+        <th>브랜드</th>
+        <th>상품명</th>
+        <th>배송비</th>
+        <th>등록일</th>
+        <th>관리</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% marts.forEach(function(mart) { 
+        const date = new Date(mart.createdAt);
+        const formattedDate = date.toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          weekday: 'short'
+        });
+        const formattedTime = date.toLocaleTimeString('ko-KR', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        });
+      %>
+        <tr>
+          <td><%= mart.category1 %></td>
+          <td><%= mart.category2 %></td>
+          <td><%= mart.brand %></td>
+          <td><a href="/edit_mart/<%= mart._id %>"><%= mart.title %></a></td>
+          <td><%= Math.floor(mart.delivery).toLocaleString() %>원</td>
+          <td><%= formattedDate %> <%= formattedTime %></td>
+          <td class="admin-mart-controls">
+            <form action="/edit_mart/<%= mart._id %>" method="GET" style="display: inline;">
+              <button type="submit" class="btn btn-edit">편집</button>
+            </form>
+            <form action="/delete_mart/<%= mart._id %>?_method=DELETE" method="POST" style="display: inline;">
+              <button type="submit" class="btn btn-delete" onclick="return deleteConfirm('<%= mart._id %>', 'mart')">삭제</button>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<div class="pagination">
+    <% if (currentPage > 1) { %>
+        <a href="?page=<%= currentPage - 1 %>" class="page-link">&laquo; 이전</a>
+    <% } %>
+    
+    <% for (let i = 1; i <= totalPages; i++) { %>
+        <% if (i === currentPage) { %>
+            <span class="page-link current"><%= i %></span>
+        <% } else { %>
+            <a href="?page=<%= i %>" class="page-link"><%= i %></a>
+        <% } %>
+    <% } %>
+    
+    <% if (currentPage < totalPages) { %>
+        <a href="?page=<%= currentPage + 1 %>" class="page-link">다음 &raquo;</a>
+    <% } %>
+</div>
+
+
+<style>
+.admin-mart-container {
+  padding: 20px;
+  font-size: 14px;  /* 전체 폰트 사이즈 14px로 설정 */
+}
+
+.admin-mart-actions {
+  margin-bottom: 20px;
+}
+
+.add-mart-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.admin-mart-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.admin-mart-table th,
+.admin-mart-table td {
+  border-bottom: 1px solid #ddd;
+}
+
+.admin-mart-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+  text-align: center;  /* 열머리글 가운데 정렬 */
+}
+
+.admin-mart-table td {
+  text-align: left;  /* 데이터 셀은 좌측 정렬 유지 */
+}
+
+.admin-mart-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.edit-btn, .delete-btn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background-color: #2196F3;
+  color: white;
+  text-decoration: none;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+}
+
+.edit-btn:hover {
+  background-color: #1976D2;
+}
+
+.delete-btn:hover {
+  background-color: #D32F2F;
+}
+</style>

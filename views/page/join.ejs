@@ -13,7 +13,6 @@
     justify-content: space-between;
     margin: 10px 0;
     max-width: 600px;
-    /* 입력 폼 영역 너비 조정 */
     margin-left: auto;
     margin-right: auto;
   }
@@ -49,11 +48,11 @@
 
   .join-h2 {
     text-align: center;
+    color: black;
   }
 
   .join-button {
     width: 600px;
-    /* 버튼 너비 조정 */
     padding: 10px;
     background-color: #000080;
     color: white;
@@ -62,10 +61,43 @@
     display: block;
     margin: 0 auto 50px auto;
   }
+
+  .join-benefits {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+    margin:20px 0;
+  }
+
+  .join-benefits h3 {
+    font-size: 1.1em;
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  .join-benefits ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: disc;
+    padding-left: 20px;
+    color: #555;
+  }
 </style>
 
 <div class="join-container">
-  <h2 class="join-h2">회원가입</h2>
+  <h2 class="join-h2">GAMASAN 회원가입</h2>
+
+  <div class="join-benefits">
+    <h3>회원가입을 하면 좋은점!</h3>
+    <ul>
+      <li>회원들에게만 제공되는</li><br>
+      <li>└ 명절 선물세트 대특가!</li>
+      <li>└ 제철 상품 한정수량 초특가!</li>
+      <li>└ 가끔 확보되는 특별상품 왕특가!</li><br>
+      <li>초기 가입 회원분들께는 추후 어떻게든 혜택을 드릴 예정입니다~!</li>
+    </ul>
+  </div>
 
   <div class="join-required-section">
     <h3 class="join-h3">필수 정보</h3>
@@ -129,13 +161,47 @@
 </form>
 
 <script>
-  function joinValidateForm() {
+  async function joinValidateForm() {
     const password = document.getElementById('join-password').value;
     const confirmPassword = document.getElementById('join-confirmPassword').value;
-
+  
     if (password !== confirmPassword) {
-      alert("비밀번호가 일치하지 않습니다..?");
+      alert("비밀번호가 일치하지 않습니다.");
       return;
     }
+  
+    // 폼 데이터 수집
+    const formData = {
+      email: document.getElementById('join-email').value,
+      password: password,
+      username: document.getElementById('join-username').value,
+      birthdate: document.getElementById('join-birthdate').value,
+      gender: document.getElementById('join-gender').value,
+      name: document.getElementById('join-name').value,
+      phone: document.getElementById('join-phone').value,
+      address: document.getElementById('join-address').value
+    };
+  
+    try {
+      const response = await fetch('/join', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        alert('회원가입이 완료되었습니다.');
+        window.location.href = '/login'; // 로그인 페이지로 리다이렉트
+      } else {
+        alert(data.message || '회원가입 중 오류가 발생했습니다.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('회원가입 중 오류가 발생했습니다.');
+    }
   }
-</script>
+  </script>

@@ -1,129 +1,129 @@
+<!-- views/login.ejs -->
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원가입</title>
+    <title>로그인</title>
     <style>
+        /* 기본 스타일 */
         body {
-            font-family: Arial, sans-serif;
-            max-width: 400px;
-            margin: auto;
-            padding: 20px;
-        }
-        .form-group {
             display: flex;
+            justify-content: center;
             align-items: center;
-            justify-content: space-between;
-            margin: 10px 0;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
         }
-        .form-group label {
-            width: 30%;
-            margin-right: 10px;
-            text-align: right;
-        }
-        .form-group input, .form-group select {
-            width: 65%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-        .required-section, .optional-section {
-            border-bottom: 1px dotted #cccccc;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        h3 {
-            font-size: 1.1em;
-            color: #555;
-            margin-top: 20px;
-        }
-        button {
+
+        /* 로그인 폼 스타일 */
+        .member-login-container {
             width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .member-login-container h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #000080;
+        }
+
+        .member-login-container input[type="text"],
+        .member-login-container input[type="password"] {
+            width: 90%;
             padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        /* 버튼 스타일 */
+        .member-login-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .member-login-actions button {
+            width: 48%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        .member-login-btn {
             background-color: #000080;
-            color: white;
+            color: #ffffff;
+        }
+
+        .member-login-btn:hover {
+            background-color: pink;
+        }
+
+        .member-login-btn:active {
+            transform: scale(0.98);
+        }
+
+        .member-find-btn {
+            background-color: #dddddd;
+            color: #333333;
+        }
+
+        .member-find-btn:hover {
+            background-color: #bbbbbb;
+        }
+
+        .member-find-btn:active {
+            transform: scale(0.98);
+        }
+
+        .member-signup-btn {
+            background-color: transparent;
+            color: #000080;
+            font-size: 0.9rem;
+            text-decoration: underline;
             border: none;
             cursor: pointer;
+            margin-top: 10px;
+            transition: color 0.3s;
+        }
+
+        .member-signup-btn:hover {
+            color: pink;
+        }
+
+        .member-signup-btn:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
 <body>
+    <div class="member-login-container">
+        <!-- 로고 텍스트 -->
+        <h1>GAMASAN</h1>
 
-<h2>회원가입</h2>
+        <!-- ID, 비밀번호 입력 -->
+        <input type="text" placeholder="메일주소">
+        <input type="password" placeholder="비밀번호">
 
-<div class="required-section">
-    <h3>필수 정보</h3>
-    <form id="signupForm">
-        <div class="form-group">
-            <label for="email">이메일 주소:</label>
-            <input type="email" id="email" required>
+        <!-- 로그인 및 ID/PW 찾기 버튼 -->
+        <div class="member-login-actions">
+            <button class="member-login-btn">로그인</button>
+            <button class="member-find-btn">ID/PW 찾기</button>
         </div>
 
-        <div class="form-group">
-            <label for="password">비밀번호:</label>
-            <input type="password" id="password" required>
-        </div>
-
-        <div class="form-group">
-            <label for="confirmPassword">비밀번호 확인:</label>
-            <input type="password" id="confirmPassword" required>
-        </div>
-
-        <div class="form-group">
-            <label for="username">활동명:</label>
-            <input type="text" id="username" required>
-        </div>
+        <!-- 회원가입 버튼 -->
+        <button class="member-signup-btn">회원가입하기</button>
     </div>
-
-    <div class="optional-section">
-        <h3>선택 정보</h3>
-        
-        <div class="form-group">
-            <label for="birthdate">생년월일:</label>
-            <input type="date" id="birthdate" required>
-        </div>
-
-        <div class="form-group">
-            <label for="gender">성별:</label>
-            <select id="gender" required>
-                <option value="male">남성</option>
-                <option value="female">여성</option>
-                <option value="other">기타</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="name">이름:</label>
-            <input type="text" id="name" required>
-        </div>
-
-        <div class="form-group">
-            <label for="phone">휴대폰 번호:</label>
-            <input type="tel" id="phone" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" placeholder="010-1234-5678" required>
-        </div>
-
-        <div class="form-group">
-            <label for="address">주소:</label>
-            <input type="text" id="address" required>
-        </div>
-    </div>
-
-    <button type="button" onclick="validateForm()">회원가입</button>
-</form>
-
-<script>
-    function validateForm() {
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        
-        if (password !== confirmPassword) {
-            alert("비밀번호가 일치하지 않습니다.");
-            return;
-        }
-
-        alert("회원가입이 완료되었습니다!");
-    }
-</script>
-
 </body>
 </html>

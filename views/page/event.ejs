@@ -4,14 +4,16 @@
 <h1>Events</h1>
 <div class="event-container">
   <% data.forEach(event => { %>
-    <div class="event-card">
-      <img src="<%= event.thumbnail %>" alt="<%= event.title %>">
-      <div class="event-content">
-        <h2><%= event.title %></h2>
-        <p class="event-script"><%= event.script %></p>
-        <p class="event-date"><%= formatDate(event.createdAt) %></p>
+    <a href="/event/<%= event._id %>" class="event-card">
+      <div class="event-card">
+        <img src="<%= event.thumbnail %>" alt="<%= event.title %>">
+        <div class="event-content">
+          <h2><%= event.title %></h2>
+          <p class="event-script"><%= event.script %></p>
+          <p class="event-date"><%= formatDate(event.createdAt) %></p>
+        </div>
       </div>
-    </div>
+    </a>
   <% }); %>
 </div>
 

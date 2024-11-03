@@ -1,3 +1,4 @@
+<script src="/js/DeleteCheck.js"></script>
 <div class="admin-title">
     <h2>
         <%= locals.title %>
@@ -17,17 +18,17 @@
         const formattedTime = date.toLocaleTimeString('ko-KR', {
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit'
+        second: '2-digit',
+        hour12: false
         });
         %>
         <li>
             <div class="program-content">
-                <a href="/program/<%= program._id %>">
+                <a href="/edit_program/<%= program._id %>">
                     <%= program.title %>
                 </a>
                 <div class="program-datetime">
-                    <%= formattedDate %><br>
-                        <%= formattedTime %>
+                    <%= formattedDate %><%= formattedTime %>
                 </div>
             </div>
             <div class="admin-program-controls">
@@ -35,7 +36,7 @@
                     <button type="submit" class="btn btn-edit">편집</button>
                 </form>
                 <form action="/delete_program/<%= program._id %>?_method=DELETE" method="POST" style="display: inline;">
-                    <button type="submit" class="btn btn-delete">삭제</button>
+                    <button type="submit" class="btn btn-delete" onclick="return deleteConfirm('<%= program._id %>', 'program')">삭제</button>
                 </form>
             </div>
         </li>

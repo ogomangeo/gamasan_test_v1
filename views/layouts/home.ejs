@@ -26,8 +26,8 @@
       <!-- adbanner adbanner adbanner adbanner  -->
       <%- include('../include/_adbanner') %>
         <!-- header header header header  -->
-        <%- include('../include/_header') %>
-          <div class="main-content">
+        <%- include('../include/_header', { member: locals.member || member }) %>
+        <div class="main-content">
             <!-- sidebar sidebar sidebar sidebar  -->
             <%- include('../include/_sidebar') %>
               <!-- product product product product  -->

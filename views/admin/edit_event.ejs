@@ -76,26 +76,26 @@
   }
   </style>
 <script src="/js/DeleteCheck.js"></script>
-<a href="/allBlogs">&larr; 뒤로</a>
+<a href="/allEvent">&larr; 뒤로</a>
 <div class="admin-title">
   <h2>
     <%= locals.title %>
   </h2>
-  <form action="/delete_blog/<%= blog._id %>?_method=DELETE" method="POST" style="display: inline;">
-    <button type="submit" class="btn btn-delete" onclick="return deleteConfirm('<%= blog._id %>', 'blog')">삭제</button>
+  <form action="/delete_event/<%= event._id %>?_method=DELETE" method="POST" style="display: inline;">
+    <button type="submit" class="btn btn-delete" onclick="return deleteConfirm('<%= event._id %>', 'event')">삭제</button>
 </form>
 
 </div>
 
-<form action="/edit_blog/<%= blog._id %>?_method=PUT" method="POST">
+<form action="/edit_event/<%= event._id %>?_method=PUT" method="POST">
   <label for="thumbnail"><b>썸네일</b></label>
-  <input type="text" placeholder="썸네일 이미지 URL" name="thumbnail" id="thumbnail" value="<%= blog.thumbnail %>">
+  <input type="text" placeholder="썸네일 이미지 URL" name="thumbnail" id="thumbnail" value="<%= event.thumbnail %>">
 
   <label for="title"><b>제목</b></label>
-  <input type="text" placeholder="게시물 제목" name="title" id="title" value="<%= blog.title %>">
+  <input type="text" placeholder="게시물 제목" name="title" id="title" value="<%= event.title %>">
 
   <label for="script"><b>내용</b></label>
-  <textarea placeholder="게시물 내용" name="script" cols="50" rows="10"><%= blog.script %></textarea>
+  <textarea placeholder="게시물 내용" name="script" cols="50" rows="10"><%= event.script %></textarea>
   <input type="submit" value="수정" class="btn">
 </form>
 

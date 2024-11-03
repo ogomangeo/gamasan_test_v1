@@ -6,6 +6,7 @@ const Program = require("../models/Program");
 const Blog = require("../models/Blog");
 const Archive = require("../models/Archive");
 const Mart = require("../models/Mart");
+const Event = require("../models/Event");
 
 
 const homeLayout = "../views/layouts/home.ejs";
@@ -150,4 +151,32 @@ router.get('/mart/:id', asyncHandler(async (req, res) => {
     });
 }));
 
+
+// 공지사항 상세 페이지 라우트
+router.get('/event/:id', asyncHandler(async (req, res) => {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+        return res.status(404).render('error', { 
+            layout: homeLayout, 
+            message: '공지사항을 찾을 수 없습니다.' 
+        });
+    }
+
+    // 이전 공지사항 찾기
+    const previousEvent = await Event.findOne({
+        createdAt: { $lt: event.createdAt }
+    }).sort({ createdAt: -1 });
+
+    // 다음 공지사항 찾기
+    const nextEvent = await Event.findOne({
+        createdAt: { $gt: event.createdAt }
+    }).sort({ createdAt: 1 });
+
+    res.render('detail/detail_event', { 
+        layout: homeLayout, 
+        event,
+        previousEvent,
+        nextEvent
+    });
+}));
 module.exports = router;

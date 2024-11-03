@@ -1,0 +1,151 @@
+<style>
+  /* 외부 컨테이너 */
+  .member-login-outer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 50px 0;
+  }
+
+  /* 로그인 폼 스타일 */
+  .member-login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .member-login-container h1 {
+    margin-bottom: 20px;
+  }
+
+  .member-login-container input[type="text"],
+  .member-login-container input[type="password"] {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  /* 버튼 스타일 */
+  .member-login-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .member-login-actions button {
+    width: 48%;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+  }
+
+  .member-login-btn {
+    background-color: #000080;
+    color: #ffffff;
+  }
+
+  .member-login-btn:hover {
+    background-color: pink;
+  }
+
+  .member-login-btn:active {
+    transform: scale(0.98);
+  }
+
+  .member-find-btn {
+    background-color: #dddddd;
+    color: #333333;
+  }
+
+  .member-find-btn:hover {
+    background-color: #bbbbbb;
+  }
+
+  .member-find-btn:active {
+    transform: scale(0.98);
+  }
+
+  .member-signup-btn {
+    display: inline-block;
+    /* 버튼처럼 동작하도록 설정 */
+    background-color: transparent;
+    color: #000080;
+    font-size: 12px;
+    text-decoration: underline;
+    padding: 8px 16px;
+    /* 버튼처럼 보이게 padding 추가 */
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: color 0.3s, transform 0.1s;
+  }
+
+  .member-signup-btn:hover {
+    color: pink;
+  }
+
+  .member-signup-btn:active {
+    transform: scale(0.98);
+  }
+</style>
+
+<div class="member-login-outer-container">
+  <div class="member-login-container">
+    <h1>GAMASAN</h1>
+
+    <!-- form method와 action 추가 -->
+    <form id="loginForm" method="POST" action="/login">
+      <input type="text" name="email" id="loginEmail" placeholder="메일주소" required>
+      <input type="password" name="password" id="loginPassword" placeholder="비밀번호" required>
+
+      <div class="member-login-actions">
+        <button type="submit" class="member-login-btn">로그인</button>
+        <button type="button" class="member-find-btn">ID/PW 찾기</button>
+      </div>
+    </form>
+
+    <a href="/join" class="member-signup-btn">회원가입하기</a>
+  </div>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+
+  try {
+    const response = await fetch('/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (response.redirected) {
+      window.location.href = response.url;
+    } else {
+      const data = await response.json();
+      if (!response.ok) {
+        alert(data.message);
+      }
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('로그인 중 오류가 발생했습니다.');
+  }
+});
+</script>

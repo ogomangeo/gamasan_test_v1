@@ -11,39 +11,47 @@
     <% mart.options.forEach(function(option) { %>
       <div class="option-item">
         <%= option.name %> : 
-          <%= Math.floor(option.price).toLocaleString() %>원
+        <%= Math.floor(option.price).toLocaleString() %>원
       </div>
-      <% }); %>
+    <% }); %>
   </div>
   <div class="martd-item">
     배송비 : <%= Math.floor(mart.delivery).toLocaleString() %>원
   </div>
-  <div class="martd-item">additional script1</div>
-  <div class="martd-item">additional script2</div>
-  <div class="martd-item">additional script3</div>
+  
+  <!-- 추가된 스크립트 영역 -->
+  <% if (mart.additional_script1) { %>
+    <div class="martd-item"><%= mart.additional_script1 %></div>
+  <% } %>
+  <% if (mart.additional_script2) { %>
+    <div class="martd-item"><%= mart.additional_script2 %></div>
+  <% } %>
+  <% if (mart.additional_script3) { %>
+    <div class="martd-item"><%= mart.additional_script3 %></div>
+  <% } %>
 
   <!-- 버튼 및 네비게이션 그룹을 한 줄에 배치 -->
   <div class="martd-button-navigation-group">
     <!-- 왼쪽 버튼 그룹 -->
     <div class="martd-button-group">
-      <a href="#" class="martd-button" aria-label="Button 1">Button 1</a>
-      <a href="#" class="martd-button" aria-label="Button 2">Button 2</a>
-      <a href="#" class="martd-button" aria-label="Button 3">Button 3</a>
-      <a href="#" class="martd-button" aria-label="Button 4">Button 4</a>
+      <a href="#" class="martd-button" onclick="event.preventDefault();" aria-label="Button 1">Button 1</a>
+      <a href="#" class="martd-button" onclick="event.preventDefault();" aria-label="Button 2">Button 2</a>
+      <a href="#" class="martd-button" onclick="event.preventDefault();" aria-label="Button 3">Button 3</a>
+      <a href="#" class="martd-button" onclick="event.preventDefault();" aria-label="Button 4">Button 4</a>
     </div>
     <!-- 오른쪽 네비게이션 버튼 그룹 -->
     <div class="martd-navigation-buttons">
       <% if (previousMart) { %>
         <a href="/mart/<%= previousMart._id %>"><button>이전</button></a>
-        <% } else { %>
-          <button disabled>이전</button>
-          <% } %>
-            <a href="/mart"><button>목록</button></a>
-            <% if (nextMart) { %>
-              <a href="/mart/<%= nextMart._id %>"><button>다음</button></a>
-              <% } else { %>
-                <button disabled>다음</button>
-                <% } %>
+      <% } else { %>
+        <button disabled>이전</button>
+      <% } %>
+      <% if (nextMart) { %>
+        <a href="/mart/<%= nextMart._id %>"><button>다음</button></a>
+      <% } else { %>
+        <button disabled>다음</button>
+      <% } %>
+      <a href="/mart"><button>목록</button></a>
     </div>
   </div>
 
@@ -56,12 +64,21 @@
         <div class="martd-thumbnail"><img src="<%= mart.thumbnail3 %>" alt="thumbnail3"></div>
       </div>
       <div class="martd-thumbnail-row">
-        <div class="martd-additional-thumbnail">additional thumbnail 1</div>
-        <div class="martd-additional-thumbnail">additional thumbnail 2</div>
-        <div class="martd-additional-thumbnail">additional thumbnail 3</div>
+        <% if (mart.additional_thumbnail1) { %>
+          <div class="martd-additional-thumbnail"><img src="<%= mart.additional_thumbnail1 %>" alt="additional thumbnail1"></div>
+        <% } %>
+        <% if (mart.additional_thumbnail2) { %>
+          <div class="martd-additional-thumbnail"><img src="<%= mart.additional_thumbnail2 %>" alt="additional thumbnail2"></div>
+        <% } %>
+        <% if (mart.additional_thumbnail3) { %>
+          <div class="martd-additional-thumbnail"><img src="<%= mart.additional_thumbnail3 %>" alt="additional thumbnail3"></div>
+        <% } %>
       </div>
     </div>
   </div>
+
   <!-- 상세 페이지 -->
-  <div class="martd-detailed-page">Detailed Page</div>
+  <% if (mart.detailed_page) { %>
+    <div class="martd-detailed-page"><%= mart.detailed_page %></div>
+  <% } %>
 </div>

@@ -12,18 +12,58 @@ const Archive = require("../models/Archive");
 const Mart = require("../models/Mart");
 const Event = require("../models/Event");
 const asyncHandler = require("express-async-handler");
+const Member = require("../models/Member");
+
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+require('dotenv').config();
+
+const memberJwtSecret = process.env.MEMBER_JWT_SECRET;
+
+// main.js 최상단의 미들웨어
+router.use(async (req, res, next) => {
+  try {
+    const token = req.cookies.memberToken;
+    // console.log('Token:', token);
+    
+    if (token) {
+      const decoded = jwt.verify(token, memberJwtSecret);
+      // console.log('Decoded token:', decoded);
+      
+      const member = await Member.findById(decoded.id).select('-password');
+      // console.log('Found member:', member);
+      
+      // res.locals에 할당
+      res.locals.member = member;
+      // app.locals에도 할당
+      req.app.locals.member = member;
+    } else {
+      res.locals.member = null;
+      req.app.locals.member = null;
+    }
+  } catch (error) {
+    // console.error('Auth middleware error:', error);
+    res.locals.member = null;
+    req.app.locals.member = null;
+  }
+  next();
+});
 
 router.get(
   ["/", "/home"],
   asyncHandler(async (req, res) => {
+    // console.log('Route handler member:', res.locals.member); // 디버깅용
+
     const locals = {
       title: "Home",
+      member: res.locals.member  // locals 객체에 member 추가
     };
     const notices = await Notice.find({}).limit(8);  // 최신 3개만 가져옴
-    const programs = await Program.find({}).limit(6);  // 최신 9개만 가져옴
+    const programs = await Program.find({}).limit(8);  // 최신 9개만 가져옴
     const blogs = await Blog.find({}).limit(8);  // 최신 3개만 가져옴
-    const archives = await Archive.find({}).limit(18);  // 최신 3개만 가져옴
+    const archives = await Archive.find({}).limit(8);  // 최신 3개만 가져옴
     const marts = await Mart.find({}).limit(8);  // 최신 3개만 가져옴
+    const events = await Event.find({}).limit(8);  // 최신 3개만 가져옴
 
     res.render("page/index", {
       locals,
@@ -32,6 +72,8 @@ router.get(
       blogs,
       archives,
       marts,
+      events,
+      member: res.locals.member,
       layout: homeLayout
     });
   })
@@ -65,7 +107,8 @@ router.get("/program", asyncHandler(async (req, res) => {
     data, 
     layout: mainLayout,
     currentPage: page,
-    totalPages: totalPages
+    totalPages: totalPages,
+    member: res.locals.member
   });
 }));
 
@@ -97,7 +140,8 @@ router.get("/program/:id", asyncHandler(async (req, res) => {
               templateContent,
               previousProgram,  // 이전글 데이터 전달
               nextProgram,      // 다음글 데이터 전달
-              layout: mainLayout
+              layout: mainLayout,
+              member: res.locals.member
           });
       } catch (fsError) {
           console.error('Error reading template file:', fsError);
@@ -116,7 +160,7 @@ router.get("/about", (req, res) => {
   const locals = {
     title: "About",
   };
-  res.render("page/about", { locals, layout: homeLayout });
+  res.render("page/about", { locals, layout: homeLayout, member: res.locals.member, });
 });
 
 router.get("/notice", asyncHandler(async (req, res) => {
@@ -146,7 +190,8 @@ router.get("/notice", asyncHandler(async (req, res) => {
     data, 
     layout: homeLayout,
     currentPage: page,
-    totalPages: totalPages
+    totalPages: totalPages,
+    member: res.locals.member
   });
 }));
 
@@ -178,7 +223,8 @@ router.get("/blog", asyncHandler(async (req, res) => {
     data, 
     layout: homeLayout,
     currentPage: page,
-    totalPages: totalPages
+    totalPages: totalPages,
+    member: res.locals.member
   });
 }));
 
@@ -209,7 +255,8 @@ router.get("/archive", asyncHandler(async (req, res) => {
     data, 
     layout: homeLayout,
     currentPage: page,
-    totalPages: totalPages
+    totalPages: totalPages,
+    member: res.locals.member
   });
 }));
 
@@ -241,7 +288,8 @@ router.get("/mart", asyncHandler(async (req, res) => {
     layout: mainLayout,
     currentPage: page,
     totalPages: totalPages,
-    totalMarts: totalMarts
+    totalMarts: totalMarts,
+    member: res.locals.member
   });
 }));
 
@@ -273,15 +321,118 @@ router.get("/event", asyncHandler(async (req, res) => {
     data, 
     layout: mainLayout,
     currentPage: page,
-    totalPages: totalPages
+    totalPages: totalPages,
+    member: res.locals.member
   });
 }));
 
 router.get("/join", asyncHandler(async (req, res) => {
   res.render("page/join", {
     title: "Join",
-    layout: mainLayout
+    layout: mainLayout,
+    member: res.locals.member
   });
+}));
+
+router.get("/login", asyncHandler(async (req, res) => {
+  res.render("page/member_login", {
+    title: "Login",
+    layout: mainLayout,
+    member: res.locals.member
+  });
+}));
+
+const checkMemberLogin = (req, res, next) => {
+  const token = req.cookies.memberToken;
+  if (!token) {
+    return res.redirect('/login');
+  }
+  try {
+    const decoded = jwt.verify(token, memberJwtSecret);
+    req.memberId = decoded.id;
+    next();
+  } catch (error) {
+    return res.redirect('/login');
+  }
+};
+
+// 로그인 POST 라우트
+router.post("/login", asyncHandler(async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const member = await Member.findOne({ email });
+
+    if (!member) {
+      return res.status(401).json({
+        status: 'fail',
+        message: '이메일 또는 비밀번호가 일치하지 않습니다.'
+      });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, member.password);
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        status: 'fail',
+        message: '이메일 또는 비밀번호가 일치하지 않습니다.'
+      });
+    }
+
+    // JWT 토큰 생성
+    const token = jwt.sign({ id: member._id }, memberJwtSecret);
+    
+    // 쿠키에 토큰 저장
+    res.cookie('memberToken', token, { httpOnly: true });
+    
+    // 로그인 성공 시 홈페이지로 리다이렉트
+    res.redirect('/');
+
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      message: error.message
+    });
+  }
+}));
+
+// 로그아웃 라우트 추가
+router.get('/logout', (req, res) => {
+  res.clearCookie('memberToken');
+  res.redirect('/');
+});
+
+router.post("/join", asyncHandler(async (req, res) => {
+  try {
+    const newMember = await Member.create({
+      email: req.body.email,
+      password: req.body.password,
+      username: req.body.username,
+      birthdate: req.body.birthdate,
+      gender: req.body.gender,
+      name: req.body.name,
+      phone: req.body.phone,
+      address: req.body.address
+    });
+
+    newMember.password = undefined;
+
+    res.status(201).json({
+      status: 'success',
+      data: newMember
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      res.status(400).json({
+        status: 'fail',
+        message: '이미 등록된 이메일입니다.'
+      });
+    } else {
+      res.status(400).json({
+        status: 'fail',
+        message: error.message
+      });
+    }
+  }
 }));
 
 module.exports = router;

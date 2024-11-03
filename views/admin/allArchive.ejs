@@ -1,3 +1,4 @@
+<script src="/js/DeleteCheck.js"></script>
 <div class="admin-title">
     <h2>
         <%= locals.title %>
@@ -17,17 +18,17 @@
         const formattedTime = date.toLocaleTimeString('ko-KR', {
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit'
+        second: '2-digit',
+        hour12: false
         });
         %>
         <li>
             <div class="archive-content">
-                <a href="/archive/<%= archive._id %>">
+                <a href="/edit_archive/<%= archive._id %>">
                     <%= archive.title %>
                 </a>
                 <div class="archive-datetime">
-                    <%= formattedDate %><br>
-                        <%= formattedTime %>
+                    <%= formattedDate %> <%= formattedTime %>
                 </div>
             </div>
             <div class="admin-archive-controls">
@@ -35,9 +36,27 @@
                     <button type="submit" class="btn btn-edit">편집</button>
                 </form>
                 <form action="/delete_archive/<%= archive._id %>?_method=DELETE" method="POST" style="display: inline;">
-                    <button type="submit" class="btn btn-delete">삭제</button>
+                    <button type="submit" class="btn btn-delete" onclick="return deleteConfirm('<%= archive._id %>', 'archive')">삭제</button>
                 </form>
             </div>
         </li>
         <% }) %>
 </ul>
+
+<div class="pagination">
+    <% if (currentPage > 1) { %>
+        <a href="?page=<%= currentPage - 1 %>" class="page-link">&laquo; 이전</a>
+    <% } %>
+    
+    <% for (let i = 1; i <= totalPages; i++) { %>
+        <% if (i === currentPage) { %>
+            <span class="page-link current"><%= i %></span>
+        <% } else { %>
+            <a href="?page=<%= i %>" class="page-link"><%= i %></a>
+        <% } %>
+    <% } %>
+    
+    <% if (currentPage < totalPages) { %>
+        <a href="?page=<%= currentPage + 1 %>" class="page-link">다음 &raquo;</a>
+    <% } %>
+</div>

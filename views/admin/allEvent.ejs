@@ -1,12 +1,12 @@
 <script src="/js/DeleteCheck.js"></script>
 <div class="admin-title">
     <h2><%= locals.title %></h2>
-    <a href="/add_notice" class="button">+ 새 게시물</a>
+    <a href="/add_event" class="button">+ 새 게시물</a>
 </div>
 
-<ul class="admin-notices">
-    <% data.forEach(notice => {
-        const date = new Date(notice.createdAt);
+<ul class="admin-events">
+    <% data.forEach(event => {
+        const date = new Date(event.createdAt);
         const formattedDate = date.toLocaleDateString('ko-KR', {
         year: 'numeric',
         month: '2-digit',
@@ -21,18 +21,18 @@
         });
         %>
     <li>
-        <div class="notice-content">
-            <a href="/edit_notice/<%= notice._id %>"><%= notice.title %></a>
-            <div class="notice-datetime">
+        <div class="event-content">
+            <a href="/edit_event/<%= event._id %>"><%= event.title %></a>
+            <div class="event-datetime">
                 <%= formattedDate %><%= formattedTime %>
             </div>
         </div>
-        <div class="admin-notice-controls">
-            <form action="/edit_notice/<%= notice._id %>" method="GET" style="display: inline;">
+        <div class="admin-event-controls">
+            <form action="/edit_event/<%= event._id %>" method="GET" style="display: inline;">
                 <button type="submit" class="btn btn-edit">편집</button>
             </form>
-            <form action="/delete_notice/<%= notice._id %>?_method=DELETE" method="POST" style="display: inline;">
-                <button type="submit" class="btn btn-delete" onclick="return deleteConfirm('<%= notice._id %>', 'notice')">삭제</button>
+            <form action="/delete_event/<%= event._id %>?_method=DELETE" method="POST" style="display: inline;">
+                <button type="submit" class="btn btn-delete" onclick="return deleteConfirm('<%= event._id %>', 'event')">삭제</button>
             </form>
         </div>
     </li>

@@ -32,24 +32,28 @@
 
 .admin-programs li {
   background-color: #fff;
-  margin-bottom: 10px;
-  padding: 15px;
+  margin-bottom: 5px;
+  padding: 0 10px;
+  height: 40px;
   border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .program-content {
-  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .program-content a {
-  font-size: 18px;
+  font-size: 16px;
   color: #2c3e50;
   text-decoration: none;
   font-weight: bold;
+  min-width: 500px;
 }
 
 .program-content a:hover {
@@ -59,7 +63,7 @@
 .program-datetime {
   font-size: 14px;
   color: #7f8c8d;
-  margin-top: 5px;
+  min-width: 200px;
 }
 
 /* 관리자 컨트롤 버튼 스타일 */

@@ -1,0 +1,212 @@
+<script src="/js/DeleteCheck.js"></script>
+<style>
+  /* 테이블 기본 스타일 */
+  .about-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e0e0e0;
+  }
+
+  /* 헤더 스타일 */
+  .about-table th {
+    background-color: #f8f9fa;
+    font-size: 13px;
+    padding: 8px 6px;
+    text-align: left;
+    border: 1px solid #e0e0e0;
+    border-bottom: 2px solid #999;
+  }
+
+  /* 기본 셀 스타일 */
+  .about-table td {
+    border: 1px solid #e0e0e0;
+    padding: 6px;
+    text-align: left;
+    font-size: 13px;
+  }
+
+  /* 작성일시 열 너비 고정 */
+  .about-table th:first-child,
+  .about-table td:first-child {
+    width: 15%;
+    white-space: nowrap;
+  }
+
+  /* 각 문의사항 구분을 위한 스타일 */
+  .about-table tbody tr:nth-child(even) td {
+    border-bottom: 1px solid #e0e0e0;
+    position: relative;
+  }
+
+  .about-table tbody tr:nth-child(even)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(to right, #f0f0f0, #e0e0e0, #f0f0f0);
+  }
+
+  /* 버튼 공통 스타일 */
+  .about-status,
+  .about-edit-btn,
+  .about-delete-btn {
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  /* 상태 버튼 스타일 */
+  .about-status {
+    border: none;
+  }
+
+  .about-status.about-unread {
+    background-color: #ffe0e0;
+    color: #ff4444;
+  }
+
+  .about-status.about-read {
+    background-color: #e0ffe0;
+    color: #44aa44;
+  }
+
+  /* 편집/삭제 버튼 스타일 */
+  .about-edit-btn,
+  .about-delete-btn {
+    border: 1px solid #ddd;
+    background-color: #fff;
+  }
+
+  .about-delete-btn {
+    color: #ff4444;
+  }
+
+  /* 내용 셀 말줄임 처리 */
+  .about-content-cell {
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* 열 너비 조정 */
+  .about-status-cell {
+    width: 10%;
+  }
+
+  .about-action-cell {
+    width: 8%;
+  }
+
+  /* 이메일 링크 스타일 */
+  .about-table td a {
+    color: #0066cc;
+    text-decoration: none;
+  }
+
+  .about-table td a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+
+<h2>문의사항</h2>
+<table class="about-table">
+  <thead>
+    <tr>
+      <th>작성일시</th>
+      <th>제목</th>
+      <th class="about-status-cell">상태</th>
+      <th class="about-action-cell">편집</th>
+      <th class="about-action-cell">삭제</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% abouts.forEach(about=> { %>
+      <tr>
+        <td>
+          <%= new Date(about.createdAt).toLocaleDateString('ko-KR', { year: 'numeric' , month: '2-digit' ,
+            day: '2-digit' }).replace(/\./g, '-' ).slice(0, -1) %>
+            <%= new Date(about.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit' , minute: '2-digit' , hour12:
+              false }) %>
+        </td>
+        <td>
+          <%= about.title %>
+        </td>
+        <td class="about-status-cell">
+          <button onclick="toggleReadStatus('<%= about._id %>', this)"
+            class="about-status <%= about.isRead ? 'about-read' : 'about-unread' %>">
+            <%= about.isRead ? '읽음' : '안읽음' %>
+          </button>
+        </td>
+        <td class="about-action-cell">
+          <form action="/edit_about/<%= about._id %>" method="GET" style="display: inline;">
+            <button type="submit" class="about-edit-btn">편집</button>
+          </form>
+        </td>
+        <td class="about-action-cell">
+          <form action="/delete_about/<%= about._id %>?_method=DELETE" method="POST" style="display: inline;">
+            <button type="submit" class="about-delete-btn"
+              onclick="return deleteConfirm('<%= about._id %>', 'about')">삭제</button>
+          </form>
+        </td>
+      </tr>
+      <tr>
+        <td><a href="mailto:<%= about.email %>">
+            <%= about.email %>
+          </a></td>
+        <td colspan="4" class="about-content-cell">
+          <%= about.content %>
+        </td>
+      </tr>
+      <% }); %>
+  </tbody>
+</table>
+
+<!-- 페이지네이션 -->
+<div class="pagination">
+    <% if (currentPage > 1) { %>
+        <a href="?page=<%= currentPage - 1 %>" class="page-link">&laquo; 이전</a>
+    <% } %>
+    
+    <% for (let i = 1; i <= totalPages; i++) { %>
+        <% if (i === currentPage) { %>
+            <span class="page-link current"><%= i %></span>
+        <% } else { %>
+            <a href="?page=<%= i %>" class="page-link"><%= i %></a>
+        <% } %>
+    <% } %>
+    
+    <% if (currentPage < totalPages) { %>
+        <a href="?page=<%= currentPage + 1 %>" class="page-link">다음 &raquo;</a>
+    <% } %>
+</div>
+
+<script>
+  async function toggleReadStatus(aboutId, button) {
+    try {
+      const response = await fetch(`/toggle-about-read/${aboutId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+
+      if (response.ok) {
+        const isRead = button.classList.contains('about-unread');
+        button.classList.toggle('about-read');
+        button.classList.toggle('about-unread');
+        button.textContent = isRead ? '읽음' : '안읽음';
+      } else {
+        alert('상태 변경에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('상태 변경 중 오류가 발생했습니다.');
+    }
+  }
+</script>

@@ -12,6 +12,10 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.3s ease;
+  text-decoration: none; /* 링크 밑줄 제거 */
+  color: inherit; /* 기본 텍스트 색상 유지 */
+  display: block; /* 카드 전체 영역을 클릭 가능하게 */
+  cursor: pointer; /* 마우스 오버시 포인터 표시 */
 }
 
 .event-card:hover {
