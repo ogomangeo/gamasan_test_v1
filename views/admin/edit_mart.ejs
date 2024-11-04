@@ -7,6 +7,7 @@
   .edit-mart-form {
     width: 800px;
   }
+
   .edit-mart-form-group {
     margin-bottom: 20px;
     display: flex;
@@ -116,6 +117,10 @@
     cursor: pointer;
   }
 
+  .required {
+    color: #ff0000;
+    margin-right: 4px;
+  }
 </style>
 
 <div class="edit-mart-container">
@@ -130,29 +135,29 @@
     onsubmit="return validateAndSubmit()">
     <!-- 기본 정보 -->
     <div class="edit-mart-form-group">
-      <label for="brand">브랜드명</label>
+      <label for="brand"><span class="required">*</span>브랜드명</label>
       <input type="text" id="brand" name="brand" value="<%= locals.mart ? mart.brand : '' %>" required>
     </div>
 
     <div class="edit-mart-form-group">
-      <label for="title">상품명</label>
+      <label for="title"><span class="required">*</span>상품명</label>
       <input type="text" id="title" name="title" value="<%= locals.mart ? mart.title : '' %>" required>
     </div>
 
     <!-- 카테고리 -->
     <div class="edit-mart-form-group">
-      <label for="category1">카테고리1</label>
+      <label for="category1"><span class="required">*</span>카테고리1</label>
       <input type="text" id="category1" name="category1" value="<%= locals.mart ? mart.category1 : '' %>" required>
     </div>
 
     <div class="edit-mart-form-group">
-      <label for="category2">카테고리2</label>
+      <label for="category2"><span class="required">*</span>카테고리2</label>
       <input type="text" id="category2" name="category2" value="<%= locals.mart ? mart.category2 : '' %>" required>
     </div>
 
     <!-- 썸네일 이미지 -->
     <div class="edit-mart-form-group">
-      <label for="thumbnail1">대표 썸네일 1</label>
+      <label for="thumbnail1"><span class="required">*</span>대표 썸네일 1</label>
       <input type="text" id="thumbnail1" name="thumbnail1" placeholder="이미지 URL"
         value="<%= locals.mart ? mart.thumbnail1 : '' %>" onchange="previewImage(this, 'preview1')" required>
       <div class="edit-mart-thumbnail-preview" id="preview1">
@@ -163,7 +168,7 @@
     </div>
 
     <div class="edit-mart-form-group">
-      <label for="thumbnail2">대표 썸네일 2</label>
+      <label for="thumbnail2"><span class="required">*</span>대표 썸네일 2</label>
       <input type="text" id="thumbnail2" name="thumbnail2" placeholder="이미지 URL"
         value="<%= locals.mart ? mart.thumbnail2 : '' %>" onchange="previewImage(this, 'preview2')" required>
       <div class="edit-mart-thumbnail-preview" id="preview2">
@@ -174,7 +179,7 @@
     </div>
 
     <div class="edit-mart-form-group">
-      <label for="thumbnail3">대표 썸네일 3</label>
+      <label for="thumbnail3"><span class="required">*</span>대표 썸네일 3</label>
       <input type="text" id="thumbnail3" name="thumbnail3" placeholder="이미지 URL"
         value="<%= locals.mart ? mart.thumbnail3 : '' %>" onchange="previewImage(this, 'preview3')" required>
       <div class="edit-mart-thumbnail-preview" id="preview3">
@@ -220,7 +225,7 @@
 
     <!-- 상품 설명 -->
     <div class="edit-mart-form-group">
-      <label for="script">상품 설명</label>
+      <label for="script"><span class="required">*</span>상품 설명</label>
       <textarea id="script" name="script" rows="5" required><%= locals.mart ? mart.script : '' %></textarea>
     </div>
 
@@ -245,21 +250,21 @@
 
     <!-- 배송 정보 -->
     <div class="edit-mart-form-group">
-      <label for="delivery">배송 정보</label>
+      <label for="delivery"><span class="required">*</span>배송 정보</label>
       <input type="text" id="delivery" name="delivery" value="<%= locals.mart ? mart.delivery : '' %>"
         placeholder="배송비를 입력해주세요" required>
     </div>
 
     <!-- 상세 페이지 -->
     <div class="edit-mart-form-group">
-      <label for="detailed_page">상세 페이지 URL</label>
+      <label for="detailed_page"><span class="required">*</span>상세 페이지 URL</label>
       <input type="text" id="detailed_page" name="detailed_page" value="<%= locals.mart ? mart.detailed_page : '' %>"
         required>
     </div>
 
     <!-- 옵션 정보 -->
     <div class="edit-mart-form-group">
-      <label>상품 옵션</label>
+      <label><span class="required">*</span>상품 옵션</label>
       <button type="button" class="edit-mart-btn edit-mart-btn-add-option" onclick="addOption()">+ 옵션 추가</button>
     </div>
 
@@ -271,7 +276,7 @@
               <input type="text" name="options[<%= index %>][name]" class="edit-mart-option-name"
                 value="<%= option.name %>" placeholder="옵션명" required>
               <input type="text" name="options[<%= index %>][price]" class="edit-mart-option-price"
-                value="<%= option.price %>" placeholder="가격" required onchange="formatPrice(this)">
+                value="<%= option.price.toLocaleString() %>" placeholder="가격" required onchange="formatPrice(this)">
             </div>
             <button type="button" class="edit-mart-btn edit-mart-btn-danger" onclick="removeOption(this)">삭제</button>
           </div>
@@ -287,9 +292,13 @@
 
 
 <script>
-  // 이미지 미리보기 함수
   function previewImage(input, previewId) {
     const preview = document.getElementById(previewId);
+    if (!preview) {
+      console.log(`Preview element with id ${previewId} not found`);
+      return;  // preview 엘리먼트가 없으면 함수 종료
+    }
+
     preview.innerHTML = '';
 
     if (input.value) {
@@ -321,7 +330,7 @@
       <div class="edit-mart-option-inputs">
         <input type="text" name="options[${optionCount}][name]" 
                class="edit-mart-option-name" placeholder="옵션명" required>
-        <input type="number" name="options[${optionCount}][price]" 
+        <input type="text" name="options[${optionCount}][price]" 
                class="edit-mart-option-price" placeholder="가격" required 
                onchange="formatPrice(this)">
       </div>
@@ -334,14 +343,14 @@
 
   // 옵션 삭제 함수
   function removeOption(button) {
-    button.closest('.edit-mart-options-container').remove();
+    button.closest('.edit-mart-option-group').remove();
     updateOptionIndexes(); // 옵션 삭제 후 인덱스 업데이트
   }
 
   // 옵션 인덱스 업데이트 함수
   function updateOptionIndexes() {
     const optionsList = document.getElementById('options-list');
-    const options = optionsList.getElementsByClassName('edit-mart-options-container');
+    const options = optionsList.getElementsByClassName('edit-mart-option-group');
 
     Array.from(options).forEach((option, index) => {
       const nameInput = option.querySelector('.edit-mart-option-name');
@@ -352,7 +361,7 @@
     });
   }
 
-  // 폼 유효성 검사 함수
+
   function validateForm() {
     const form = document.getElementById('editMartForm');
     const inputs = form.querySelectorAll('input[required], textarea[required]');
@@ -361,6 +370,7 @@
     // 필수 필드 검사
     inputs.forEach(input => {
       if (!input.value.trim()) {
+        console.log('필수 필드 누락:', input.name || input.id);
         input.classList.add('edit-mart-is-invalid');
         isValid = false;
       } else {
@@ -371,6 +381,7 @@
     // 옵션 검사
     const optionsList = document.getElementById('options-list');
     if (optionsList.children.length === 0) {
+      console.log('옵션이 없음');
       alert('최소 1개 이상의 옵션을 추가해주세요.');
       isValid = false;
     }
@@ -379,10 +390,15 @@
     const imageInputs = form.querySelectorAll('input[type="text"][name*="thumbnail"]');
     imageInputs.forEach(input => {
       if (input.required && !isValidImageUrl(input.value)) {
+        console.log('잘못된 이미지 URL:', input.name);
         input.classList.add('edit-mart-is-invalid');
         isValid = false;
       }
     });
+
+    if (!isValid) {
+      console.log('폼 검증 실패 사유 확인');
+    }
 
     return isValid;
   }
@@ -392,18 +408,29 @@
     return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
   }
 
-  // 페이지 로드 시 초기화
-  document.addEventListener('DOMContentLoaded', () => {
-    // 기존 가격들 포맷팅
-    document.querySelectorAll('.edit-mart-option-price').forEach(input => {
-      formatPrice(input);
-    });
+  // 이미지 URL 검증 함수 수정
+  function isValidImageUrl(url) {
+    // 기본적인 URL 형식만 검사하도록 수정
+    try {
+      new URL(url);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 
-    // 기존 이미지 미리보기 초기화
+  // 이미지 미리보기 초기화 수정
+  document.addEventListener('DOMContentLoaded', () => {
     const imageInputs = document.querySelectorAll('input[type="text"][name*="thumbnail"]');
     imageInputs.forEach(input => {
       if (input.value) {
-        const previewId = input.id.replace('thumbnail', 'preview');
+        // ID 매칭 수정
+        let previewId;
+        if (input.id.includes('additional_thumbnail')) {
+          previewId = 'preview_add' + input.id.slice(-1);
+        } else {
+          previewId = 'preview' + input.id.slice(-1);
+        }
         previewImage(input, previewId);
       }
     });
@@ -414,22 +441,30 @@
       return false;
     }
 
-    // 옵션 데이터 수집 및 JSON 변환
+    // 옵션 데이터 수집
     const optionsList = document.getElementById('options-list');
     const options = [];
 
-    const optionContainers = optionsList.getElementsByClassName('edit-mart-options-container');
-    Array.from(optionContainers).forEach(container => {
-      const nameInput = container.querySelector('.edit-mart-option-name');
-      const priceInput = container.querySelector('.edit-mart-option-price');
+    const optionGroups = optionsList.getElementsByClassName('edit-mart-option-group');
+    Array.from(optionGroups).forEach(group => {
+      const nameInput = group.querySelector('.edit-mart-option-name');
+      const priceInput = group.querySelector('.edit-mart-option-price');
 
-      options.push({
-        name: nameInput.value,
-        price: parseInt(priceInput.value.replace(/,/g, ''))
-      });
+      if (nameInput && priceInput) {
+        options.push({
+          name: nameInput.value,
+          price: Number(priceInput.value.replace(/,/g, ''))
+        });
+      }
     });
 
-    // hidden input 생성 및 추가
+    // 기존의 hidden input이 있다면 제거
+    const existingOptionsInput = document.querySelector('input[name="options"]');
+    if (existingOptionsInput) {
+      existingOptionsInput.remove();
+    }
+
+    // 새로운 hidden input 추가
     const optionsInput = document.createElement('input');
     optionsInput.type = 'hidden';
     optionsInput.name = 'options';

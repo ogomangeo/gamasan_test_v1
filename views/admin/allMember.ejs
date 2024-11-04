@@ -1,0 +1,185 @@
+<script src="/js/DeleteCheck.js"></script>
+<style>
+  /* 테이블 기본 스타일 */
+  .member-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e0e0e0;
+  }
+
+  /* 헤더 스타일 */
+  .member-table th {
+    background-color: #f8f9fa;
+    font-size: 13px;
+    padding: 8px 6px;
+    text-align: left;
+    border: 1px solid #e0e0e0;
+    border-bottom: 2px solid #999;
+  }
+
+  /* 기본 셀 스타일 */
+  .member-table td {
+    border: 1px solid #e0e0e0;
+    padding: 6px;
+    text-align: left;
+    font-size: 13px;
+  }
+
+  /* 작성일시 열 너비 고정 */
+  .member-table th:first-child,
+  .member-table td:first-child {
+    width: 10%;
+    white-space: nowrap;
+  }
+
+  /* 버튼 공통 스타일 */
+  .member-status,
+  .member-edit-btn,
+  .member-delete-btn {
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  /* 상태 버튼 스타일 */
+  .member-status {
+    border: none;
+  }
+
+  .member-status.member-active {
+    background-color: #e0ffe0;
+    color: #44aa44;
+  }
+
+  .member-status.member-inactive {
+    background-color: #ffe0e0;
+    color: #ff4444;
+  }
+
+  /* 편집/삭제 버튼 스타일 */
+  .member-edit-btn,
+  .member-delete-btn {
+    border: 1px solid #ddd;
+    background-color: #fff;
+  }
+
+  .member-delete-btn {
+    color: #ff4444;
+  }
+
+  /* 내용 셀 말줄임 처리 */
+  .member-cell {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* 열 너비 조정 */
+  .member-status-cell {
+    width: 6%;
+  }
+
+  .member-action-cell {
+    width: 6%;
+  }
+
+  /* 페이지네이션 스타일 */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .page-link {
+    padding: 5px 10px;
+    margin: 0 3px;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: #333;
+  }
+
+  .page-link.current {
+    background-color: #f8f9fa;
+    border-color: #999;
+  }
+</style>
+
+<h2>회원 관리</h2>
+<table class="member-table">
+  <thead>
+    <tr>
+      <th>가입일</th>
+      <th>이메일</th>
+      <th>활동명</th>
+      <th>생년월일</th>
+      <th>성별</th>
+      <th>이름</th>
+      <th>연락처</th>
+      <th>주소</th>
+      <th class="member-status-cell">상태</th>
+      <th class="member-action-cell">편집</th>
+      <th class="member-action-cell">삭제</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% data.forEach(member => { %>
+    <tr>
+      <td>
+        <%= new Date(member.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', 
+            day: '2-digit' }).replace(/\./g, '-').slice(0, -1) %>
+      </td>
+      <td><%= member.email %></td>
+      <td class="member-cell"><%= member.username %></td>
+      <td>
+        <%= member.birthdate ? new Date(member.birthdate).toLocaleDateString('ko-KR', 
+            { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '-').slice(0, -1) : '-' %>
+      </td>
+      <td>
+        <%= member.gender === 'male' ? '남성' : 
+            member.gender === 'female' ? '여성' : 
+            member.gender === 'other' ? '기타' : '-' %>
+      </td>
+      <td class="member-cell"><%= member.name || '-' %></td>
+      <td><%= member.phone || '-' %></td>
+      <td class="member-cell"><%= member.address || '-' %></td>
+      <td class="member-status-cell">
+        <span class="member-status <%= member.isActive ? 'member-active' : 'member-inactive' %>">
+          <%= member.isActive ? '활성' : '비활성' %>
+        </span>
+      </td>
+      <td class="member-action-cell">
+        <form action="/edit_member/<%= member._id %>" method="GET" style="display: inline;">
+          <button type="submit" class="member-edit-btn">편집</button>
+        </form>
+      </td>
+      <td class="member-action-cell">
+        <form action="/delete_member/<%= member._id %>?_method=DELETE" method="POST" style="display: inline;">
+          <button type="submit" class="member-delete-btn" 
+                  onclick="return deleteConfirm('<%= member._id %>', 'member')">삭제</button>
+        </form>
+      </td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<!-- 페이지네이션 -->
+<div class="pagination">
+    <% if (currentPage > 1) { %>
+        <a href="?page=<%= currentPage - 1 %>" class="page-link">&laquo; 이전</a>
+    <% } %>
+    
+    <% for (let i = 1; i <= totalPages; i++) { %>
+        <% if (i === currentPage) { %>
+            <span class="page-link current"><%= i %></span>
+        <% } else { %>
+            <a href="?page=<%= i %>" class="page-link"><%= i %></a>
+        <% } %>
+    <% } %>
+    
+    <% if (currentPage < totalPages) { %>
+        <a href="?page=<%= currentPage + 1 %>" class="page-link">다음 &raquo;</a>
+    <% } %>
+</div>

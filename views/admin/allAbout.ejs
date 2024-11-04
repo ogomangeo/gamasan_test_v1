@@ -32,22 +32,6 @@
     white-space: nowrap;
   }
 
-  /* 각 문의사항 구분을 위한 스타일 */
-  .about-table tbody tr:nth-child(even) td {
-    border-bottom: 1px solid #e0e0e0;
-    position: relative;
-  }
-
-  .about-table tbody tr:nth-child(even)::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 3px;
-    background: linear-gradient(to right, #f0f0f0, #e0e0e0, #f0f0f0);
-  }
-
   /* 버튼 공통 스타일 */
   .about-status,
   .about-edit-btn,
@@ -101,15 +85,6 @@
     width: 8%;
   }
 
-  /* 이메일 링크 스타일 */
-  .about-table td a {
-    color: #0066cc;
-    text-decoration: none;
-  }
-
-  .about-table td a:hover {
-    text-decoration: underline;
-  }
 </style>
 
 
@@ -155,9 +130,7 @@
         </td>
       </tr>
       <tr>
-        <td><a href="mailto:<%= about.email %>">
-            <%= about.email %>
-          </a></td>
+        <td><%= about.email %></td>
         <td colspan="4" class="about-content-cell">
           <%= about.content %>
         </td>

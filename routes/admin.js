@@ -14,6 +14,7 @@ const Archive = require("../models/Archive");
 const Event = require("../models/Event");
 const About = require("../models/About");
 const Mart = require("../models/Mart");
+const Member = require("../models/Member");
 const jwtSecret = process.env.JWT_SECRET;
 
 //
@@ -719,48 +720,60 @@ router.post(
   "/add_mart",
   checkLogin,
   asyncHandler(async (req, res) => {
-    const {
-      thumbnail1,
-      thumbnail2,
-      thumbnail3,
-      additional_thumbnail1,
-      additional_thumbnail2,
-      additional_thumbnail3,
-      category1,
-      category2,
-      title,
-      brand,
-      delivery,
-      script,
-      additional_script1,
-      additional_script2,
-      additional_script3,
-      detailed_page,
-      options,
-    } = req.body;
+    try {
+      const {
+        thumbnail1,
+        thumbnail2,
+        thumbnail3,
+        additional_thumbnail1,
+        additional_thumbnail2,
+        additional_thumbnail3,
+        category1,
+        category2,
+        title,
+        brand,
+        delivery,
+        script,
+        additional_script1,
+        additional_script2,
+        additional_script3,
+        detailed_page,
+        options,
+      } = req.body;
 
-    const newMart = new Mart({
-      thumbnail1,
-      thumbnail2,
-      thumbnail3,
-      additional_thumbnail1,
-      additional_thumbnail2,
-      additional_thumbnail3,
-      category1,
-      category2,
-      title,
-      brand,
-      delivery,
-      script,
-      additional_script1,
-      additional_script2,
-      additional_script3,
-      detailed_page,
-      options: JSON.parse(options), // options는 배열이므로 JSON 파싱 필요
-    });
+      // options가 이미 객체인 경우 파싱하지 않음
+      const parsedOptions = Array.isArray(options)
+        ? options
+        : typeof options === "string"
+        ? JSON.parse(options)
+        : [];
 
-    await Mart.create(newMart);
-    res.redirect("/allMart");
+      const newMart = new Mart({
+        thumbnail1,
+        thumbnail2,
+        thumbnail3,
+        additional_thumbnail1,
+        additional_thumbnail2,
+        additional_thumbnail3,
+        category1,
+        category2,
+        title,
+        brand,
+        delivery,
+        script,
+        additional_script1,
+        additional_script2,
+        additional_script3,
+        detailed_page,
+        options: parsedOptions,
+      });
+
+      await Mart.create(newMart);
+      res.redirect("/allMart");
+    } catch (error) {
+      console.error("Error creating mart:", error);
+      res.status(400).send(error.message);
+    }
   })
 );
 
@@ -792,48 +805,84 @@ router.put(
   "/edit_mart/:id",
   checkLogin,
   asyncHandler(async (req, res) => {
-    const {
-      thumbnail1,
-      thumbnail2,
-      thumbnail3,
-      additional_thumbnail1,
-      additional_thumbnail2,
-      additional_thumbnail3,
-      category1,
-      category2,
-      title,
-      brand,
-      delivery,
-      script,
-      additional_script1,
-      additional_script2,
-      additional_script3,
-      detailed_page,
-      options,
-    } = req.body;
+    try {
+      const {
+        thumbnail1,
+        thumbnail2,
+        thumbnail3,
+        additional_thumbnail1,
+        additional_thumbnail2,
+        additional_thumbnail3,
+        category1,
+        category2,
+        title,
+        brand,
+        delivery,
+        script,
+        additional_script1,
+        additional_script2,
+        additional_script3,
+        detailed_page,
+        options,
+      } = req.body;
 
-    await Mart.findByIdAndUpdate(req.params.id, {
-      thumbnail1,
-      thumbnail2,
-      thumbnail3,
-      additional_thumbnail1,
-      additional_thumbnail2,
-      additional_thumbnail3,
-      category1,
-      category2,
-      title,
-      brand,
-      delivery,
-      script,
-      additional_script1,
-      additional_script2,
-      additional_script3,
-      detailed_page,
-      options: JSON.parse(options),
-      createdAt: Date.now(),
-    });
+      // options 데이터 처리
+      let parsedOptions = [];
+      if (options) {
+        try {
+          // options가 문자열인 경우 파싱
+          const tempOptions =
+            typeof options === "string" ? JSON.parse(options) : options;
 
-    res.redirect("/allMart");
+          // 각 옵션 유효성 검사 및 변환
+          parsedOptions = tempOptions
+            .map((option) => {
+              if (!option || !option.name || !option.price) {
+                return null;
+              }
+              return {
+                name: option.name,
+                price:
+                  parseInt(option.price.toString().replace(/[^0-9]/g, "")) || 0,
+              };
+            })
+            .filter((option) => option !== null); // null 옵션 제거
+        } catch (error) {}
+      }
+
+      const updateData = {
+        thumbnail1,
+        thumbnail2,
+        thumbnail3,
+        additional_thumbnail1,
+        additional_thumbnail2,
+        additional_thumbnail3,
+        category1,
+        category2,
+        title,
+        brand,
+        delivery,
+        script,
+        additional_script1,
+        additional_script2,
+        additional_script3,
+        detailed_page,
+        options: parsedOptions,
+        updatedAt: Date.now(),
+      };
+
+      await Mart.findByIdAndUpdate(req.params.id, updateData, {
+        new: true,
+        runValidators: true,
+      });
+
+      res.redirect("/allMart");
+    } catch (error) {
+      res.status(500).json({
+        error: "Error updating mart",
+        details: error.message,
+      });
+    }
   })
 );
 
@@ -846,4 +895,35 @@ router.delete(
     res.redirect("/allMart");
   })
 );
+
+//membermembermembermembermembermembermembermembermembermembermembermembermembermembermembermembermembermember
+//Get all Member
+//GET /allMember
+router.get(
+  "/allMember",
+  checkLogin,
+  asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 15;
+    const skip = (page - 1) * limit;
+
+    const totalItems = await Member.countDocuments();
+    const totalPages = Math.ceil(totalItems / limit);
+
+    const data = await Member.find()
+      .sort({ updatedAt: "desc", createdAt: "desc" })
+      .skip(skip)
+      .limit(limit);
+
+    const locals = { title: "회원 관리" };
+    res.render("admin/allMember", {
+      locals,
+      data,
+      layout: adminLayout3,
+      currentPage: page,
+      totalPages,
+    });
+  })
+);
+
 module.exports = router;

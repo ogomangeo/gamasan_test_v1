@@ -1,1 +1,316 @@
-<h1>add mart</h1>
+<style>
+  .add-mart-container {
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .add-mart-form {
+    width: 800px;
+  }
+
+  .add-mart-form-group {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .add-mart-form-group label {
+    min-width: 120px;
+    font-weight: bold;
+  }
+
+  .required {
+    color: #ff0000;
+    margin-right: 4px;
+  }
+
+  .add-mart-form-group input[type="text"],
+  .add-mart-form-group input[type="number"],
+  .add-mart-form-group textarea {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .add-mart-form-group textarea {
+    height: 50px;
+    resize: vertical;
+  }
+
+  /* 썸네일 미리보기 스타일 */
+  .add-mart-thumbnail-preview {
+    min-width: 100px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #ddd;
+    padding: 5px;
+    margin-left: 10px;
+  }
+
+  .add-mart-thumbnail-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* 옵션 관련 스타일 */
+  .add-mart-options-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+  }
+
+  .add-mart-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .add-mart-btn-add {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .add-mart-btn-danger {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .add-mart-btn-submit {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+
+  /* 상세 페이지 이미지 미리보기 스타일 */
+  #preview_detailed {
+    min-width: 200px;
+    /* 더 큰 미리보기 */
+    width: 200px;
+    height: 200px;
+  }
+
+  #preview_detailed img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* 이미지 비율 유지 */
+  }
+</style>
+
+<div class="add-mart-container">
+  <a href="/allMart">&larr; 뒤로</a>
+
+  <h2>상품 등록</h2>
+
+  <form id="addMartForm" class="add-mart-form" onsubmit="return validateAndSubmit()">
+    <!-- 기본 정보 -->
+    <div class="add-mart-form-group">
+      <label for="brand"><span class="required">*</span>브랜드명</label>
+      <input type="text" id="brand" name="brand" required>
+    </div>
+
+    <div class="add-mart-form-group">
+      <label for="title"><span class="required">*</span>상품명</label>
+      <input type="text" id="title" name="title" required>
+    </div>
+
+    <!-- 카테고리 -->
+    <div class="add-mart-form-group">
+      <label for="category1"><span class="required">*</span>카테고리1</label>
+      <input type="text" id="category1" name="category1" required>
+    </div>
+
+    <div class="add-mart-form-group">
+      <label for="category2"><span class="required">*</span>카테고리2</label>
+      <input type="text" id="category2" name="category2" required>
+    </div>
+
+    <!-- 썸네일 이미지 -->
+    <div class="add-mart-form-group">
+      <label for="thumbnail1"><span class="required">*</span>대표 썸네일 1</label>
+      <input type="text" id="thumbnail1" name="thumbnail1" placeholder="이미지 URL"
+        onchange="previewImage(this, 'preview1')" required>
+      <div class="add-mart-thumbnail-preview" id="preview1"></div>
+    </div>
+
+    <div class="add-mart-form-group">
+      <label for="thumbnail2"><span class="required">*</span>대표 썸네일 2</label>
+      <input type="text" id="thumbnail2" name="thumbnail2" placeholder="이미지 URL"
+        onchange="previewImage(this, 'preview2')" required>
+      <div class="add-mart-thumbnail-preview" id="preview2"></div>
+    </div>
+
+    <div class="add-mart-form-group">
+      <label for="thumbnail3"><span class="required">*</span>대표 썸네일 3</label>
+      <input type="text" id="thumbnail3" name="thumbnail3" placeholder="이미지 URL"
+        onchange="previewImage(this, 'preview3')" required>
+      <div class="add-mart-thumbnail-preview" id="preview3"></div>
+    </div>
+
+    <!-- 추가 썸네일 -->
+    <div class="add-mart-form-group">
+      <label for="additional_thumbnail1">추가 썸네일 1</label>
+      <input type="text" id="additional_thumbnail1" name="additional_thumbnail1" placeholder="이미지 URL"
+        onchange="previewImage(this, 'preview_add1')">
+      <div class="add-mart-thumbnail-preview" id="preview_add1"></div>
+    </div>
+
+    <div class="add-mart-form-group">
+      <label for="additional_thumbnail2">추가 썸네일 2</label>
+      <input type="text" id="additional_thumbnail2" name="additional_thumbnail2" placeholder="이미지 URL"
+        onchange="previewImage(this, 'preview_add2')">
+      <div class="add-mart-thumbnail-preview" id="preview_add2"></div>
+    </div>
+
+    <div class="add-mart-form-group">
+      <label for="additional_thumbnail3">추가 썸네일 3</label>
+      <input type="text" id="additional_thumbnail3" name="additional_thumbnail3" placeholder="이미지 URL"
+        onchange="previewImage(this, 'preview_add3')">
+      <div class="add-mart-thumbnail-preview" id="preview_add3"></div>
+    </div>
+
+    <!-- 상품 설명 -->
+    <div class="add-mart-form-group">
+      <label for="script"><span class="required">*</span>상품 설명</label>
+      <textarea id="script" name="script" rows="5" required></textarea>
+    </div>
+
+    <!-- 추가 설명 -->
+    <div class="add-mart-form-group">
+      <label for="additional_script1">추가 설명 1</label>
+      <textarea id="additional_script1" name="additional_script1" rows="3"></textarea>
+    </div>
+
+    <div class="add-mart-form-group">
+      <label for="additional_script2">추가 설명 2</label>
+      <textarea id="additional_script2" name="additional_script2" rows="3"></textarea>
+    </div>
+
+    <div class="add-mart-form-group">
+      <label for="additional_script3">추가 설명 3</label>
+      <textarea id="additional_script3" name="additional_script3" rows="3"></textarea>
+    </div>
+
+    <!-- 배송 정보 -->
+    <div class="add-mart-form-group">
+      <label for="delivery"><span class="required">*</span>배송 정보</label>
+      <input type="text" id="delivery" name="delivery" placeholder="배송비를 입력해주세요" required>
+    </div>
+
+    <!-- 상세 페이지 -->
+    <div class="add-mart-form-group">
+      <label for="detailed_page"><span class="required">*</span>상세 페이지 이미지</label>
+      <input type="text" id="detailed_page" name="detailed_page" placeholder="이미지 URL"
+        onchange="previewImage(this, 'preview_detailed')" required>
+      <div class="add-mart-thumbnail-preview" id="preview_detailed"></div>
+    </div>
+
+    <!-- 옵션 정보 -->
+    <div class="add-mart-form-group">
+      <label><span class="required">*</span>상품 옵션</label>
+      <button type="button" class="add-mart-btn add-mart-btn-add" onclick="addOption()">+ 옵션 추가</button>
+    </div>
+
+    <div id="options-list"></div>
+
+    <button type="submit" class="add-mart-btn add-mart-btn-submit">상품 등록</button>
+  </form>
+</div>
+
+<script>
+  // 이미지 미리보기 함수
+  function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    preview.innerHTML = '';
+
+    if (input.value) {
+      const img = document.createElement('img');
+      img.src = input.value;
+      img.alt = '썸네일 미리보기';
+      img.onerror = () => {
+        preview.innerHTML = '<p>잘못된 이미지 URL입니다.</p>';
+      };
+      preview.appendChild(img);
+    }
+  }
+
+  // 가격 포맷팅 함수
+  function formatPrice(input) {
+    let value = input.value.replace(/,/g, '');
+    if (value !== '') {
+      value = parseInt(value).toLocaleString();
+      input.value = value;
+    }
+  }
+
+  function addOption() {
+    const optionsList = document.getElementById('options-list');
+    const optionCount = optionsList.children.length;
+
+    const optionHtml = `
+      <div class="add-mart-options-container">
+        <input type="text" name="option_name_${optionCount}" 
+               placeholder="옵션명" required>
+        <input type="number" name="option_price_${optionCount}" 
+               placeholder="가격" required onchange="formatPrice(this)">
+        <button type="button" class="add-mart-btn add-mart-btn-danger" 
+                onclick="this.parentElement.remove()">삭제</button>
+      </div>
+    `;
+
+    optionsList.insertAdjacentHTML('beforeend', optionHtml);
+  }
+
+  function validateAndSubmit() {
+    const form = document.getElementById('addMartForm');
+    const optionsList = document.getElementById('options-list');
+
+    // 필수 필드 검사
+    if (!form.checkValidity()) {
+      alert('모든 필수 항목을 입력해주세요.');
+      return false;
+    }
+
+    // 옵션 검사
+    if (optionsList.children.length === 0) {
+      alert('최소 1개 이상의 옵션을 추가해주세요.');
+      return false;
+    }
+
+    // 옵션 데이터 수집
+    const optionsArray = [];
+    const optionContainers = optionsList.getElementsByClassName('add-mart-options-container');
+
+    Array.from(optionContainers).forEach(container => {
+      const nameInput = container.querySelector('input[name^="option_name"]');
+      const priceInput = container.querySelector('input[name^="option_price"]');
+
+      optionsArray.push({
+        name: nameInput.value,
+        price: Number(priceInput.value.replace(/,/g, ''))
+      });
+    });
+
+    // 숨겨진 input 필드 생성 및 추가
+    const optionsInput = document.createElement('input');
+    optionsInput.type = 'hidden';
+    optionsInput.name = 'options';
+    optionsInput.value = JSON.stringify(optionsArray);
+    form.appendChild(optionsInput);
+
+    // form의 action과 method 설정
+    form.action = '/add_mart';
+    form.method = 'POST';
+
+    // 폼 제출
+    return true;
+  }
+</script>
