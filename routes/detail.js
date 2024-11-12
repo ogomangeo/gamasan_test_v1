@@ -124,8 +124,28 @@ router.get('/archive/:id', asyncHandler(async (req, res) => {
 }));
 
 // Mart 상세 페이지 라우트
+// Mart 상세 페이지 라우트
 router.get('/mart/:id', asyncHandler(async (req, res) => {
-    const mart = await Mart.findById(req.params.id);
+    const { id } = req.params;
+    let mart;
+
+    // URL인 경우 market_url로 검색
+    if (id.startsWith('http') || id.startsWith('www')) {
+        mart = await Mart.findOne({
+            'market_link.market_url': id
+        });
+    } else {
+        // ObjectId로 검색
+        try {
+            mart = await Mart.findById(id);
+        } catch (error) {
+            // ObjectId가 아닌 경우 market_url로 한번 더 시도
+            mart = await Mart.findOne({
+                'market_link.market_url': id
+            });
+        }
+    }
+
     if (!mart) {
         return res.status(404).render('error', { 
             layout: homeLayout, 

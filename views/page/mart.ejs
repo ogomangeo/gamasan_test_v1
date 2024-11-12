@@ -33,8 +33,19 @@
               </span>
             </div>
             <span class="mart-link-buttons">
-              <a href="#" class="mart-link-button">#스마트스토어</a>
-              <a href="#" class="mart-link-button">#쿠팡</a>
+              <% if (mart.market_link && mart.market_link.length > 0) { %>
+                <% mart.market_link.slice(0, 2).forEach(function(link) { %>
+                  <a href="<%= link.market_url %>" class="mart-link-button" target="_blank">
+                    <%= link.market_name %>
+                  </a>
+                <% }); %>
+                
+                <% if (mart.market_link.length > 2) { %>
+                  <a href="/mart/<%= mart._id %>" class="more-button">
+                    더보기
+                  </a>
+                <% } %>
+              <% } %>
             </span>
           </div>
           <div class="mart-option">
@@ -72,10 +83,11 @@
   </div>
 </div>
 
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // 기존 옵션 선택 이벤트
   const optionSelects = document.querySelectorAll('.option-select');
-
   optionSelects.forEach(select => {
     select.addEventListener('change', function() {
       const martId = this.getAttribute('data-mart-id');
@@ -88,5 +100,28 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+
+  // 팝업 닫기를 위한 전역 클릭 이벤트
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.mart-link-more-button')) {
+      const popups = document.querySelectorAll('.more-links-popup');
+      popups.forEach(popup => popup.style.display = 'none');
+    }
+  });
 });
+
+// 더보기 버튼 토글 함수
+window.toggleMoreLinks = function(martId) {
+  const moreLinks = document.getElementById(`moreLinks_${martId}`);
+  if (moreLinks) {
+    // 다른 모든 팝업 닫기
+    document.querySelectorAll('.more-links-popup').forEach(popup => {
+      if (popup.id !== `moreLinks_${martId}`) {
+        popup.style.display = 'none';
+      }
+    });
+    // 현재 팝업 토글
+    moreLinks.style.display = moreLinks.style.display === 'none' ? 'block' : 'none';
+  }
+};
 </script>

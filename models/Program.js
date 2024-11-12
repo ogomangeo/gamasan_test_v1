@@ -25,7 +25,11 @@ const ProgramSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now()
-    }
+    },
+    youtube_url:{
+        type: String,
+        required: true
+    },
 });
 
 // pre save 미들웨어 추가

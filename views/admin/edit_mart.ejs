@@ -121,6 +121,23 @@
     color: #ff0000;
     margin-right: 4px;
   }
+
+  .edit-mart-market-group {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+  }
+
+  .edit-mart-market-options {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #ddd;
+  }
+
+  .market-options-list {
+    margin-top: 10px;
+  }
 </style>
 
 <div class="edit-mart-container">
@@ -255,17 +272,81 @@
         placeholder="배송비를 입력해주세요" required>
     </div>
 
-    <!-- 상세 페이지 -->
+    <!-- 마켓 링크 정보 -->
     <div class="edit-mart-form-group">
-      <label for="detailed_page"><span class="required">*</span>상세 페이지 URL</label>
-      <input type="text" id="detailed_page" name="detailed_page" value="<%= locals.mart ? mart.detailed_page : '' %>"
-        required>
+      <label><span class="required">*</span>마켓 정보</label>
+      <button type="button" class="edit-mart-btn edit-mart-btn-add-option" onclick="addMarket()">+ 마켓 추가</button>
+    </div>
+
+    <div id="market-links-list" class="edit-mart-options-list">
+      <% if (locals.mart && mart.market_link && mart.market_link.length> 0) { %>
+        <% mart.market_link.forEach(function(market, index) { %>
+          <div class="edit-mart-market-group" data-market-index="<%= index %>">
+            <div class="edit-mart-option-inputs">
+              <input type="text" name="market_link_<%= index %>_market_name" class="edit-mart-option-name"
+                value="<%= market.market_name %>" placeholder="마켓 이름" required>
+              <input type="text" name="market_link_<%= index %>_market_url" class="edit-mart-option-name"
+                value="<%= market.market_url %>" placeholder="마켓 URL" required>
+            </div>
+            <textarea name="market_link_<%= index %>_market_description" class="edit-mart-option-name"
+              placeholder="마켓 설명"><%= market.market_description %></textarea>
+
+            <!-- 마켓별 옵션 -->
+            <div class="edit-mart-market-options">
+              <button type="button" class="edit-mart-btn edit-mart-btn-add-option"
+                onclick="addMarketOption('<%= index %>')">
+                + 마켓 옵션 추가
+              </button>
+              <div class="market-options-list">
+                <% if (market.market_options && market.market_options.length> 0) { %>
+                  <% market.market_options.forEach(function(option, optionIndex) { %>
+                    <div class="edit-mart-option-group">
+                      <div class="edit-mart-option-inputs">
+                        <input type="text" name="market_link_<%= index %>_market_options_<%= optionIndex %>_name"
+                          class="edit-mart-option-name" value="<%= option.name %>" placeholder="옵션명" required>
+                        <input type="text" name="market_link_<%= index %>_market_options_<%= optionIndex %>_price"
+                          class="edit-mart-option-price" value="<%= option.price.toLocaleString() %>" placeholder="가격"
+                          required onchange="formatPrice(this)">
+                      </div>
+                      <button type="button" class="edit-mart-btn edit-mart-btn-danger"
+                        onclick="removeMarketOption(this)">삭제</button>
+                    </div>
+                    <% }); %>
+                      <% } %>
+              </div>
+            </div>
+            <button type="button" class="edit-mart-btn edit-mart-btn-danger" onclick="removeMarket(this)">마켓 삭제</button>
+          </div>
+          <% }); %>
+            <% } %>
+    </div>
+    <!-- 상세 이미지들 -->
+    <div class="edit-mart-form-group">
+      <label><span class="required">*</span>상세 이미지</label>
+      <button type="button" class="edit-mart-btn edit-mart-btn-add-option" onclick="addDetailedImage()">+ 이미지
+        추가</button>
+    </div>
+
+    <div id="detailed-images-list" class="edit-mart-options-list">
+      <% if (locals.mart && mart.detailed_images && mart.detailed_images.length> 0) { %>
+        <% mart.detailed_images.forEach((image, index)=> { %>
+          <div class="edit-mart-option-group">
+            <div class="edit-mart-option-inputs">
+              <input type="text" name="detailed_images[<%= index %>]" class="edit-mart-option-name" value="<%= image %>"
+                placeholder="이미지 URL" required>
+            </div>
+            <button type="button" class="edit-mart-btn edit-mart-btn-danger"
+              onclick="removeDetailedImage(this)">삭제</button>
+          </div>
+          <% }); %>
+            <% } %>
     </div>
 
     <!-- 옵션 정보 -->
     <div class="edit-mart-form-group">
       <label><span class="required">*</span>상품 옵션</label>
-      <button type="button" class="edit-mart-btn edit-mart-btn-add-option" onclick="addOption()">+ 옵션 추가</button>
+      <button type="button" class="edit-mart-btn edit-mart-btn-add-option" onclick="addOption()">+ 옵션
+        추가</button>
     </div>
 
     <div id="options-list" class="edit-mart-options-list">
@@ -290,17 +371,16 @@
   </form>
 </div>
 
-
 <script>
+  // 이미지 미리보기 관련 함수
   function previewImage(input, previewId) {
     const preview = document.getElementById(previewId);
     if (!preview) {
       console.log(`Preview element with id ${previewId} not found`);
-      return;  // preview 엘리먼트가 없으면 함수 종료
+      return;
     }
 
     preview.innerHTML = '';
-
     if (input.value) {
       const img = document.createElement('img');
       img.src = input.value;
@@ -311,6 +391,7 @@
       preview.appendChild(img);
     }
   }
+
   // 가격 포맷팅 함수
   function formatPrice(input) {
     let value = input.value.replace(/,/g, '');
@@ -320,34 +401,31 @@
     }
   }
 
-  // 옵션 추가 함수
+  // 기본 옵션 관련 함수들
   function addOption() {
     const optionsList = document.getElementById('options-list');
     const optionCount = optionsList.children.length;
 
     const optionHtml = `
-    <div class="edit-mart-option-group">
-      <div class="edit-mart-option-inputs">
-        <input type="text" name="options[${optionCount}][name]" 
-               class="edit-mart-option-name" placeholder="옵션명" required>
-        <input type="text" name="options[${optionCount}][price]" 
-               class="edit-mart-option-price" placeholder="가격" required 
-               onchange="formatPrice(this)">
+      <div class="edit-mart-option-group">
+        <div class="edit-mart-option-inputs">
+          <input type="text" name="options[${optionCount}][name]" 
+                 class="edit-mart-option-name" placeholder="옵션명" required>
+          <input type="text" name="options[${optionCount}][price]" 
+                 class="edit-mart-option-price" placeholder="가격" required 
+                 onchange="formatPrice(this)">
+        </div>
+        <button type="button" class="edit-mart-btn edit-mart-btn-danger" onclick="removeOption(this)">삭제</button>
       </div>
-      <button type="button" class="edit-mart-btn edit-mart-btn-danger" onclick="removeOption(this)">삭제</button>
-    </div>
-  `;
-
+    `;
     optionsList.insertAdjacentHTML('beforeend', optionHtml);
   }
 
-  // 옵션 삭제 함수
   function removeOption(button) {
     button.closest('.edit-mart-option-group').remove();
-    updateOptionIndexes(); // 옵션 삭제 후 인덱스 업데이트
+    updateOptionIndexes();
   }
 
-  // 옵션 인덱스 업데이트 함수
   function updateOptionIndexes() {
     const optionsList = document.getElementById('options-list');
     const options = optionsList.getElementsByClassName('edit-mart-option-group');
@@ -355,22 +433,152 @@
     Array.from(options).forEach((option, index) => {
       const nameInput = option.querySelector('.edit-mart-option-name');
       const priceInput = option.querySelector('.edit-mart-option-price');
-
       nameInput.name = `options[${index}][name]`;
       priceInput.name = `options[${index}][price]`;
     });
   }
 
+  // 상세 이미지 관련 함수들
+  function addDetailedImage() {
+    const imagesList = document.getElementById('detailed-images-list');
+    const imageCount = imagesList.children.length;
 
+    const imageHtml = `
+      <div class="edit-mart-option-group">
+        <div class="edit-mart-option-inputs">
+          <input type="text" name="detailed_images[${imageCount}]" 
+                 class="edit-mart-option-name" placeholder="이미지 URL" required>
+        </div>
+        <button type="button" class="edit-mart-btn edit-mart-btn-danger" 
+                onclick="removeDetailedImage(this)">삭제</button>
+      </div>
+    `;
+    imagesList.insertAdjacentHTML('beforeend', imageHtml);
+  }
+
+  function removeDetailedImage(button) {
+    button.closest('.edit-mart-option-group').remove();
+    updateDetailedImageIndexes();
+  }
+
+  function updateDetailedImageIndexes() {
+    const imagesList = document.getElementById('detailed-images-list');
+    const images = imagesList.getElementsByClassName('edit-mart-option-group');
+
+    Array.from(images).forEach((image, index) => {
+      const input = image.querySelector('input[type="text"]');
+      input.name = `detailed_images[${index}]`;
+    });
+  }
+
+  // 마켓 관련 함수들
+  function addMarket() {
+    const marketsList = document.getElementById('market-links-list');
+    const marketCount = marketsList.querySelectorAll('.edit-mart-market-group').length;
+
+    const marketHtml = `
+      <div class="edit-mart-market-group" data-market-index="${marketCount}">
+        <div class="edit-mart-option-inputs">
+          <input type="text" name="market_link_${marketCount}_market_name" 
+                 class="edit-mart-option-name" placeholder="마켓 이름" required>
+          <input type="text" name="market_link_${marketCount}_market_url" 
+                 class="edit-mart-option-name" placeholder="마켓 URL" required>
+        </div>
+        <textarea name="market_link_${marketCount}_market_description" 
+                  class="edit-mart-option-name" placeholder="마켓 설명"></textarea>
+        <div class="edit-mart-market-options">
+          <button type="button" class="edit-mart-btn edit-mart-btn-add-option" 
+                  onclick="addMarketOption('${marketCount}')">+ 마켓 옵션 추가</button>
+          <div class="market-options-list"></div>
+        </div>
+        <button type="button" class="edit-mart-btn edit-mart-btn-danger" 
+                onclick="removeMarket(this)">마켓 삭제</button>
+      </div>
+    `;
+    marketsList.insertAdjacentHTML('beforeend', marketHtml);
+  }
+
+  function addMarketOption(marketIndex) {
+    marketIndex = parseInt(marketIndex);
+    const marketGroup = document.querySelector(`[data-market-index="${marketIndex}"]`);
+    const optionsList = marketGroup.querySelector('.market-options-list');
+    const optionCount = optionsList.querySelectorAll('.edit-mart-option-group').length;
+
+    const optionHtml = `
+      <div class="edit-mart-option-group">
+        <div class="edit-mart-option-inputs">
+          <input type="text" name="market_link_${marketIndex}_market_options_${optionCount}_name" 
+                 class="edit-mart-option-name" placeholder="옵션명" required>
+          <input type="text" name="market_link_${marketIndex}_market_options_${optionCount}_price" 
+                 class="edit-mart-option-price" placeholder="가격" required 
+                 onchange="formatPrice(this)">
+        </div>
+        <button type="button" class="edit-mart-btn edit-mart-btn-danger" 
+                onclick="removeMarketOption(this)">삭제</button>
+      </div>
+    `;
+    optionsList.insertAdjacentHTML('beforeend', optionHtml);
+  }
+
+  function removeMarket(button) {
+    button.closest('.edit-mart-market-group').remove();
+    updateMarketIndexes();
+  }
+
+  function removeMarketOption(button) {
+    button.closest('.edit-mart-option-group').remove();
+    updateAllMarketOptions();
+  }
+
+  function updateMarketIndexes() {
+    const markets = document.querySelectorAll('.edit-mart-market-group');
+    markets.forEach((market, index) => {
+      market.dataset.marketIndex = index;
+      updateMarketInputNames(market, index);
+    });
+  }
+
+  function updateMarketInputNames(market, marketIndex) {
+    // 기본 입력 필드 업데이트
+    const inputs = market.querySelectorAll('input[type="text"], textarea');
+    inputs.forEach(input => {
+      if (input.name.startsWith('market_link_')) {
+        const nameParts = input.name.split('_');
+        nameParts[2] = marketIndex;
+        input.name = nameParts.join('_');
+      }
+    });
+
+    // 옵션 입력 필드 업데이트
+    const options = market.querySelectorAll('.edit-mart-option-group');
+    options.forEach((option, optionIndex) => {
+      const optionInputs = option.querySelectorAll('input');
+      optionInputs.forEach(input => {
+        input.name = input.name.replace(
+          /market_link_\d+_market_options_\d+/,
+          `market_link_${marketIndex}_market_options_${optionIndex}`
+        );
+      });
+    });
+  }
+
+  function updateAllMarketOptions() {
+    const markets = document.querySelectorAll('.edit-mart-market-group');
+    markets.forEach(market => {
+      const marketIndex = parseInt(market.dataset.marketIndex);
+      updateMarketInputNames(market, marketIndex);
+    });
+  }
+
+  // 폼 검증 함수
   function validateForm() {
     const form = document.getElementById('editMartForm');
     const inputs = form.querySelectorAll('input[required], textarea[required]');
     let isValid = true;
 
-    // 필수 필드 검사
+    // 필수 필드 검증
     inputs.forEach(input => {
       if (!input.value.trim()) {
-        console.log('필수 필드 누락:', input.name || input.id);
         input.classList.add('edit-mart-is-invalid');
         isValid = false;
       } else {
@@ -378,39 +586,35 @@
       }
     });
 
-    // 옵션 검사
-    const optionsList = document.getElementById('options-list');
-    if (optionsList.children.length === 0) {
-      console.log('옵션이 없음');
-      alert('최소 1개 이상의 옵션을 추가해주세요.');
-      isValid = false;
-    }
-
-    // 이미지 URL 검사
+    // 이미지 URL 검증
     const imageInputs = form.querySelectorAll('input[type="text"][name*="thumbnail"]');
     imageInputs.forEach(input => {
       if (input.required && !isValidImageUrl(input.value)) {
-        console.log('잘못된 이미지 URL:', input.name);
         input.classList.add('edit-mart-is-invalid');
         isValid = false;
       }
     });
 
-    if (!isValid) {
-      console.log('폼 검증 실패 사유 확인');
+    // 필수 섹션 검증
+    if (!validateSection('options-list', '옵션') ||
+      !validateSection('detailed-images-list', '상세 이미지') ||
+      !validateSection('market-links-list', '마켓 정보')) {
+      isValid = false;
     }
 
     return isValid;
   }
 
-  // 이미지 URL 유효성 검사
-  function isValidImageUrl(url) {
-    return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
+  function validateSection(sectionId, sectionName) {
+    const section = document.getElementById(sectionId);
+    if (!section || section.children.length === 0) {
+      alert(`최소 1개 이상의 ${sectionName}를 추가해주세요.`);
+      return false;
+    }
+    return true;
   }
 
-  // 이미지 URL 검증 함수 수정
   function isValidImageUrl(url) {
-    // 기본적인 URL 형식만 검사하도록 수정
     try {
       new URL(url);
       return true;
@@ -419,59 +623,71 @@
     }
   }
 
-  // 이미지 미리보기 초기화 수정
-  document.addEventListener('DOMContentLoaded', () => {
-    const imageInputs = document.querySelectorAll('input[type="text"][name*="thumbnail"]');
-    imageInputs.forEach(input => {
-      if (input.value) {
-        // ID 매칭 수정
-        let previewId;
-        if (input.id.includes('additional_thumbnail')) {
-          previewId = 'preview_add' + input.id.slice(-1);
-        } else {
-          previewId = 'preview' + input.id.slice(-1);
-        }
-        previewImage(input, previewId);
-      }
-    });
-  });
-
   function validateAndSubmit() {
     if (!validateForm()) {
       return false;
     }
 
-    // 옵션 데이터 수집
+    // 1. 기본 상품 옵션 데이터 수집
     const optionsList = document.getElementById('options-list');
-    const options = [];
+    const options = Array.from(optionsList.getElementsByClassName('edit-mart-option-group'))
+      .map(group => ({
+        name: group.querySelector('.edit-mart-option-name').value,
+        price: Number(group.querySelector('.edit-mart-option-price').value.replace(/,/g, ''))
+      }));
 
-    const optionGroups = optionsList.getElementsByClassName('edit-mart-option-group');
-    Array.from(optionGroups).forEach(group => {
-      const nameInput = group.querySelector('.edit-mart-option-name');
-      const priceInput = group.querySelector('.edit-mart-option-price');
+    // 2. 마켓 정보 데이터 수집
+    const marketsList = document.getElementById('market-links-list');
+    const marketLinks = Array.from(marketsList.getElementsByClassName('edit-mart-market-group'))
+      .map(marketGroup => {
+        const marketIndex = marketGroup.dataset.marketIndex;
+        const marketOptions = Array.from(marketGroup.querySelectorAll('.market-options-list .edit-mart-option-group'))
+          .map(optionGroup => ({
+            name: optionGroup.querySelector('input[name$="_name"]').value,
+            price: Number(optionGroup.querySelector('input[name$="_price"]').value.replace(/,/g, ''))
+          }));
 
-      if (nameInput && priceInput) {
-        options.push({
-          name: nameInput.value,
-          price: Number(priceInput.value.replace(/,/g, ''))
-        });
-      }
-    });
+        return {
+          market_name: marketGroup.querySelector(`input[name="market_link_${marketIndex}_market_name"]`).value,
+          market_url: marketGroup.querySelector(`input[name="market_link_${marketIndex}_market_url"]`).value,
+          market_description: marketGroup.querySelector(`textarea[name="market_link_${marketIndex}_market_description"]`).value,
+          market_options: marketOptions
+        };
+      });
 
-    // 기존의 hidden input이 있다면 제거
-    const existingOptionsInput = document.querySelector('input[name="options"]');
-    if (existingOptionsInput) {
-      existingOptionsInput.remove();
-    }
-
-    // 새로운 hidden input 추가
-    const optionsInput = document.createElement('input');
-    optionsInput.type = 'hidden';
-    optionsInput.name = 'options';
-    optionsInput.value = JSON.stringify(options);
-
-    document.getElementById('editMartForm').appendChild(optionsInput);
+    // 3. hidden inputs 업데이트
+    // 기존 옵션 input 업데이트
+    updateHiddenInput('options', options);
+    // 마켓 정보 input 업데이트
+    updateHiddenInput('market_link', marketLinks);
 
     return true;
   }
+
+  // hidden input 업데이트 헬퍼 함수
+  function updateHiddenInput(name, value) {
+    const existingInput = document.querySelector(`input[name="${name}"]`);
+    if (existingInput) {
+      existingInput.remove();
+    }
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = JSON.stringify(value);
+    document.getElementById('editMartForm').appendChild(input);
+  }
+
+  // 초기화
+  document.addEventListener('DOMContentLoaded', () => {
+    const imageInputs = document.querySelectorAll('input[type="text"][name*="thumbnail"]');
+    imageInputs.forEach(input => {
+      if (input.value) {
+        const previewId = input.id.includes('additional_thumbnail')
+          ? 'preview_add' + input.id.slice(-1)
+          : 'preview' + input.id.slice(-1);
+        previewImage(input, previewId);
+      }
+    });
+  });
 </script>

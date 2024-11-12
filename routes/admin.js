@@ -253,11 +253,12 @@ router.post(
   "/add_program",
   checkLogin,
   asyncHandler(async (req, res) => {
-    const { thumbnail, title, script } = req.body;
+    const { thumbnail, title, script, youtube_url } = req.body;  // youtube_url 추가
     const newProgram = new Program({
       thumbnail: thumbnail,
       title: title,
       script: script,
+      youtube_url: youtube_url  // youtube_url 추가
     });
     await Program.create(newProgram);
     res.redirect("/allPrograms");
@@ -372,6 +373,7 @@ router.put(
       thumbnail: req.body.thumbnail,
       title: req.body.title,
       script: req.body.script,
+      youtube_url: req.body.youtube_url,  // youtube_url 추가
       createdAt: Date.now(),
     });
     res.redirect("/allPrograms");
@@ -737,16 +739,65 @@ router.post(
         additional_script1,
         additional_script2,
         additional_script3,
-        detailed_page,
+        detailed_images,
         options,
+        market_link
       } = req.body;
 
-      // options가 이미 객체인 경우 파싱하지 않음
-      const parsedOptions = Array.isArray(options)
-        ? options
-        : typeof options === "string"
-        ? JSON.parse(options)
-        : [];
+      // 옵션 데이터 파싱 및 검증
+      let parsedOptions = [];
+      if (options) {
+        const tempOptions = typeof options === 'string' ? JSON.parse(options) : options;
+        parsedOptions = tempOptions.map(option => ({
+          name: String(option.name || ''),
+          price: Number(String(option.price || '0').replace(/[^\d]/g, ''))
+        })).filter(option => option.name && !isNaN(option.price));
+      }
+
+      // 상세 이미지 파싱 및 검증
+      let parsedDetailedImages = [];
+      if (detailed_images) {
+        parsedDetailedImages = typeof detailed_images === 'string' ? 
+          JSON.parse(detailed_images) : 
+          Array.isArray(detailed_images) ? detailed_images : [detailed_images];
+        parsedDetailedImages = parsedDetailedImages.filter(url => url && typeof url === 'string');
+      }
+
+      // 마켓 링크 파싱 및 검증
+      let parsedMarketLink = [];
+      if (market_link) {
+        const tempMarketLink = typeof market_link === 'string' ? JSON.parse(market_link) : market_link;
+        
+        parsedMarketLink = tempMarketLink.map(market => {
+          if (!market.market_name || !market.market_url) return null;
+
+          const marketOptions = Array.isArray(market.market_options) ?
+            market.market_options.map(option => ({
+              name: String(option.name || ''),
+              price: Number(String(option.price || '0').replace(/[^\d]/g, ''))
+            })).filter(option => option.name && !isNaN(option.price)) : [];
+
+          return {
+            market_name: String(market.market_name),
+            market_url: String(market.market_url),
+            market_description: String(market.market_description || ''),
+            market_options: marketOptions
+          };
+        }).filter(Boolean); // null 값 제거
+      }
+
+      // 필수 필드 검증
+      if (!parsedDetailedImages.length) {
+        throw new Error('최소 1개 이상의 상세 이미지가 필요합니다.');
+      }
+      
+      if (!parsedMarketLink.length) {
+        throw new Error('최소 1개 이상의 마켓 정보가 필요합니다.');
+      }
+
+      if (!parsedOptions.length) {
+        throw new Error('최소 1개 이상의 상품 옵션이 필요합니다.');
+      }
 
       const newMart = new Mart({
         thumbnail1,
@@ -764,15 +815,23 @@ router.post(
         additional_script1,
         additional_script2,
         additional_script3,
-        detailed_page,
+        detailed_images: parsedDetailedImages,
         options: parsedOptions,
+        market_link: parsedMarketLink
       });
 
       await Mart.create(newMart);
       res.redirect("/allMart");
     } catch (error) {
       console.error("Error creating mart:", error);
-      res.status(400).send(error.message);
+      // 에러 발생 시 더 자세한 정보를 클라이언트에 전달
+      res.status(400).json({ 
+        error: error.message,
+        details: {
+          body: req.body,
+          stack: error.stack
+        }
+      });
     }
   })
 );
@@ -822,32 +881,64 @@ router.put(
         additional_script1,
         additional_script2,
         additional_script3,
-        detailed_page,
+        detailed_images,
         options,
+        market_link
       } = req.body;
 
-      // options 데이터 처리
+      // 옵션 데이터 파싱
       let parsedOptions = [];
       if (options) {
-        try {
-          // options가 문자열인 경우 파싱
-          const tempOptions =
-            typeof options === "string" ? JSON.parse(options) : options;
+        const tempOptions = typeof options === 'string' ? JSON.parse(options) : options;
+        parsedOptions = tempOptions.map(option => ({
+          name: String(option.name || ''),
+          price: Number(String(option.price || '0').replace(/[^\d]/g, ''))
+        })).filter(option => option.name);
+      }
 
-          // 각 옵션 유효성 검사 및 변환
-          parsedOptions = tempOptions
-            .map((option) => {
-              if (!option || !option.name || !option.price) {
-                return null;
-              }
-              return {
-                name: option.name,
-                price:
-                  parseInt(option.price.toString().replace(/[^0-9]/g, "")) || 0,
-              };
-            })
-            .filter((option) => option !== null); // null 옵션 제거
-        } catch (error) {}
+      // 마켓 링크 데이터 파싱
+      let parsedMarketLink = [];
+      if (market_link) {
+        const tempMarketLink = typeof market_link === 'string' ? JSON.parse(market_link) : market_link;
+        
+        // 각 마켓 데이터 처리
+        parsedMarketLink = Object.keys(tempMarketLink)
+          .map(key => {
+            const market = tempMarketLink[key];
+            if (!market || !market.market_name || !market.market_url) return null;
+
+            // 마켓 옵션 처리
+            const marketOptions = Array.isArray(market.market_options) ?
+              market.market_options.map(option => ({
+                name: String(option.name || ''),
+                price: Number(String(option.price || '0').replace(/[^\d]/g, ''))
+              })).filter(option => option.name && !isNaN(option.price)) : [];
+
+            return {
+              market_name: String(market.market_name),
+              market_url: String(market.market_url),
+              market_description: String(market.market_description || ''),
+              market_options: marketOptions
+            };
+          })
+          .filter(Boolean); // null 값 제거
+      }
+
+      // 상세 이미지 처리
+      let parsedDetailedImages = [];
+      if (detailed_images) {
+        if (typeof detailed_images === 'string') {
+          try {
+            parsedDetailedImages = JSON.parse(detailed_images);
+          } catch (e) {
+            parsedDetailedImages = [detailed_images];
+          }
+        } else if (Array.isArray(detailed_images)) {
+          parsedDetailedImages = detailed_images;
+        } else {
+          parsedDetailedImages = [detailed_images];
+        }
+        parsedDetailedImages = parsedDetailedImages.filter(Boolean);
       }
 
       const updateData = {
@@ -866,26 +957,46 @@ router.put(
         additional_script1,
         additional_script2,
         additional_script3,
-        detailed_page,
+        detailed_images: parsedDetailedImages,
         options: parsedOptions,
-        updatedAt: Date.now(),
+        market_link: parsedMarketLink,
+        updatedAt: Date.now()
       };
 
-      await Mart.findByIdAndUpdate(req.params.id, updateData, {
-        new: true,
-        runValidators: true,
+      // null이나 undefined인 필드 제거
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key] === null || updateData[key] === undefined || updateData[key] === '') {
+          delete updateData[key];
+        }
       });
+
+      console.log('Update Data:', JSON.stringify(updateData, null, 2));
+
+      const updatedMart = await Mart.findByIdAndUpdate(
+        req.params.id,
+        { $set: updateData },
+        {
+          new: true,
+          runValidators: true
+        }
+      );
+
+      if (!updatedMart) {
+        throw new Error('상품을 찾을 수 없습니다.');
+      }
 
       res.redirect("/allMart");
     } catch (error) {
+      console.error("수정 중 오류 발생:", error);
+      console.log("Request Body:", JSON.stringify(req.body, null, 2));
       res.status(500).json({
-        error: "Error updating mart",
+        error: "상품 수정 중 오류가 발생했습니다",
         details: error.message,
+        stack: error.stack
       });
     }
   })
 );
-
 //Admin - delete mart
 router.delete(
   "/delete_mart/:id",
@@ -925,5 +1036,16 @@ router.get(
     });
   })
 );
+
+//bannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbannerbanner
+router.get(
+  "/allBanner",
+  checkLogin,
+  asyncHandler(async (req, res) => {
+    const locals = { title: "배너 관리자" };
+    res.render("admin/allBanner", { locals, layout: adminLayout3 });
+  })
+);
+
 
 module.exports = router;

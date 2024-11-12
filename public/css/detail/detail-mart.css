@@ -87,11 +87,23 @@
   transform: scale(1.1);
 }
 
+/* 상세 이미지 영역 스타일 수정 */
 .martd-detailed-page {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   margin-top: 20px;
-  font-weight: bold;
-  font-size: 18px;
+  text-align: center;
+}
+
+.detailed-image-item {
+  width: 100%;
+}
+
+.detailed-image-item img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .martd-button-navigation-group {

@@ -31,22 +31,12 @@
             </span>
             <span>|</span>
             <a href="/logout">Logout</a>
-            <span>|</span>
-            <a href="#" onclick="showAlert(); return false;">Cart</a>
             <% } else { %>
               <!-- 비로그인 상태 -->
               <a href="/login">Login</a>
               <span>|</span>
               <a href="/join">Join</a>
-              <span>|</span>
-              <a href="#" onclick="showAlert(); return false;">Cart</a>
               <% } %>
         </div>
       </div>
     </div>
-
-    <script>
-      function showAlert() {
-        alert('준비중입니다..!');
-      }
-    </script>

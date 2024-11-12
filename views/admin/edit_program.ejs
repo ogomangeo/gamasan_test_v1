@@ -89,7 +89,8 @@
 
 <form action="/edit_program/<%= program._id %>?_method=PUT" method="POST">
   <label for="thumbnail"><b>썸네일</b></label>
-  <input type="text" placeholder="썸네일 이미지 URL" name="thumbnail" id="thumbnail" value="<%= program.thumbnail %>">
+  <input type="text" placeholder="유튜브 URL을 입력하세요" name="youtube_url" id="youtube_url" value="<%= program.youtube_url %>" onchange="getYoutubeThumbnail(this.value)">
+  <input type="hidden" name="thumbnail" id="thumbnail" value="<%= program.thumbnail %>">
 
   <label for="title"><b>제목</b></label>
   <input type="text" placeholder="게시물 제목" name="title" id="title" value="<%= program.title %>">
@@ -99,3 +100,36 @@
   <input type="submit" value="수정" class="btn">
 </form>
 
+<script>
+function getYoutubeThumbnail(url) {
+  // 유튜브 URL에서 비디오 ID 추출
+  let videoId = '';
+  
+  // 일반적인 유튜브 URL 패턴 처리
+  if (url.includes('youtube.com/watch?v=')) {
+      videoId = url.split('v=')[1];
+  } 
+  // 짧은 URL (youtu.be) 패턴 처리
+  else if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1];
+  }
+  
+  // URL에 추가 파라미터가 있는 경우 처리
+  if (videoId.includes('&')) {
+      videoId = videoId.split('&')[0];
+  }
+  
+  if (videoId) {
+      // 고품질 썸네일 URL 생성 (maxresdefault)
+      const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      
+      // hidden input의 값을 썸네일 URL로 업데이트
+      document.getElementById('thumbnail').value = thumbnailUrl;
+      
+      // 선택적: 사용자에게 썸네일이 설정되었음을 알림
+      alert('썸네일이 설정되었습니다!');
+  } else {
+      alert('올바른 유튜브 URL을 입력해주세요.');
+  }
+}
+</script>

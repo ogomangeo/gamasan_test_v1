@@ -79,22 +79,67 @@
 }
 
 .mart-link-buttons {
-  display: inline-block;
+  position: relative;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center; /* 버튼들을 세로 중앙 정렬 */
 }
 
 .mart-link-button {
-  display: inline-block;
-  padding: 2px 5px;
-  margin-left: 5px;
+  border-radius: 4px;
   background-color: #f0f0f0;
   color: #333;
   text-decoration: none;
-  border-radius: 3px;
-  font-size: 0.8em;
+  padding: 3px 2px;
+  font-size: 12px;
+  text-align: center; /* 텍스트 중앙 정렬 */
+  box-sizing: border-box;
+  display: inline-flex; /* 플렉스 박스로 변경 */
+  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: center; /* 가로 중앙 정렬 */
+}
+
+.more-button {
+  border: none;
+  border-radius: 4px;
+  padding: 3px 2px;
+  background-color: #e0e0e0;
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.more-links-popup {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.more-links-popup .mart-link-button {
+  display: flex;
+  width: 100%;      /* 팝업에서는 전체 너비 사용 */
+  min-width: 120px; /* 팝업에서는 최소 너비 좀 더 크게 */
+  margin: 4px 0;
+  white-space: nowrap;
 }
 
 .mart-link-button:hover {
   background-color: #e0e0e0;
+}
+
+.more-button:hover {
+  background-color: #d6d6d6;
 }
 
 .mart-brand-category {

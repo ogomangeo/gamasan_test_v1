@@ -16,7 +16,20 @@
 
     <div class="detail-script"><%- program.script %></div>
     <div class="template-container"><%- templateContent %></div>
-    <div class="detail-thumbnail-container"><img src="<%= program.thumbnail %>" alt="<%= program.title %> Thumbnail" class="detail-thumbnail"></div>
+     <!-- 유튜브 영상과 썸네일 표시 영역 -->
+     <div class="detail-media-container">
+        <!-- 유튜브 영상 삽입 -->
+        <div class="video-container">
+            <iframe 
+                width="50%" 
+                height="315" 
+                src="<%= program.thumbnail.replace('img.youtube.com/vi', 'www.youtube.com/embed').replace('/maxresdefault.jpg', '') %>" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+        </div>    
+    </div>
 </div>
 
 <%
