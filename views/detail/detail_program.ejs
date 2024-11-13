@@ -1,44 +1,58 @@
 <div class="detail-container">
     <div class="detail-header">
-        <h1 class="detail-title"><%= program.title %></h1>
-        <span class="detail-date"><%= formatDate(program.createdAt) %></span>
+        <h1 class="detail-title">
+            <%= program.title %>
+        </h1>
+        <span class="detail-date">
+            <%= formatDate(program.createdAt) %>
+        </span>
     </div>
 
     <div class="detail-nav-buttons">
         <% if (previousProgram) { %>
             <a href="/program/<%= previousProgram._id %>" class="detail-nav-button">이전글</a>
-        <% } %>
-        <% if (nextProgram) { %>
-            <a href="/program/<%= nextProgram._id %>" class="detail-nav-button">다음글</a>
-        <% } %>
-        <a href="/program" class="detail-nav-button">목록</a>
+            <% } %>
+                <% if (nextProgram) { %>
+                    <a href="/program/<%= nextProgram._id %>" class="detail-nav-button">다음글</a>
+                    <% } %>
+                        <a href="/program" class="detail-nav-button">목록</a>
     </div>
-
+    
     <div class="detail-script"><%- program.script %></div>
     <div class="template-container"><%- templateContent %></div>
-     <!-- 유튜브 영상과 썸네일 표시 영역 -->
-     <div class="detail-media-container">
+    <!-- 유튜브 영상과 썸네일 표시 영역 -->
+    <div class="detail-media-container">
         <!-- 유튜브 영상 삽입 -->
         <div class="video-container">
-            <iframe 
-                width="50%" 
-                height="315" 
-                src="<%= program.thumbnail.replace('img.youtube.com/vi', 'www.youtube.com/embed').replace('/maxresdefault.jpg', '') %>" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            <iframe
+                src="<%= program.thumbnail.replace('img.youtube.com/vi', 'www.youtube.com/embed').replace('/maxresdefault.jpg', '') %>"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen>
             </iframe>
-        </div>    
+        </div>
     </div>
 </div>
 
-<%
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${month}/${day} ${hours}:${minutes}`;
-}
-%>
+<% function formatDate(dateString) { const date=new Date(dateString); const month=String(date.getMonth() +
+    1).padStart(2, '0' ); const day=String(date.getDate()).padStart(2, '0' ); const
+    hours=String(date.getHours()).padStart(2, '0' ); const minutes=String(date.getMinutes()).padStart(2, '0' ); return
+    `${month}/${day} ${hours}:${minutes}`; } %>
+
+    <style>
+        .detail-media-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .video-container {
+            width: 50%;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 315px;
+        }
+    </style>

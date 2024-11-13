@@ -1,4 +1,4 @@
-<!-- GPT 오름차순 -->
+<!-- GPT 내림차순 -->
 <% data.sort((a, b)=> new Date(b.createdAt) - new Date(a.createdAt)); // 최근 작성된 순으로 정렬
     %>
 <h1>Programs</h1>
@@ -10,7 +10,9 @@
                     <div class="content">
                         <div class="date"><%= formatDate(program.createdAt) %></div>
                         <h3><%= program.title %></h3>
-                        <p><%= program.script.length > 70 ? program.script.slice(0, 70) + '...' : program.script %></p>
+                        <p><%= program.script.replace(/<[^>]*>/g, '').length > 70 ? 
+                          program.script.replace(/<[^>]*>/g, '').slice(0, 70) + '...' : 
+                          program.script.replace(/<[^>]*>/g, '') %></p>
                     </div>
                 </a>
             </li>

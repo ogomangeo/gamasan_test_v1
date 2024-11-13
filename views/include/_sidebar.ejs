@@ -5,9 +5,9 @@
         <ul>
             <li><a href="/program" class="<%= (locals.path?.startsWith('/program') || locals.title === 'Program') ? 'active' : '' %>">프로그램즈</a></li>
             <li><a href="/mart" class="<%= (locals.path?.startsWith('/mart') || locals.title === 'Mart') ? 'active' : '' %>">가마산마트</a></li>
-            <li><a href="/blog" class="<%= (locals.path?.startsWith('/blog') || locals.title === 'Blog') ? 'active' : '' %>">블로깅</a></li>
             <li><a href="/archive" class="<%= (locals.path?.startsWith('/archive') || locals.title === 'Archive') ? 'active' : '' %>">아카이빙</a></li>
             <li><a href="/event" class="<%= (locals.path?.startsWith('/event') || locals.title === 'Event') ? 'active' : '' %>">이벤트</a></li>
+            <li><a href="/blog" class="<%= (locals.path?.startsWith('/blog') || locals.title === 'Blog') ? 'active' : '' %>">블로깅</a></li>
             <li><a href="/notice" class="<%= (locals.path?.startsWith('/notice') || locals.title === 'Notice') ? 'active' : '' %>">공지사항</a></li>
             <li><a href="/about" class="<%= (locals.path?.startsWith('/about') || locals.title === 'About') ? 'active' : '' %>">ABOUT</a></li>
         </ul>
@@ -242,7 +242,7 @@
                     }
                 </style>
                 <div class="slot-machine">
-                    <h3 class="slot-slot-title">Mini-SlotMachine</h3>
+                    <h3 class="slot-slot-title">Today your Luck!</h3>
                     <div class="slot-header-bar">
                         <div class="slot-header-bar-inner" id="headerBarInner"></div>
                     </div>
