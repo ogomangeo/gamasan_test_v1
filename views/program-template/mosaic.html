@@ -1,0 +1,451 @@
+<style>
+  .canvas-container {
+    position: relative;
+    margin: 20px;
+    display: none;
+  }
+
+  #imageCanvas {
+    border: 1px solid #ccc;
+  }
+
+  #brushCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+  }
+
+  .controls {
+    margin: 20px auto;
+    /* 좌우 마진을 auto로 설정 */
+    width: 600px;
+    text-align: center;
+    /* 내부 콘텐츠 중앙 정렬 */
+  }
+
+  .upload-area {
+    width: 500px;
+    height: 300px;
+    border: 2px dashed #ccc;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .upload-area.dragover {
+    background-color: #e1e1e1;
+    border-color: #999;
+  }
+
+  .control-group {
+    display: flex;
+    justify-content: center;
+    /* 가로 중앙 정렬 */
+    align-items: center;
+    margin: 15px auto;
+    /* 좌우 마진을 auto로 설정 */
+  }
+
+  .control-label {
+    display: inline-block;
+    width: 120px;
+    flex-shrink: 0;
+  }
+
+  .control-group input[type="range"] {
+    flex: 1;
+    width: 375px;
+    margin: 0 10px;
+  }
+
+  .value-display {
+    width: 50px;
+    text-align: right;
+  }
+
+  h1 {
+    margin: 20px 0;
+    text-align: center;
+  }
+
+  .button-group {
+    margin: 20px auto;
+    /* 좌우 마진을 auto로 설정 */
+    display: flex;
+    justify-content: center;
+    /* 가로 중앙 정렬 */
+    gap: 10px;
+    width: fit-content;
+    /* 내용물 크기에 맞춤 */
+  }
+
+  .button-group button {
+    padding: 8px 20px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #ffffff;
+    transition: all 0.3s ease;
+    width: 120px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .button-group button:hover {
+    background-color: #f0f0f0;
+  }
+
+  .button-group button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  #downloadBtn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+  }
+
+  #downloadBtn:hover {
+    background-color: #45a049;
+  }
+
+  .controls.disabled .control-group input[type="range"],
+  .controls.disabled .button-group button:not(#restartBtn) {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+</style>
+
+<h1>자유형 모자이크 이미지 처리</h1>
+
+<div class="controls disabled" id="controlsArea">
+  <div class="control-group">
+    <span class="control-label">브러시 크기:</span>
+    <input type="range" id="brushSize" min="10" max="200" value="100">
+    <span id="brushSizeValue" class="value-display">100</span>px
+  </div>
+  <div class="control-group">
+    <span class="control-label">모자이크 크기:</span>
+    <input type="range" id="blockSize" min="2" max="30" value="10">
+    <span id="blockSizeValue" class="value-display">10</span>px
+  </div>
+  <div class="control-group">
+    <span class="control-label">모자이크 강도:</span>
+    <input type="range" id="opacity" min="0" max="100" value="40">
+    <span id="opacityValue" class="value-display">40</span>%
+  </div>
+  <div class="button-group">
+    <button id="undoBtn" disabled>실행취소</button>
+    <button id="resetBtn">초기화</button>
+    <button id="restartBtn">처음부터</button>
+    <button id="downloadBtn">다운로드</button>
+  </div>
+</div>
+
+<div id="uploadArea" class="upload-area">
+  <div>
+    <p>이미지를 여기에 드래그하거나 클릭하여 업로드하세요</p>
+    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+  </div>
+</div>
+
+<div class="canvas-container" id="canvasArea">
+  <canvas id="imageCanvas"></canvas>
+  <canvas id="brushCanvas"></canvas>
+</div>
+
+<script>
+  let isDrawing = false;
+  let originalImage = null;
+  const imageCanvas = document.getElementById('imageCanvas');
+  const brushCanvas = document.getElementById('brushCanvas');
+  const imgCtx = imageCanvas.getContext('2d', { willReadFrequently: true });
+  const brushCtx = brushCanvas.getContext('2d', { willReadFrequently: true });
+
+  const blockSizeInput = document.getElementById('blockSize');
+  const blockSizeValue = document.getElementById('blockSizeValue');
+  const brushSizeInput = document.getElementById('brushSize');
+  const brushSizeValue = document.getElementById('brushSizeValue');
+  const opacityInput = document.getElementById('opacity');
+  const opacityValue = document.getElementById('opacityValue');
+
+  const uploadArea = document.getElementById('uploadArea');
+  const fileInput = document.getElementById('fileInput');
+  const controlsArea = document.getElementById('controlsArea');
+  const canvasArea = document.getElementById('canvasArea');
+  const resetBtn = document.getElementById('resetBtn');
+  const undoBtn = document.getElementById('undoBtn');
+
+  // Undo 히스토리 관리
+  const maxHistorySteps = 20;
+  let history = [];
+  let currentStep = -1;
+
+  function saveState() {
+    const imageData = imgCtx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
+    history = history.slice(0, currentStep + 1);
+    history.push(imageData);
+    if (history.length > maxHistorySteps) {
+      history.shift();
+    }
+    currentStep = history.length - 1;
+    undoBtn.disabled = currentStep <= 0;
+  }
+
+  function undo() {
+    if (currentStep > 0) {
+      currentStep--;
+      imgCtx.putImageData(history[currentStep], 0, 0);
+      undoBtn.disabled = currentStep <= 0;
+    }
+  }
+
+  // 드래그 앤 드롭 이벤트
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+  });
+
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+  });
+
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      loadImage(file);
+    }
+  });
+
+  uploadArea.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      loadImage(file);
+    }
+  });
+
+  function loadImage(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const image = new Image();
+      image.onload = function () {
+        originalImage = image;
+        imageCanvas.width = image.width;
+        imageCanvas.height = image.height;
+        brushCanvas.width = image.width;
+        brushCanvas.height = image.height;
+        imgCtx.drawImage(image, 0, 0);
+
+        uploadArea.style.display = 'none';
+        controlsArea.classList.remove('disabled');
+        canvasArea.style.display = 'block';
+
+        saveState();
+      };
+      image.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function startDrawing(e) {
+    isDrawing = true;
+    saveState();
+    draw(e);
+  }
+
+  function draw(e) {
+    if (!isDrawing) {
+      requestAnimationFrame(() => {
+        const rect = imageCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        brushCtx.clearRect(0, 0, brushCanvas.width, brushCanvas.height);
+        drawBrushPreview(x, y);
+      });
+      return;
+    }
+
+    const rect = imageCanvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const brushSize = parseInt(brushSizeInput.value);
+    const blockSize = parseInt(blockSizeInput.value);
+    const opacity = parseInt(opacityInput.value) / 100;
+
+    applyMosaicBrush(x, y, brushSize, blockSize, opacity);
+    brushCtx.clearRect(0, 0, brushCanvas.width, brushCanvas.height);
+    drawBrushPreview(x, y);
+  }
+
+  function drawBrushPreview(x, y) {
+    const brushSize = parseInt(brushSizeInput.value);
+    brushCtx.beginPath();
+    brushCtx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
+    brushCtx.strokeStyle = 'red';
+    brushCtx.lineWidth = 1;
+    brushCtx.stroke();
+  }
+
+  function stopDrawing() {
+    if (isDrawing) {
+      isDrawing = false;
+      saveState();
+    }
+  }
+
+  function applyMosaicBrush(centerX, centerY, brushSize, blockSize, opacity) {
+    const radius = brushSize / 2;
+    const x = Math.max(0, centerX - radius);
+    const y = Math.max(0, centerY - radius);
+    const size = brushSize;
+
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = size;
+    tempCanvas.height = size;
+    const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+
+    tempCtx.drawImage(imageCanvas,
+      x, y, size, size,
+      0, 0, size, size
+    );
+
+    const imageData = tempCtx.getImageData(0, 0, size, size);
+    const data = imageData.data;
+
+    for (let blockY = 0; blockY < size; blockY += blockSize) {
+      for (let blockX = 0; blockX < size; blockX += blockSize) {
+        const blockCenterX = blockX + blockSize / 2;
+        const blockCenterY = blockY + blockSize / 2;
+        const distance = Math.sqrt(
+          Math.pow(blockCenterX - size / 2, 2) +
+          Math.pow(blockCenterY - size / 2, 2)
+        );
+
+        if (distance > radius) continue;
+
+        let r = 0, g = 0, b = 0, count = 0;
+
+        for (let py = 0; py < blockSize && blockY + py < size; py++) {
+          for (let px = 0; px < blockSize && blockX + px < size; px++) {
+            const i = ((blockY + py) * size + blockX + px) * 4;
+            r += data[i];
+            g += data[i + 1];
+            b += data[i + 2];
+            count++;
+          }
+        }
+
+        r = Math.floor(r / count);
+        g = Math.floor(g / count);
+        b = Math.floor(b / count);
+
+        for (let py = 0; py < blockSize && blockY + py < size; py++) {
+          for (let px = 0; px < blockSize && blockX + px < size; px++) {
+            const distance = Math.sqrt(
+              Math.pow(blockX + px - size / 2, 2) +
+              Math.pow(blockY + py - size / 2, 2)
+            );
+
+            if (distance <= radius) {
+              const i = ((blockY + py) * size + blockX + px) * 4;
+              data[i] = r * opacity + data[i] * (1 - opacity);
+              data[i + 1] = g * opacity + data[i + 1] * (1 - opacity);
+              data[i + 2] = b * opacity + data[i + 2] * (1 - opacity);
+            }
+          }
+        }
+      }
+    }
+
+    tempCtx.putImageData(imageData, 0, 0);
+    imgCtx.drawImage(tempCanvas, x, y);
+  }
+
+  // 이벤트 리스너
+  brushSizeInput.addEventListener('input', function () {
+    brushSizeValue.textContent = this.value;
+  });
+
+  blockSizeInput.addEventListener('input', function () {
+    blockSizeValue.textContent = this.value;
+  });
+
+  opacityInput.addEventListener('input', function () {
+    opacityValue.textContent = this.value;
+  });
+
+  resetBtn.addEventListener('click', () => {
+    if (originalImage) {
+      imgCtx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
+      imgCtx.drawImage(originalImage, 0, 0);
+      brushCtx.clearRect(0, 0, brushCanvas.width, brushCanvas.height);
+      saveState();
+    }
+  });
+
+  document.getElementById('restartBtn').addEventListener('click', () => {
+    imgCtx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
+    brushCtx.clearRect(0, 0, brushCanvas.width, brushCanvas.height);
+
+    originalImage = null;
+
+    uploadArea.style.display = 'flex';
+    controlsArea.classList.add('disabled');
+    canvasArea.style.display = 'none';
+
+    fileInput.value = '';
+
+    brushSizeInput.value = 100;
+    blockSizeInput.value = 10;
+    opacityInput.value = 40;
+    brushSizeValue.textContent = '100';
+    blockSizeValue.textContent = '10';
+    opacityValue.textContent = '40';
+
+    history = [];
+    currentStep = -1;
+    undoBtn.disabled = true;
+  });
+
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    if (!originalImage) return;
+
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = imageCanvas.width;
+    tempCanvas.height = imageCanvas.height;
+    const tempCtx = tempCanvas.getContext('2d');
+
+    tempCtx.drawImage(imageCanvas, 0, 0);
+
+    const link = document.createElement('a');
+    link.download = 'mosaic_image.png';
+    link.href = tempCanvas.toDataURL('image/png');
+
+    link.click();
+  });
+
+  undoBtn.addEventListener('click', undo);
+
+  // 캔버스 이벤트 리스너
+  imageCanvas.addEventListener('mousedown', startDrawing);
+  imageCanvas.addEventListener('mousemove', draw);
+  imageCanvas.addEventListener('mouseup', stopDrawing);
+  imageCanvas.addEventListener('mouseout', stopDrawing);
+
+  // 페이지 로드 시 초기 상태 설정
+  document.addEventListener('DOMContentLoaded', () => {
+    controlsArea.classList.add('disabled');
+    undoBtn.disabled = true;
+  });
+</script>

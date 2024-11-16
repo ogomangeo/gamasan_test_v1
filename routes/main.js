@@ -4,7 +4,6 @@ const path = require('path');
 const fs = require('fs');
 
 const mainLayout = "../views/layouts/main.ejs";
-const homeLayout = "../views/layouts/home.ejs";
 const Notice = require("../models/Notice");
 const Program = require("../models/Program");
 const Blog = require("../models/Blog");
@@ -58,12 +57,12 @@ router.get(
       title: "Home",
       member: res.locals.member  // locals 객체에 member 추가
     };
-    const notices = await Notice.find({}).limit(8);  // 최신 3개만 가져옴
-    const programs = await Program.find({}).limit(8);  // 최신 9개만 가져옴
-    const blogs = await Blog.find({}).limit(8);  // 최신 3개만 가져옴
-    const archives = await Archive.find({}).limit(8);  // 최신 3개만 가져옴
-    const marts = await Mart.find({}).limit(8);  // 최신 3개만 가져옴
-    const events = await Event.find({}).limit(8);  // 최신 3개만 가져옴
+    const notices = await Notice.find({}).sort({ createdAt: -1 }).limit(8);  // 최신순 정렬
+    const programs = await Program.find({}).sort({ createdAt: -1 }).limit(8);  // 최신순 정렬
+    const blogs = await Blog.find({}).sort({ createdAt: -1 }).limit(8);  // 최신순 정렬
+    const archives = await Archive.find({}).sort({ createdAt: -1 }).limit(8);  // 최신순 정렬
+    const marts = await Mart.find({}).sort({ createdAt: -1 }).limit(8);  // 최신순 정렬
+    const events = await Event.find({}).sort({ createdAt: -1 }).limit(8);  // 최신순 정렬
 
     res.render("page/index", {
       locals,
@@ -74,7 +73,7 @@ router.get(
       marts,
       events,
       member: res.locals.member,
-      layout: homeLayout
+      layout: mainLayout
     });
   })
 );
@@ -112,6 +111,7 @@ router.get("/program", asyncHandler(async (req, res) => {
   });
 }));
 
+// main.js의 프로그램 상세 라우트 부분을 수정
 router.get("/program/:id", asyncHandler(async (req, res) => {
   try {
       const program = await Program.findById(req.params.id);
@@ -119,13 +119,17 @@ router.get("/program/:id", asyncHandler(async (req, res) => {
           return res.redirect('/program');
       }
 
+      // script 필드를 select에 추가
+      const programs = await Program.find({})
+          .sort({ createdAt: -1 })
+          .limit(10)
+          .select('_id title script thumbnail createdAt'); // script 추가
+
       // 이전글, 다음글 찾기
       const [previousProgram, nextProgram] = await Promise.all([
-          // 현재 글보다 이전에 작성된 글 중 가장 최근 글
           Program.findOne({
               createdAt: { $lt: program.createdAt }
           }).sort({ createdAt: -1 }),
-          // 현재 글보다 나중에 작성된 글 중 가장 오래된 글
           Program.findOne({
               createdAt: { $gt: program.createdAt }
           }).sort({ createdAt: 1 })
@@ -133,13 +137,15 @@ router.get("/program/:id", asyncHandler(async (req, res) => {
 
       const templateName = program.template;
       const templatePath = path.join(__dirname, `../views/program-template/${templateName}.html`);
+      
       try {
           const templateContent = fs.readFileSync(templatePath, 'utf-8');
           res.render("detail/detail_program", {
               program,
+              programs,
               templateContent,
-              previousProgram,  // 이전글 데이터 전달
-              nextProgram,      // 다음글 데이터 전달
+              previousProgram,
+              nextProgram,
               layout: mainLayout,
               member: res.locals.member
           });
@@ -160,7 +166,7 @@ router.get("/about", (req, res) => {
   const locals = {
     title: "About",
   };
-  res.render("page/about", { locals, layout: homeLayout, member: res.locals.member, });
+  res.render("page/about", { locals, layout: mainLayout, member: res.locals.member, });
 });
 
 router.get("/notice", asyncHandler(async (req, res) => {
@@ -188,7 +194,7 @@ router.get("/notice", asyncHandler(async (req, res) => {
   res.render("page/notice", { 
     locals, 
     data, 
-    layout: homeLayout,
+    layout: mainLayout,
     currentPage: page,
     totalPages: totalPages,
     member: res.locals.member
@@ -221,7 +227,7 @@ router.get("/blog", asyncHandler(async (req, res) => {
   res.render("page/blog", { 
     locals, 
     data, 
-    layout: homeLayout,
+    layout: mainLayout,
     currentPage: page,
     totalPages: totalPages,
     member: res.locals.member
@@ -253,7 +259,7 @@ router.get("/archive", asyncHandler(async (req, res) => {
   res.render("page/archive", { 
     locals, 
     data, 
-    layout: homeLayout,
+    layout: mainLayout,
     currentPage: page,
     totalPages: totalPages,
     member: res.locals.member

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>키워드 리서치 도구</title>
+    <style>
+        .window {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #000 #000 #dfdfdf;
+            box-shadow: 1px 1px 0 0 #fff inset, -1px -1px 0 0 #707070 inset;
+            padding: 2px;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        .title-bar {
+            background: #000080;
+            padding: 3px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+            margin: 10px 0;
+            border: 2px solid;
+            border-color: #707070 #dfdfdf #dfdfdf #707070;
+            background: #fff;
+            padding: 5px;
+            resize: none;  /* 크기 조절 기능 제거 */
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #000 #000 #dfdfdf;
+            padding: 5px 10px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+
+        button:active {
+            border-color: #000 #dfdfdf #dfdfdf #000;
+        }
+
+        button:disabled {
+            color: #707070;
+            cursor: not-allowed;
+        }
+
+        .info {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+
+        .status {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #000080;
+        }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="title-bar">연관검색어, 확장키워드 리서치 도구</div>
+        <div class="content">
+            <div id="powerlink">
+                <div class="info">키워드를 쉼표(,)로 구분하여 입력 (최대 50개)</div>
+                <textarea placeholder="예시: 태국여행, 방콕여행, 푸켓여행"></textarea>
+                <button onclick="downloadPowerlink(this)">엑셀 다운로드</button>
+                <div class="status" id="powerlink-status"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function downloadPowerlink(button) {
+            const textarea = document.querySelector('textarea');
+            const status = document.getElementById('powerlink-status');
+            const keywords = textarea.value.trim();
+            
+            if (!keywords) {
+                status.textContent = '키워드를 입력해주세요.';
+                return;
+            }
+
+            try {
+                button.disabled = true;
+                status.textContent = '다운로드 중... 잠시만 기다려주세요.';
+
+                const response = await fetch('/api/powerlink', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ keywords }),
+                });
+
+                if (!response.ok) throw new Error('검색 중 오류가 발생했습니다.');
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'powerlink_results.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                status.textContent = '다운로드 완료!';
+            } catch (error) {
+                status.textContent = error.message;
+            } finally {
+                button.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

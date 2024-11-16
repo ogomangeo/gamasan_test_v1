@@ -249,19 +249,39 @@ router.post(
 
 //Admin - Add Post
 //Post /add
+//Admin - Add Post
 router.post(
   "/add_program",
   checkLogin,
   asyncHandler(async (req, res) => {
-    const { thumbnail, title, script, youtube_url } = req.body;  // youtube_url 추가
-    const newProgram = new Program({
-      thumbnail: thumbnail,
-      title: title,
-      script: script,
-      youtube_url: youtube_url  // youtube_url 추가
-    });
-    await Program.create(newProgram);
-    res.redirect("/allPrograms");
+    try {
+      console.log("받은 데이터:", req.body); // 디버깅용 로그
+      
+      const { thumbnail, title, script, youtube_url } = req.body;
+      
+      if (!thumbnail || !title || !script || !youtube_url) {
+        throw new Error("필수 필드가 누락되었습니다.");
+      }
+      
+      const newProgram = {
+        thumbnail,
+        title,
+        script,
+        youtube_url,
+        template: 'combination' // 기본값 설정
+      };
+
+      const program = await Program.create(newProgram);
+      console.log("생성된 프로그램:", program); // 디버깅용 로그
+      
+      res.redirect("/allPrograms");
+    } catch (error) {
+      console.error("프로그램 생성 오류:", error);
+      res.status(400).json({ 
+        error: error.message,
+        details: req.body 
+      });
+    }
   })
 );
 

@@ -1,110 +1,53 @@
-/* 가마산 소개 섹션 스타일 */
+/* 전체 섹션 스타일 */
 #gamasan-about {
-  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
-/* 모든 제목에 대한 공통 스타일 */
-#gamasan-about h1,
-#gamasan-about h2,
-#gamasan-about h3 {
-  margin: 30px 0; /* 위아래 여백을 30px로 통일 */
-  color: #333;
-}
-
+/* 헤더 스타일 */
 #gamasan-about h1 {
   font-size: 2.5rem;
   text-align: center;
-}
-
-#gamasan-about h2 {
-  font-size: 2rem;
+  color: #333;
+  margin-bottom: 40px;
 }
 
 #gamasan-about h3 {
   font-size: 1.8rem;
-}
-
-/* 리스트 스타일 */
-#gamasan-about ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-/* 리스트 아이템 스타일 */
-#gamasan-about li {
-  display: flex;
-  flex-direction: column;
-  width: calc(33.33% - 20px);
-  min-width: 200px;
-  margin-bottom: 20px;
-}
-
-/* 이미지 스타일 */
-#gamasan-about li img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  margin-bottom: 10px;
-}
-
-/* 텍스트 스타일 */
-#gamasan-about li strong {
-  font-size: 1.1rem;
   color: #333;
-  margin-bottom: 5px;
+  margin: 40px 0 20px;
 }
 
-#gamasan-about li span {
-  font-size: 1rem;
-  color: #555;
-}
-
-/* 사업영역 스타일 */
-#gamasan-about .business-areas li {
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-#gamasan-about .business-areas li strong {
-  margin-bottom: 5px;
-}
-
-/* 문의하기 섹션 스타일 */
+/* 문의하기 폼 스타일 */
 #contact-form {
   max-width: 700px;
-  width: 100%;
-  margin: 30px auto 70px;
-  padding: 30px 20px;
-  background-color: #f4f4f4;
+  margin: 0 auto 50px;
+  padding: 30px;
+  background: #f8f8f8;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 #contact-form h2 {
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.8rem;
   color: #333;
+  margin-bottom: 30px;
 }
 
-/* 폼 요소 스타일 */
 #contact-form form div {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 #contact-form label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   font-weight: bold;
   color: #555;
 }
 
-#contact-form input {
+#contact-form input,
+#contact-form textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
@@ -113,42 +56,95 @@
 }
 
 #contact-form textarea {
-  width: 100%;
-  min-height: 200px;  /* textarea 높이 증가 */
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 1rem;
-  resize: vertical;  /* 수직으로만 크기 조절 가능 */
+  min-height: 150px;
+  resize: vertical;
 }
 
-#contact-form input:focus,
-#contact-form textarea:focus {
-  border-color: #333;
-  outline: none;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-}
-
-/* 버튼 스타일 - 무채색 */
 #contact-form button {
   width: 100%;
   padding: 12px;
-  background-color: #333;
+  background: #333;
   color: white;
   border: none;
   border-radius: 5px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background 0.3s;
 }
 
 #contact-form button:hover {
-  background-color: #555;
+  background: #444;
 }
 
+/* 리스트 스타일 */
+#gamasan-about ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+#gamasan-about li {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  width: calc(50% - 15px);
+  min-width: 300px;
+}
+
+#gamasan-about li img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;  /* 이미지 크기 고정 */
+}
+
+#gamasan-about li .content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;  /* 남은 공간 모두 차지 */
+}
+
+#gamasan-about li strong {
+  display: block;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+#gamasan-about li p {
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* 구분선 스타일 */
 hr {
   border: none;
   height: 1px;
-  background-color: #e0e0e0;
-  margin: 20px 0;
+  background: #ddd;
+  margin: 40px 0;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  #gamasan-about li {
+    width: 100%;
+  }
+  
+  #contact-form {
+    padding: 20px;
+  }
+  
+  #gamasan-about h1 {
+    font-size: 2rem;
+  }
+  
+  #gamasan-about h3 {
+    font-size: 1.5rem;
+  }
 }

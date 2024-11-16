@@ -1,0 +1,165 @@
+<style>
+  .keyex-window {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 20px auto;
+  }
+
+  .keyex-title-bar {
+    padding: 15px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 8px 8px 0 0;
+    font-weight: bold;
+  }
+
+  .keyex-content {
+    padding: 20px;
+  }
+
+  #keyex-powerlink {
+    margin-bottom: 20px;
+  }
+
+  .keyex-info {
+    color: #666;
+    margin-bottom: 15px;
+  }
+
+  .keyex-input {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 15px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+
+  .keyex-button {
+    background-color: #00c73c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.2s;
+  }
+
+  .keyex-button:hover {
+    background-color: #00a532;
+  }
+
+  .keyex-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+
+  #keyex-status {
+    margin-top: 15px;
+    color: #666;
+  }
+
+  .keyex-loading {
+    display: none;
+    margin-top: 15px;
+  }
+</style>
+
+<div class="keyex-window">
+  <div class="keyex-title-bar">
+    연관검색어, 확장키워드 리서치 도구
+  </div>
+  <div class="keyex-content">
+    <div id="keyex-powerlink">
+      <div class="keyex-info">
+        ✅ 분석이 완료되면 자동으로 엑셀 파일이 다운로드됩니다~!      </div>
+      <form onsubmit="event.preventDefault(); analyzeKeywords();">
+        <input type="text" id="keyex-keywords" name="keywords" class="keyex-input" 
+              placeholder="키워드를 쉼표(,)로 구분하여 입력 (최대 50개)">
+        <button type="submit" class="keyex-button">분석 시작</button>
+      </form>
+      <div class="keyex-loading" id="keyex-loading">분석 중입니다...</div>
+      <div id="keyex-status"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function analyzeKeywords() {
+    const keywordsInput = document.getElementById('keyex-keywords');
+    const loading = document.getElementById('keyex-loading');
+    const status = document.getElementById('keyex-status');
+    const button = document.querySelector('.keyex-button');
+
+    const keywords = keywordsInput.value.trim();
+    if (!keywords) {
+      status.textContent = '키워드를 입력해주세요.';
+      return;
+    }
+
+    // 쉼표나 공백으로 구분된 키워드를 처리
+    const keywordCount = keywords
+      .split(/[,\s]+/)  // 쉼표나 연속된 공백으로 분리
+      .filter(k => k.trim())  // 빈 문자열 제거
+      .length;
+
+    if (keywordCount > 50) {
+      status.textContent = '최대 50개까지만 입력 가능합니다.';
+      return;
+    }
+
+    try {
+      button.disabled = true;
+      loading.style.display = 'block';
+      status.textContent = '';
+
+      // API 요청 시에도 동일한 방식으로 키워드 처리
+      const keywordArray = keywords
+        .split(/[,\s]+/)
+        .filter(k => k.trim())
+        .join(',');  // API 요청을 위해 다시 쉼표로 결합
+
+      const response = await fetch('/keyword/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ keywords: keywordArray })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Base64 데이터를 Blob으로 변환
+        const buffer = Uint8Array.from(atob(result.data), c => c.charCodeAt(0));
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+        // 다운로드 링크 생성
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `검색결과_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        status.textContent = '분석이 완료되었습니다. 파일이 다운로드됩니다.';
+      } else {
+        status.textContent = result.message;
+      }
+    } catch (error) {
+      status.textContent = '오류가 발생했습니다. 다시 시도해주세요.';
+      console.error('Error:', error);
+    } finally {
+      button.disabled = false;
+      loading.style.display = 'none';
+    }
+  }
+</script>

@@ -1,3 +1,19 @@
+<!-- programs-list와 detail-container를 포함하는 전체 코드입니다 -->
+
+<div class="programs-list-container">
+    <div class="programs-list">
+        <% programs.forEach(function(item) { %>
+            <a href="/program/<%= item._id %>" class="program-item <%= (item._id === program._id) ? 'active' : '' %>">
+                <div class="program-info">
+                    <h3 class="program-title">
+                        <%= item.title %>
+                    </h3>
+                </div>
+            </a>
+            <% }); %>
+    </div>
+</div>
+
 <div class="detail-container">
     <div class="detail-header">
         <h1 class="detail-title">
@@ -17,12 +33,10 @@
                     <% } %>
                         <a href="/program" class="detail-nav-button">목록</a>
     </div>
-    
+
     <div class="detail-script"><%- program.script %></div>
     <div class="template-container"><%- templateContent %></div>
-    <!-- 유튜브 영상과 썸네일 표시 영역 -->
     <div class="detail-media-container">
-        <!-- 유튜브 영상 삽입 -->
         <div class="video-container">
             <iframe
                 src="<%= program.thumbnail.replace('img.youtube.com/vi', 'www.youtube.com/embed').replace('/maxresdefault.jpg', '') %>"
@@ -40,6 +54,66 @@
     `${month}/${day} ${hours}:${minutes}`; } %>
 
     <style>
+        .programs-list-container {
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+            padding: 15px;
+            user-select: none;
+            max-height: 140px;
+            /* 2행으로 제한하기 위해 높이 조정 */
+            overflow: hidden;
+            /* 2행 넘어가는 내용 숨김 */
+        }
+
+        .programs-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            /* 간격 조정 */
+            cursor: grab;
+            scroll-behavior: smooth;
+            overflow-y: hidden;
+            /* 세로 스크롤 방지 */
+            overflow-x: auto;
+            /* 가로 스크롤만 허용 */
+            height: 100%;
+        }
+
+        .programs-list:active {
+            cursor: grabbing;
+        }
+
+        .program-item {
+            flex: 0 0 200px;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .program-item.active {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+
+        .program-info {
+            padding: 3px;
+        }
+
+        .program-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.3;
+        }
+
+        /* 나머지 스타일 (detail-container 관련) 유지 */
         .detail-media-container {
             display: flex;
             justify-content: center;
@@ -55,4 +129,46 @@
             width: 100%;
             height: 315px;
         }
+
+        .program-item h3 {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin: 0px;
+        }
+        
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const slider = document.querySelector('.programs-list');
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                slider.classList.add('active');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                slider.classList.remove('active');
+            });
+
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.classList.remove('active');
+            });
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 2; // 스크롤 속도 조절
+                slider.scrollLeft = scrollLeft - walk;
+            });
+        });
+    </script>

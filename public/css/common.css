@@ -39,13 +39,17 @@ li {
 }
 
 .main-content {
-    width: 1200px;
+    max-width: 1200px;
     display: flex;
     padding: 20px 0;
+    margin: 0 auto;      /* 좌우 여백을 자동으로 설정하여 가운데 정렬 */
+    justify-content: center;  /* flex 아이템들을 가운데 정렬 */
 }
 
 .content-wrapper {
+    max-width: 1000px;
     flex-grow: 1;
     flex-direction: column;
     justify-content: center;
+    align-items: center;  /* 가로 방향 가운데 정렬 */
 }

@@ -1,129 +1,102 @@
-<!-- views/login.ejs -->
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로그인</title>
+    <title><%= locals.title %></title>
     <style>
-        /* 기본 스타일 */
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-        }
-
-        /* 로그인 폼 스타일 */
-        .member-login-container {
-            width: 100%;
-            max-width: 400px;
-            padding: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .member-login-container h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #000080;
-        }
-
-        .member-login-container input[type="text"],
-        .member-login-container input[type="password"] {
-            width: 90%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        /* 버튼 스타일 */
-        .member-login-actions {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
-
-        .member-login-actions button {
-            width: 48%;
-            padding: 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
-        }
-
-        .member-login-btn {
-            background-color: #000080;
-            color: #ffffff;
-        }
-
-        .member-login-btn:hover {
-            background-color: pink;
-        }
-
-        .member-login-btn:active {
-            transform: scale(0.98);
-        }
-
-        .member-find-btn {
-            background-color: #dddddd;
-            color: #333333;
-        }
-
-        .member-find-btn:hover {
-            background-color: #bbbbbb;
-        }
-
-        .member-find-btn:active {
-            transform: scale(0.98);
-        }
-
-        .member-signup-btn {
-            background-color: transparent;
-            color: #000080;
-            font-size: 0.9rem;
-            text-decoration: underline;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: color 0.3s;
-        }
-
-        .member-signup-btn:hover {
-            color: pink;
-        }
-
-        .member-signup-btn:active {
-            transform: scale(0.98);
-        }
+        .search-container { max-width: 1200px; margin: 2rem auto; padding: 1rem; }
+        .search-form { margin-bottom: 2rem; }
+        .keyword-input { width: 100%; padding: 0.5rem; margin-bottom: 1rem; }
+        .search-button { padding: 0.5rem 2rem; background: #03C75A; color: white; border: none; }
+        .result-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .result-table th, .result-table td { border: 1px solid #ddd; padding: 0.5rem; text-align: center; }
+        .device-header { background-color: #f5f5f5; }
     </style>
 </head>
 <body>
-    <div class="member-login-container">
-        <!-- 로고 텍스트 -->
-        <h1>GAMASAN</h1>
-
-        <!-- ID, 비밀번호 입력 -->
-        <input type="text" placeholder="메일주소">
-        <input type="password" placeholder="비밀번호">
-
-        <!-- 로그인 및 ID/PW 찾기 버튼 -->
-        <div class="member-login-actions">
-            <button class="member-login-btn">로그인</button>
-            <button class="member-find-btn">ID/PW 찾기</button>
+    <div class="search-container">
+        <h1>네이버 키워드 검색 도구</h1>
+        
+        <div class="search-form">
+            <input type="text" id="keyword" class="keyword-input" placeholder="키워드를 입력하세요">
+            <button onclick="searchKeyword()" class="search-button">검색</button>
         </div>
-
-        <!-- 회원가입 버튼 -->
-        <button class="member-signup-btn">회원가입하기</button>
+        
+        <div id="results">
+            <table class="result-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">키워드</th>
+                        <th colspan="2">월간 검색수</th>
+                        <th colspan="2">월평균 클릭수</th>
+                        <th colspan="2">월평균 클릭률</th>
+                    </tr>
+                    <tr class="device-header">
+                        <th>PC</th>
+                        <th>모바일</th>
+                        <th>PC</th>
+                        <th>모바일</th>
+                        <th>PC</th>
+                        <th>모바일</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody"></tbody>
+            </table>
+        </div>
     </div>
+
+    <script>
+    async function searchKeyword() {
+        const keyword = document.getElementById('keyword').value;
+        if (!keyword) {
+            alert('키워드를 입력해주세요');
+            return;
+        }
+
+        try {
+            const response = await fetch('/keyword/searchad', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ keyword })
+            });
+
+            const data = await response.json();
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            displayResults(data);
+        } catch (error) {
+            alert('검색 중 오류가 발생했습니다.');
+            console.error(error);
+        }
+    }
+
+    function calculateClickRate(clicks, searches) {
+        if (searches === '<10' || searches === '0' || clicks === '0') return '0.00%';
+        const searchNum = parseInt(searches);
+        const clickNum = parseInt(clicks);
+        return ((clickNum / searchNum) * 100).toFixed(2) + '%';
+    }
+
+    function displayResults(data) {
+        const tbody = document.getElementById('resultBody');
+        tbody.innerHTML = '';
+
+        data.keywordList.forEach(item => {
+            const row = tbody.insertRow();
+            row.insertCell(0).textContent = item.relKeyword;
+            row.insertCell(1).textContent = item.monthlyPcQcCnt;
+            row.insertCell(2).textContent = item.monthlyMobileQcCnt;
+            row.insertCell(3).textContent = item.monthlyAvePcClkCnt;
+            row.insertCell(4).textContent = item.monthlyAveMobileClkCnt;
+            row.insertCell(5).textContent = calculateClickRate(item.monthlyAvePcClkCnt, item.monthlyPcQcCnt);
+            row.insertCell(6).textContent = calculateClickRate(item.monthlyAveMobileClkCnt, item.monthlyMobileQcCnt);
+        });
+    }
+    </script>
 </body>
 </html>

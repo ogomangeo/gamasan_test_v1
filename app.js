@@ -17,8 +17,8 @@ app.set("view engine", "ejs");
 app.set("views", "./views");
 
 app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb', extended: true}));
 app.use(methodOverride("_method"));
 app.use(express.static("public"));
 
@@ -42,6 +42,7 @@ app.use((req, res, next) => {
 app.use("/", require("./routes/main"));
 app.use("/", require("./routes/admin"));
 app.use("/", require("./routes/detail"));
+app.use("/", require("./routes/main2"));
 app.use("/mart", martRouter);
 
 app.listen(port, () => {

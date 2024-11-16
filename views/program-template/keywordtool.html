@@ -1,0 +1,271 @@
+<style>
+  .keytool-search-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+  }
+
+  .keytool-search-form {
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+  }
+
+  .keytool-keyword-input {
+    flex: 1;
+    margin-top: 20px;
+    padding: 0.5rem;
+  }
+
+  .keytool-button {
+    padding: 0.5rem 2rem;
+    border: none;
+    cursor: pointer;
+  }
+
+  .keytool-search-button {
+    background: #03C75A;
+    color: white;
+  }
+
+  .keytool-download-button {
+    background: #4CAF50;
+    color: white;
+  }
+
+  .keytool-result-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-bottom: 1rem;
+  }
+
+  .keytool-result-table th,
+  .keytool-result-table td {
+    border: 1px solid #ddd;
+    padding: 0.3rem;
+    text-align: center;
+  }
+
+  .keytool-device-header {
+    background-color: #f5f5f5;
+  }
+
+  .keytool-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+
+  .keytool-page-button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+  }
+
+  .keytool-page-button.active {
+    background: #03C75A;
+    color: white;
+  }
+
+  .keytool-total-count {
+    text-align: right;
+    margin-bottom: 1rem;
+  }
+</style>
+
+<div class="keytool-search-container">
+  <h1>네이버 키워드 검색 도구</h1>
+
+  <div class="keytool-search-form">
+    <input type="text" id="keyword" class="keytool-keyword-input" placeholder="키워드를 입력하세요">
+    <button onclick="searchKeyword()" class="keytool-button keytool-search-button">검색</button>
+    <button onclick="downloadExcel()" class="keytool-button keytool-download-button">엑셀로 다운로드</button>
+  </div>
+
+  <div id="results">
+    <div class="keytool-total-count" id="totalCount"></div>
+    <table class="keytool-result-table">
+      <thead>
+        <tr>
+          <th rowspan="2">키워드</th>
+          <th colspan="2">월간 검색수</th>
+          <th rowspan="2">검색수<br>합계</th>
+          <th colspan="2">월평균 클릭수</th>
+          <th colspan="2">월평균 클릭률</th>
+        </tr>
+        <tr class="keytool-device-header">
+          <th>PC</th>
+          <th>모바일</th>
+          <th>PC</th>
+          <th>모바일</th>
+          <th>PC</th>
+          <th>모바일</th>
+        </tr>
+      </thead>
+      <tbody id="resultBody"></tbody>
+    </table>
+    <div class="keytool-pagination" id="pagination"></div>
+  </div>
+</div>
+
+<script>
+  let allResults = [];
+  const itemsPerPage = 100;
+  let currentPage = 1;
+
+  async function searchKeyword() {
+    let keyword = document.getElementById('keyword').value;
+    if (!keyword) {
+      alert('키워드를 입력해주세요');
+      return;
+    }
+
+    keyword = keyword.replace(/\s+/g, '');
+
+    try {
+      const response = await fetch('/keyword/searchad', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ keyword })
+      });
+
+      const data = await response.json();
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      allResults = (data.keywordList || []).sort((a, b) => {
+        const totalA = calculateTotalSearches(a.monthlyPcQcCnt, a.monthlyMobileQcCnt);
+        const totalB = calculateTotalSearches(b.monthlyPcQcCnt, b.monthlyMobileQcCnt);
+        return totalB - totalA;
+      });
+
+      currentPage = 1;
+      updateResults();
+    } catch (error) {
+      alert('검색 중 오류가 발생했습니다.');
+      console.error(error);
+    }
+  }
+
+  function calculateClickRate(clicks, searches) {
+    if (searches === '<10' || searches === '0' || clicks === '0') return '0.00%';
+    const searchNum = parseInt(searches);
+    const clickNum = parseInt(clicks);
+    return ((clickNum / searchNum) * 100).toFixed(2) + '%';
+  }
+
+  function calculateTotalSearches(pc, mobile) {
+    // '<10'을 5로 변환하고 숫자가 아닌 경우 0으로 처리
+    const pcNum = pc === '<10' ? 5 : (!isNaN(parseInt(pc)) ? parseInt(pc) : 0);
+    const mobileNum = mobile === '<10' ? 5 : (!isNaN(parseInt(mobile)) ? parseInt(mobile) : 0);
+    return pcNum + mobileNum;
+  }
+
+  function updateResults() {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pageResults = allResults.slice(startIndex, endIndex);
+
+    document.getElementById('totalCount').textContent = `전체 ${allResults.length}개의 결과`;
+
+    const tbody = document.getElementById('resultBody');
+    tbody.innerHTML = '';
+
+    pageResults.forEach(item => {
+      const row = tbody.insertRow();
+      row.insertCell(0).textContent = item.relKeyword;
+      row.insertCell(1).textContent = item.monthlyPcQcCnt;
+      row.insertCell(2).textContent = item.monthlyMobileQcCnt;
+      row.insertCell(3).textContent = calculateTotalSearches(item.monthlyPcQcCnt, item.monthlyMobileQcCnt);
+      row.insertCell(4).textContent = item.monthlyAvePcClkCnt;
+      row.insertCell(5).textContent = item.monthlyAveMobileClkCnt;
+      row.insertCell(6).textContent = calculateClickRate(item.monthlyAvePcClkCnt, item.monthlyPcQcCnt);
+      row.insertCell(7).textContent = calculateClickRate(item.monthlyAveMobileClkCnt, item.monthlyMobileQcCnt);
+    });
+
+    updatePagination();
+  }
+
+  async function downloadExcel() {
+    try {
+      if (!allResults.length) {
+        alert('다운로드할 데이터가 없습니다.');
+        return;
+      }
+
+      const response = await fetch('/keyword/download', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data: allResults })
+      });
+
+      if (!response.ok) throw new Error('다운로드 실패');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '키워드_분석_결과.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('다운로드 에러:', error);
+      alert('엑셀 다운로드 중 오류가 발생했습니다.');
+    }
+  }
+
+  function updatePagination() {
+    const totalPages = Math.ceil(allResults.length / itemsPerPage);
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+
+    if (currentPage > 1) {
+      const prevButton = createPageButton('이전', () => {
+        currentPage--;
+        updateResults();
+      });
+      pagination.appendChild(prevButton);
+    }
+
+    for (let i = 1; i <= totalPages; i++) {
+      const button = createPageButton(i, () => {
+        currentPage = i;
+        updateResults();
+      });
+      if (i === currentPage) {
+        button.classList.add('active');
+      }
+      pagination.appendChild(button);
+    }
+
+    if (currentPage < totalPages) {
+      const nextButton = createPageButton('다음', () => {
+        currentPage++;
+        updateResults();
+      });
+      pagination.appendChild(nextButton);
+    }
+  }
+
+  function createPageButton(text, onClick) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.className = 'keytool-page-button';
+    if (text !== '이전' && text !== '다음') {
+      button.classList.add('keytool-page-number');
+    }
+    button.onclick = onClick;
+    return button;
+  }
+</script>
