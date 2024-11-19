@@ -1,0 +1,301 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  .keyNgroup-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 15px;
+    font-size: 14px;
+    background: white;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .keyNgroup-input-group {
+    margin-bottom: 15px;
+  }
+
+  .keyNgroup-label {
+    display: block;
+    margin: 5px 0;
+    font-weight: bold;
+  }
+
+  .keyNgroup-textarea,
+  .keyNgroup-number {
+    display: block;
+    margin: 0 auto;
+  }
+
+  .keyNgroup-textarea {
+    width: 50%;
+    height: 200px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .keyNgroup-number {
+    width: 50%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .keyNgroup-btn-group {
+    gap: 8px;
+    margin: 15px 0;
+  }
+
+  .keyNgroup-btn {
+    flex: 1;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+  }
+
+  .keyNgroup-remainder {
+    background: #4CAF50;
+  }
+
+  .keyNgroup-equal {
+    background: #2196F3;
+  }
+
+  .keyNgroup-download {
+    background: #FF9800;
+  }
+
+  .keyNgroup-copy {
+    background: #2196F3;
+    padding: 4px 8px;
+  }
+
+  .keyNgroup-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .keyNgroup-table th,
+  .keyNgroup-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .keyNgroup-error {
+    color: #d32f2f;
+    background: #ffebee;
+    padding: 8px;
+    border-radius: 4px;
+    margin: 10px 0;
+    display: none;
+  }
+
+  .keyNgroup-success {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 8px 15px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    display: none;
+    z-index: 1000;
+  }
+
+  .keyNgroup-summary {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+  }
+
+  .keyNgroup-keyword-count {
+    color: #666;
+    margin-top: 5px;
+    font-size: 14px;
+  }
+
+  .keyNgroup-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .keyNgroup-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  .keyNgroup-copy:hover {
+    background: #2196F3;
+  }
+</style>
+
+<div id="keyNgroup-copyMessage" class="keyNgroup-success">복사되었습니다!</div>
+<div class="keyNgroup-container">
+  <h2>키워드 그룹 분배기</h2>
+
+  <div class="keyNgroup-input-group">
+    <label class="keyNgroup-label">키워드 입력</label>
+    <textarea class="keyNgroup-textarea" id="keyNgroup-keywords" oninput="keyNgroupUpdateCount()"
+      placeholder="키워드를 입력하세요 (쉼표, 줄바꿈, 띄어쓰기로 구분)"></textarea>
+    <div id="keyNgroup-keyword-count" class="keyNgroup-keyword-count"></div>
+  </div>
+
+  <div class="keyNgroup-input-group">
+    <label class="keyNgroup-label">위 키워드들을 몇 개의 그룹으로 나눌까요?</label>
+    <input type="number" class="keyNgroup-number" id="keyNgroup-group-count" min="1">
+  </div>
+
+  <div id="keyNgroup-error" class="keyNgroup-error"></div>
+
+  <div class="keyNgroup-btn-group">
+    <button onclick="keyNgroupDistribute('remainder')" class="keyNgroup-btn keyNgroup-remainder">나머지 방식
+      (3,3,3,1)</button>
+    <button onclick="keyNgroupDistribute('equal')" class="keyNgroup-btn keyNgroup-equal">균등 방식 (3,3,2,2)</button>
+    <button onclick="keyNgroupDownloadExcel()" class="keyNgroup-btn keyNgroup-download">엑셀 다운로드</button>
+  </div>
+
+  <div id="keyNgroup-result"></div>
+</div>
+
+<script>
+  let keyNgroupCurrentGroups = [];
+
+  function keyNgroupUpdateCount() {
+    const keywords = getKeyNgroupKeywords(document.getElementById('keyNgroup-keywords').value);
+    document.getElementById('keyNgroup-keyword-count').textContent = `입력된 키워드: ${keywords.length}개`;
+  }
+
+  function getKeyNgroupKeywords(input) {
+    return input.split(/[\s,]+/).filter(word => word.trim().length > 0);
+  }
+
+  function keyNgroupShowError(message) {
+    const error = document.getElementById('keyNgroup-error');
+    error.textContent = message;
+    error.style.display = 'block';
+  }
+
+  function keyNgroupShowCopy() {
+    const msg = document.getElementById('keyNgroup-copyMessage');
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display = 'none', 2000);
+  }
+
+  // Copy 함수 수정
+  async function keyNgroupCopy(text, buttonElement) {
+    try {
+      await navigator.clipboard.writeText(text);
+      // 모든 복사 버튼 초기화
+      document.querySelectorAll('.keyNgroup-copy').forEach(btn => {
+        btn.style.backgroundColor = '#2196F3';
+        btn.textContent = '복사';
+      });
+      // 클릭된 버튼 상태 변경
+      buttonElement.style.backgroundColor = '#4CAF50';
+      buttonElement.textContent = '복사됨';
+      keyNgroupShowCopy();
+    } catch (err) {
+      console.error('복사 실패:', err);
+    }
+  }
+
+  function keyNgroupDistributeKeywords(keywords, groupCount, mode) {
+    const baseSize = Math.floor(keywords.length / groupCount);
+    const remainder = keywords.length % groupCount;
+    const groups = Array.from({ length: groupCount }, () => []);
+    let currentIndex = 0;
+
+    if (mode === 'remainder') {
+      for (let i = 0; i < groupCount - 1; i++) {
+        groups[i] = keywords.slice(currentIndex, currentIndex + baseSize + 1);
+        currentIndex += baseSize + 1;
+      }
+      groups[groupCount - 1] = keywords.slice(currentIndex);
+    } else {
+      for (let i = 0; i < groupCount; i++) {
+        const size = i < remainder ? baseSize + 1 : baseSize;
+        groups[i] = keywords.slice(currentIndex, currentIndex + size);
+        currentIndex += size;
+      }
+    }
+    return groups;
+  }
+
+  function keyNgroupDownloadExcel() {
+    if (!keyNgroupCurrentGroups.length) {
+      keyNgroupShowError('다운로드할 데이터가 없습니다.');
+      return;
+    }
+
+    const wb = XLSX.utils.book_new();
+
+    const data = keyNgroupCurrentGroups.map((group, index) => {
+      const row = { '그룹번호': `그룹${index + 1}` };
+      group.forEach((keyword, i) => {
+        row[`키워드${i + 1}`] = keyword;
+      });
+      return row;
+    });
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, "키워드 분배 결과");
+    XLSX.writeFile(wb, "키워드_분배_결과.xlsx");
+  }
+
+  function keyNgroupDistribute(mode) {
+    const keywords = getKeyNgroupKeywords(document.getElementById('keyNgroup-keywords').value);
+    const groupCount = parseInt(document.getElementById('keyNgroup-group-count').value);
+    const result = document.getElementById('keyNgroup-result');
+    const error = document.getElementById('keyNgroup-error');
+
+    error.style.display = 'none';
+    result.innerHTML = '';
+
+    if (!keywords.length) {
+      keyNgroupShowError('키워드를 입력해주세요.');
+      return;
+    }
+    if (!groupCount || groupCount < 1) {
+      keyNgroupShowError('유효한 그룹 수를 입력해주세요.');
+      return;
+    }
+    if (keywords.length < groupCount) {
+      keyNgroupShowError('키워드 수가 그룹 수보다 적습니다.');
+      return;
+    }
+
+    const groups = keyNgroupDistributeKeywords(keywords, groupCount, mode);
+    keyNgroupCurrentGroups = groups;
+
+    result.innerHTML = `
+    <div class="keyNgroup-summary">
+      총 키워드: ${keywords.length}개 / 그룹 수: ${groupCount}개
+    </div>
+    <table class="keyNgroup-table">
+      <thead>
+        <tr>
+          <th>그룹</th>
+          <th>키워드 수</th>
+          <th>키워드</th>
+          <th>복사</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${groups.map((group, i) => `
+          <tr>
+            <td>그룹 ${i + 1}</td>
+            <td>${group.length}</td>
+            <td>${group.join(', ')}</td>
+            <td><button onclick="keyNgroupCopy('${group.join(', ')}', this)" class="keyNgroup-btn keyNgroup-copy">복사</button></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  }
+</script>

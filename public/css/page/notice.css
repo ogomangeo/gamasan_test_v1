@@ -35,13 +35,7 @@
     background-color: #f8f9fa;
   }
   
-  /* 썸네일 */
-  .thumbnail {
-    width: 60px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 5px;
-  }
+
   
   /* 제목 */
   .title {

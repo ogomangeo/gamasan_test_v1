@@ -91,7 +91,7 @@
   background-color: #f0f0f0;
   color: #333;
   text-decoration: none;
-  padding: 3px 2px;
+  padding: 5px;
   font-size: 12px;
   text-align: center; /* 텍스트 중앙 정렬 */
   box-sizing: border-box;
@@ -103,7 +103,7 @@
 .more-button {
   border: none;
   border-radius: 4px;
-  padding: 3px 2px;
+  padding: 5px;
   background-color: #e0e0e0;
   cursor: pointer;
   font-size: 12px;

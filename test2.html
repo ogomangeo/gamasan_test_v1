@@ -2,127 +2,891 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>키워드 리서치 도구</title>
+    <title>한국전통표준색명및색상</title>
     <style>
-        .window {
-            background: #c0c0c0;
-            border: 2px solid;
-            border-color: #dfdfdf #000 #000 #dfdfdf;
-            box-shadow: 1px 1px 0 0 #fff inset, -1px -1px 0 0 #707070 inset;
-            padding: 2px;
-            margin: 20px auto;
-            max-width: 800px;
-        }
-
-        .title-bar {
-            background: #000080;
-            padding: 3px;
-            color: #fff;
-            font-weight: bold;
-        }
-
-        .content {
-            padding: 10px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 80px;
-            margin: 10px 0;
-            border: 2px solid;
-            border-color: #707070 #dfdfdf #dfdfdf #707070;
-            background: #fff;
-            padding: 5px;
-            resize: none;  /* 크기 조절 기능 제거 */
+        * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
 
-        button {
-            background: #c0c0c0;
-            border: 2px solid;
-            border-color: #dfdfdf #000 #000 #dfdfdf;
-            padding: 5px 10px;
-            margin: 5px 0;
+        body {
+            padding: 20px;
+            font-family: '맑은 고딕', 'Malgun Gothic', sans-serif;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            text-align: center;
+            padding: 2px;
+            position: relative;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            padding:10px 0;
+        }
+
+        /* 헥스코드 복사 관련 스타일 */
+        .hex-code {
             cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
         }
-
-        button:active {
-            border-color: #000 #dfdfdf #dfdfdf #000;
+        
+        .hex-code:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            font-weight: bold;
         }
-
-        button:disabled {
-            color: #707070;
-            cursor: not-allowed;
-        }
-
-        .info {
-            margin: 5px 0;
+        
+        .copy-tooltip {
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 12px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
         }
 
-        .status {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #000080;
+        .copy-tooltip.show {
+            opacity: 1;
         }
     </style>
+    <script>
+        function adjustTextColor() {
+            const cells = document.querySelectorAll('td[style*="background-color"]');
+            
+            cells.forEach(cell => {
+                const backgroundColor = cell.style.backgroundColor;
+                const rgb = backgroundColor.match(/\d+/g);
+                if (!rgb) return;
+                
+                const brightness = (parseInt(rgb[0]) * 299 + 
+                                parseInt(rgb[1]) * 587 + 
+                                parseInt(rgb[2]) * 114) / 1000;
+                
+                cell.style.color = brightness > 128 ? '#000000' : '#FFFFFF';
+            });
+        }
+
+        function setupHexCodeCopy() {
+            const hexCells = Array.from(document.querySelectorAll('td'))
+                .filter(cell => cell.textContent.startsWith('#'));
+
+            hexCells.forEach(cell => {
+                cell.classList.add('hex-code');
+                
+                cell.addEventListener('click', async function() {
+                    const hexCode = this.textContent;
+                    try {
+                        await navigator.clipboard.writeText(hexCode);
+                        
+                        // 기존 툴팁 제거
+                        const existingTooltip = document.querySelector('.copy-tooltip');
+                        if (existingTooltip) {
+                            existingTooltip.remove();
+                        }
+
+                        // 새 툴팁 생성
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'copy-tooltip';
+                        tooltip.textContent = '복사되었습니다!';
+                        document.body.appendChild(tooltip);
+
+                        // 툴팁 위치 설정
+                        const rect = this.getBoundingClientRect();
+                        const tooltipTop = rect.top + window.scrollY;
+                        const tooltipLeft = rect.left + window.scrollX;
+
+                        tooltip.style.position = 'absolute';
+                        tooltip.style.top = `${tooltipTop + rect.height/2}px`;
+                        tooltip.style.left = `${tooltipLeft + rect.width/2}px`;
+                        
+                        // 툴팁 표시
+                        setTimeout(() => tooltip.classList.add('show'), 0);
+                        
+                        // 툴팁 제거
+                        setTimeout(() => {
+                            tooltip.classList.remove('show');
+                            setTimeout(() => tooltip.remove(), 300);
+                        }, 1000);
+
+                    } catch (err) {
+                        console.error('클립보드 복사 실패:', err);
+                        alert('클립보드 복사에 실패했습니다.');
+                    }
+                });
+            });
+        }
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', () => {
+            adjustTextColor();
+            setupHexCodeCopy();
+        });
+    </script>
 </head>
 <body>
-    <div class="window">
-        <div class="title-bar">연관검색어, 확장키워드 리서치 도구</div>
-        <div class="content">
-            <div id="powerlink">
-                <div class="info">키워드를 쉼표(,)로 구분하여 입력 (최대 50개)</div>
-                <textarea placeholder="예시: 태국여행, 방콕여행, 푸켓여행"></textarea>
-                <button onclick="downloadPowerlink(this)">엑셀 다운로드</button>
-                <div class="status" id="powerlink-status"></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        async function downloadPowerlink(button) {
-            const textarea = document.querySelector('textarea');
-            const status = document.getElementById('powerlink-status');
-            const keywords = textarea.value.trim();
-            
-            if (!keywords) {
-                status.textContent = '키워드를 입력해주세요.';
-                return;
-            }
-
-            try {
-                button.disabled = true;
-                status.textContent = '다운로드 중... 잠시만 기다려주세요.';
-
-                const response = await fetch('/api/powerlink', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ keywords }),
-                });
-
-                if (!response.ok) throw new Error('검색 중 오류가 발생했습니다.');
-
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'powerlink_results.xlsx';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-
-                status.textContent = '다운로드 완료!';
-            } catch (error) {
-                status.textContent = error.message;
-            } finally {
-                button.disabled = false;
-            }
-        }
-    </script>
+    <!-- 여기에 테이블 코드가 들어갑니다 -->
 </body>
+</html>
+</head>
+
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>색상계열(90색)</th>
+                <th>No.</th>
+                <th>국립현대미술관한국전통표준색명</th>
+                <th>헥스코드(Click!)</th>
+                <th>sRGB</th>
+                <th>유광팬톤호환색표</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="background-color:#ECD437;" rowspan="16">황·유황(16색)</td>
+                <td style="background-color:#ECD437;">1</td>
+                <td style="background-color:#ECD437;">황색</td>
+                <td>#ECD437</td>
+                <td>236,212,55</td>
+                <td>FormularGuide7404C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#E5BA69;">2</td>
+                <td style="background-color:#E5BA69;">유황색</td>
+                <td>#E5BA69</td>
+                <td>229,186,105</td>
+                <td>FormularGuide2008C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#CCDB00;">3</td>
+                <td style="background-color:#CCDB00;">명황색</td>
+                <td>#CCDB00</td>
+                <td>204,219,0</td>
+                <td>FormularGuide382C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#F2EAB2;">4</td>
+                <td style="background-color:#F2EAB2;">담황색</td>
+                <td>#F2EAB2</td>
+                <td>242,234,178</td>
+                <td>FormularGuide7499C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#E4EA7D;">5</td>
+                <td style="background-color:#E4EA7D;">송화색</td>
+                <td>#E4EA7D</td>
+                <td>228,234,125</td>
+                <td>FormularGuide930C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#E4C043;">6</td>
+                <td style="background-color:#E4C043;">자황색(赭⿈⾊)(赭⿈⾊)</td>
+                <td>#E4C043</td>
+                <td>228,192,67</td>
+                <td>FormularGuide4017C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#F7A65D;">7</td>
+                <td style="background-color:#F7A65D;">행황색</td>
+                <td>#F7A65D</td>
+                <td>247,166,93</td>
+                <td>FormularGuide714C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#D9C78A;">8</td>
+                <td style="background-color:#D9C78A;">두록색</td>
+                <td>#D9C78A</td>
+                <td>217,199,138</td>
+                <td>ColorBridge4002CP</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#FC9339;">9</td>
+                <td style="background-color:#FC9339;">적황색</td>
+                <td>#FC9339</td>
+                <td>252,147,57</td>
+                <td>FormularGuide715C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#BF8142;">10</td>
+                <td style="background-color:#BF8142;">토황색</td>
+                <td>#BF8142</td>
+                <td>191,129,66</td>
+                <td>FormularGuide722C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#D7B858;">11</td>
+                <td style="background-color:#D7B858;">지황색</td>
+                <td>#D7B858</td>
+                <td>215,184,88</td>
+                <td>FormularGuide7751C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#A37A46;">12</td>
+                <td style="background-color:#A37A46;">토색</td>
+                <td>#A37A46</td>
+                <td>163,122,70</td>
+                <td>FormularGuide2318C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#E9CC56;">13</td>
+                <td style="background-color:#E9CC56;">치자색</td>
+                <td>#E9CC56</td>
+                <td>233,204,86</td>
+                <td>ColorBridge122CP</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#DE9E91;">14</td>
+                <td style="background-color:#DE9E91;">홍황색</td>
+                <td>#DE9E91</td>
+                <td>222,158,145</td>
+                <td>FormularGuide487C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#B6987E;">15</td>
+                <td style="background-color:#B6987E;">자황색(紫⿈⾊)(紫⿈⾊)</td>
+                <td>#B6987E</td>
+                <td>182,152,126</td>
+                <td>FormularGuide2312C</td>
+
+            </tr>
+            <tr>
+                <td>16</td>
+                <td>금색</td>
+                <td></td>
+                <td>-</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td style="background-color:#354A8D;" rowspan="32">청·벽·녹(32색)</td>
+                <td style="background-color:#354A8D;">17</td>
+                <td style="background-color:#354A8D;">청색</td>
+                <td>#354A8D</td>
+                <td>53,74,141</td>
+                <td>FormularGuide7687C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#2E92D5;">18</td>
+                <td style="background-color:#2E92D5;">벽색</td>
+                <td>#2E92D5</td>
+                <td>46,146,213</td>
+                <td>FormularGuide2925C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#73B2D9;">19</td>
+                <td style="background-color:#73B2D9;">천청색</td>
+                <td>#73B2D9</td>
+                <td>115,178,217</td>
+                <td>FormularGuide542C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#3D8FB5;">20</td>
+                <td style="background-color:#3D8FB5;">담청색</td>
+                <td>#3D8FB5</td>
+                <td>61,143,181</td>
+                <td>FormularGuide7459C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#52BEB5;">21</td>
+                <td style="background-color:#52BEB5;">취람색</td>
+                <td>#52BEB5</td>
+                <td>82,190,181</td>
+                <td>FormularGuide3258C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#8472C3;">22</td>
+                <td style="background-color:#8472C3;">양람색</td>
+                <td>#8472C3</td>
+                <td>132,114,195</td>
+                <td>FormularGuide2101C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#5278B1;">23</td>
+                <td style="background-color:#5278B1;">벽청색</td>
+                <td>#5278B1</td>
+                <td>82,120,177</td>
+                <td>FormularGuide7683C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#465B81;">24</td>
+                <td style="background-color:#465B81;">청현색</td>
+                <td>#465B81</td>
+                <td>70,91,129</td>
+                <td>FormularGuide2374C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#384C71;">25</td>
+                <td style="background-color:#384C71;">감색(紺⾊)(紺⾊)</td>
+                <td>#384C71</td>
+                <td>56,76,113</td>
+                <td>FormularGuide2378C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#5B3F7B;">26</td>
+                <td style="background-color:#5B3F7B;">남색</td>
+                <td>#5B3F7B</td>
+                <td>91,63,123</td>
+                <td>FormularGuide3574C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#775393;">27</td>
+                <td style="background-color:#775393;">연람색</td>
+                <td>#775393</td>
+                <td>119,83,147</td>
+                <td>FormularGuide7677C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#7D7DA9;">28</td>
+                <td style="background-color:#7D7DA9;">벽람색</td>
+                <td>#7D7DA9</td>
+                <td>125,125,169</td>
+                <td>FormularGuide7675C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#604F73;">29</td>
+                <td style="background-color:#604F73;">숙람색</td>
+                <td>#604F73</td>
+                <td>96,79,115</td>
+                <td>FormularGuide5275C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#464863;">30</td>
+                <td style="background-color:#464863;">군청색</td>
+                <td>#464863</td>
+                <td>70,72,99</td>
+                <td>FormularGuide4131C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#568B54;">31</td>
+                <td style="background-color:#568B54;">녹색</td>
+                <td>#568B54</td>
+                <td>86,139,84</td>
+                <td>ColorBridge7730CP</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#34B15E;">32</td>
+                <td style="background-color:#34B15E;">명록색</td>
+                <td>#34B15E</td>
+                <td>52,177,94</td>
+                <td>ColorBridge2257CP</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#4F9D4E;">33</td>
+                <td style="background-color:#4F9D4E;">유록색</td>
+                <td>#4F9D4E</td>
+                <td>79,157,78</td>
+                <td>ExtendedGamut7739XGC</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#68A43B;">34</td>
+                <td style="background-color:#68A43B;">유청색</td>
+                <td>#68A43B</td>
+                <td>104,164,59</td>
+                <td>FormularGuide7737C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#B6E46F;">35</td>
+                <td style="background-color:#B6E46F;">연두색</td>
+                <td>#B6E46F</td>
+                <td>182,228,111</td>
+                <td>FormularGuide374C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#D1E492;">36</td>
+                <td style="background-color:#D1E492;">춘유록색</td>
+                <td>#D1E492</td>
+                <td>209,228,146</td>
+                <td>ExtendedGamut2281XGC</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#009B87;">37</td>
+                <td style="background-color:#009B87;">청록색</td>
+                <td>#009B87</td>
+                <td>0,155,135</td>
+                <td>CMYKP130-14C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#199878;">38</td>
+                <td style="background-color:#199878;">진초록색</td>
+                <td>#199878</td>
+                <td>25,152,120</td>
+                <td>FormularGuide2243C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#55A553;">39</td>
+                <td style="background-color:#55A553;">초록색</td>
+                <td>#55A553</td>
+                <td>85,165,83</td>
+                <td>CMYKP142-14C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#416D63;">40</td>
+                <td style="background-color:#416D63;">흑록색</td>
+                <td>#416D63</td>
+                <td>65,109,99</td>
+                <td>ColorBridge5545CP</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#74C0B1;">41</td>
+                <td style="background-color:#74C0B1;">비색</td>
+                <td>#74C0B1</td>
+                <td>116,192,177</td>
+                <td>ColorBridge3255CP</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#8CD4D4;">42</td>
+                <td style="background-color:#8CD4D4;">옥색</td>
+                <td>#8CD4D4</td>
+                <td>140,212,212</td>
+                <td>ExtendedGamut318XGC</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#5B6BB0;">43</td>
+                <td style="background-color:#5B6BB0;">삼청색</td>
+                <td>#5B6BB0</td>
+                <td>91,107,176</td>
+                <td>FormularGuide7456C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#227C77;">44</td>
+                <td style="background-color:#227C77;">뇌록색</td>
+                <td>#227C77</td>
+                <td>34,124,119</td>
+                <td>CMYKP126-5C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#20B381;">45</td>
+                <td style="background-color:#20B381;">양록색</td>
+                <td>#20B381</td>
+                <td>32,179,129</td>
+                <td>FormularGuide339C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#456042;">46</td>
+                <td style="background-color:#456042;">하엽색</td>
+                <td>#456042</td>
+                <td>69,96,66</td>
+                <td>ColorBridge2410CP</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#70798F;">47</td>
+                <td style="background-color:#70798F;">흑청색</td>
+                <td>#70798F</td>
+                <td>112,121,143</td>
+                <td>FormularGuide2360C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#7496BC;">48</td>
+                <td style="background-color:#7496BC;">청벽색</td>
+                <td>#7496BC</td>
+                <td>116,150,188</td>
+                <td>FormularGuide645C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#F1F1F1;" rowspan="10">백·흑(10색)</td>
+                <td style="background-color:#F1F1F1;">49</td>
+                <td style="background-color:#F1F1F1;">백색</td>
+                <td>#F1F1F1</td>
+                <td>241,241,241</td>
+                <td>CMYKP179-1C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#1C1C1C;">50</td>
+                <td style="background-color:#1C1C1C;">흑색</td>
+                <td>#1C1C1C</td>
+                <td>28,28,28</td>
+                <td>FormularGuideBlack6C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#8C8C86;">51</td>
+                <td style="background-color:#8C8C86;">회색</td>
+                <td>#8C8C86</td>
+                <td>140,140,134</td>
+                <td>ExtendedGamut7539XGC</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#ADADAF;">52</td>
+                <td style="background-color:#ADADAF;">구색</td>
+                <td>#ADADAF</td>
+                <td>173,173,175</td>
+                <td>FormularGuideCoolGray6C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#6C6A6A;">53</td>
+                <td style="background-color:#6C6A6A;">치색</td>
+                <td>#6C6A6A</td>
+                <td>108,106,106</td>
+                <td>FormularGuide4292C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#837680;">54</td>
+                <td style="background-color:#837680;">연지회색</td>
+                <td>#837680</td>
+                <td>131,118,128</td>
+                <td>FormularGuide8462C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#D8DFDB;">55</td>
+                <td style="background-color:#D8DFDB;">설백색</td>
+                <td>#D8DFDB</td>
+                <td>216,223,219</td>
+                <td>FormularGuide7541C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#E9E4C2;">56</td>
+                <td style="background-color:#E9E4C2;">유백색</td>
+                <td>#E9E4C2</td>
+                <td>233,228,194</td>
+                <td>Pastels&amp;Neons9142C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#E8E3CE;">57</td>
+                <td style="background-color:#E8E3CE;">지백색</td>
+                <td>#E8E3CE</td>
+                <td>232,227,206</td>
+                <td>CMYKP3-1C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#E2D1B0;">58</td>
+                <td style="background-color:#E2D1B0;">소색</td>
+                <td>#E2D1B0</td>
+                <td>226,209,176</td>
+                <td>FormularGuide468C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#842E55;" rowspan="11">자(11색)</td>
+                <td style="background-color:#842E55;">59</td>
+                <td style="background-color:#842E55;">자색</td>
+                <td>#842E55</td>
+                <td>132,46,85</td>
+                <td>FormularGuide683C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#932D67;">60</td>
+                <td style="background-color:#932D67;">자주색</td>
+                <td>#932D67</td>
+                <td>147,45,103</td>
+                <td>CMYKP81-15C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#A93F95;">61</td>
+                <td style="background-color:#A93F95;">보라색</td>
+                <td>#A93F95</td>
+                <td>169,63,149</td>
+                <td>ColorBridgePurpleCP</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#754A84;">62</td>
+                <td style="background-color:#754A84;">홍람색</td>
+                <td>#754A84</td>
+                <td>117,74,132</td>
+                <td>FormularGuide2082C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#66375D;">63</td>
+                <td style="background-color:#66375D;">포도색</td>
+                <td>#66375D</td>
+                <td>102,55,93</td>
+                <td>FormularGuide5125C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#6835A1;">64</td>
+                <td style="background-color:#6835A1;">청자색(⾭紫⾊)(⾭紫⾊)</td>
+                <td>#6835A1</td>
+                <td>104,53,161</td>
+                <td>ExtendedGamut2090XGC</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#7C91D0;">65</td>
+                <td style="background-color:#7C91D0;">벽자색</td>
+                <td>#7C91D0</td>
+                <td>124,145,208</td>
+                <td>FormularGuide2114C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#A189BB;">66</td>
+                <td style="background-color:#A189BB;">회보라색</td>
+                <td>#A189BB</td>
+                <td>161,137,187</td>
+                <td>FormularGuide4121C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#A18DA5;">67</td>
+                <td style="background-color:#A18DA5;">담자색</td>
+                <td>#A18DA5</td>
+                <td>161,141,165</td>
+                <td>FormularGuide666C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#563B37;">68</td>
+                <td style="background-color:#563B37;">다자색</td>
+                <td>#563B37</td>
+                <td>86,59,55</td>
+                <td>FormularGuide7617C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#C17186;">69</td>
+                <td style="background-color:#C17186;">적자색</td>
+                <td>#C17186</td>
+                <td>193,113,134</td>
+                <td>FormularGuide695C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#CE4537;" rowspan="21">적·홍(21색)</td>
+                <td style="background-color:#CE4537;">70</td>
+                <td style="background-color:#CE4537;">적색</td>
+                <td>#CE4537</td>
+                <td>206,69,55</td>
+                <td>ColorBridge7626CP</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#E33D6D;">71</td>
+                <td style="background-color:#E33D6D;">홍색</td>
+                <td>#E33D6D</td>
+                <td>227,61,109</td>
+                <td>ExtendedGamut198XGC</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#AC423C;">72</td>
+                <td style="background-color:#AC423C;">적토색</td>
+                <td>#AC423C</td>
+                <td>172,66,60</td>
+                <td>FormularGuide7608C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#79413D;">73</td>
+                <td style="background-color:#79413D;">휴색</td>
+                <td>#79413D</td>
+                <td>121,65,61</td>
+                <td>FormularGuide499C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#9D6F59;">74</td>
+                <td style="background-color:#9D6F59;">갈색</td>
+                <td>#9D6F59</td>
+                <td>157,111,89</td>
+                <td>FormularGuide4715C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#CE8141;">75</td>
+                <td style="background-color:#CE8141;">호박색(琥珀⾊)(琥珀⾊)</td>
+                <td>#CE8141</td>
+                <td>206,129,65</td>
+                <td>FormularGuide722C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#C28664;">76</td>
+                <td style="background-color:#C28664;">추향색</td>
+                <td>#C28664</td>
+                <td>194,134,100</td>
+                <td>FormularGuide7515C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#D07156;">77</td>
+                <td style="background-color:#D07156;">육색</td>
+                <td>#D07156</td>
+                <td>208,113,86</td>
+                <td>FormularGuide7618C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#E76F53;">78</td>
+                <td style="background-color:#E76F53;">주색</td>
+                <td>#E76F53</td>
+                <td>231,111,83</td>
+                <td>FormularGuide7416C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#F76A76;">79</td>
+                <td style="background-color:#F76A76;">주홍색</td>
+                <td>#F76A76</td>
+                <td>247,106,118</td>
+                <td>FormularGuide1777C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#FFA471;">80</td>
+                <td style="background-color:#FFA471;">담주색</td>
+                <td>#FFA471</td>
+                <td>255,164,113</td>
+                <td>FormularGuide7410C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#8F5F72;">81</td>
+                <td style="background-color:#8F5F72;">진홍색</td>
+                <td>#8F5F72</td>
+                <td>143,95,114</td>
+                <td>FormularGuide4095C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#D94C9E;">82</td>
+                <td style="background-color:#D94C9E;">선홍색</td>
+                <td>#D94C9E</td>
+                <td>217,76,158</td>
+                <td>FormularGuide3527C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#D6587D;">83</td>
+                <td style="background-color:#D6587D;">연지색</td>
+                <td>#D6587D</td>
+                <td>214,88,125</td>
+                <td>FormularGuide7423C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#DD7096;">84</td>
+                <td style="background-color:#DD7096;">훈색</td>
+                <td>#DD7096</td>
+                <td>221,112,150</td>
+                <td>FormularGuide2045C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#E86DB5;">85</td>
+                <td style="background-color:#E86DB5;">진분홍색</td>
+                <td>#E86DB5</td>
+                <td>232,109,181</td>
+                <td>FormularGuide218C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#E4ABBC;">86</td>
+                <td style="background-color:#E4ABBC;">분홍색</td>
+                <td>#E4ABBC</td>
+                <td>228,171,188</td>
+                <td>FormularGuide508C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#E3B3C1;">87</td>
+                <td style="background-color:#E3B3C1;">연분홍색</td>
+                <td>#E3B3C1</td>
+                <td>227,179,193</td>
+                <td>FormularGuide509C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#D04E3F;">88</td>
+                <td style="background-color:#D04E3F;">장단색</td>
+                <td>#D04E3F</td>
+                <td>208,78,63</td>
+                <td>ColorBridge2033CP</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#945438;">89</td>
+                <td style="background-color:#945438;">석간주색</td>
+                <td>#945438</td>
+                <td>148,84,56</td>
+                <td>FormularGuide2469C</td>
+
+            </tr>
+            <tr>
+                <td style="background-color:#9D6B7E;">90</td>
+                <td style="background-color:#9D6B7E;">흑홍색</td>
+                <td>#9D6B7E</td>
+                <td>157,107,126</td>
+                <td>FormularGuide7646C</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
 </html>

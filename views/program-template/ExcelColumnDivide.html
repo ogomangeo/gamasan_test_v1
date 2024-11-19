@@ -1,0 +1,233 @@
+<style>
+  h1 {
+    text-align: center;
+    color: #007BFF;
+  }
+
+  label,
+  input,
+  textarea {
+    display: block;
+    width: 70%;
+    margin: 10px auto;
+    font-size: 16px;
+  }
+
+  textarea {
+    height: 150px;
+    resize: vertical;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+  }
+
+  input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .button-group {
+    display: flex;
+    gap: 10px;
+    margin: 10px auto;
+    width: 70%;
+  }
+
+  button {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  button#randomBtn {
+    background-color: #28a745;
+  }
+
+  button#randomBtn:hover {
+    background-color: #218838;
+  }
+
+  .output {
+    margin: 20px auto;
+    width: 70%;
+    border-top: 2px solid #007BFF;
+    padding-top: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #007BFF;
+    color: white;
+  }
+
+  .chunk-button {
+    background-color: #28a745;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .chunk-button.clicked {
+    background-color: #0056b3;
+  }
+
+  label {
+    text-align: center;
+  }
+</style>
+
+<h1>키워드 나누기</h1>
+<label for="keywordInput">키워드를 입력하세요 (쉼표, 줄바꿈, 띄어쓰기 사용가능)</label>
+<textarea id="keywordInput" placeholder="키워드를 입력하세요"></textarea>
+<label for="chunkSize">몇 개씩 나눌까요?</label>
+<input type="number" id="chunkSize" min="1" placeholder="10" />
+<div class="button-group">
+  <button id="sequentialBtn">순서대로 처리하기</button>
+  <button id="randomBtn">랜덤으로 처리하기</button>
+  <button id="excelBtn">엑셀 다운로드</button>
+</div>
+<div class="output" id="output"></div>
+
+<script>
+  const keywordInput = document.getElementById('keywordInput');
+  const chunkSizeInput = document.getElementById('chunkSize');
+  const sequentialBtn = document.getElementById('sequentialBtn');
+  const randomBtn = document.getElementById('randomBtn');
+  const outputDiv = document.getElementById('output');
+
+
+  document.getElementById('excelBtn').addEventListener('click', downloadExcel);
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function processKeywords(isRandom = false) {
+    const chunkSize = parseInt(chunkSizeInput.value, 10);
+    if (!chunkSize || chunkSize <= 0) {
+      alert("유효한 숫자를 입력해주세요!");
+      return;
+    }
+
+    let keywords = keywordInput.value
+      .split(/[\n,\s]+/)
+      .filter(k => k.trim())
+      .map(k => k.trim());
+
+    if (keywords.length === 0) {
+      alert("키워드를 입력해주세요!");
+      return;
+    }
+
+    if (isRandom) {
+      keywords = shuffleArray([...keywords]);
+    }
+
+    const chunks = [];
+    for (let i = 0; i < keywords.length; i += chunkSize) {
+      chunks.push(keywords.slice(i, i + chunkSize));
+    }
+
+    outputDiv.innerHTML = `
+          <div class="summary">
+              총 키워드 수: <strong>${keywords.length}</strong> / 묶음 수: <strong>${chunks.length}</strong>
+          </div>
+          <table>
+              <thead>
+                  <tr>
+                      <th>묶음/갯수</th>
+                      <th>키워드</th>
+                      <th>복사</th>
+                  </tr>
+              </thead>
+              <tbody id="outputTable"></tbody>
+          </table>
+      `;
+
+    const outputTable = document.getElementById('outputTable');
+    chunks.forEach((chunk, index) => {
+      const row = document.createElement("tr");
+      const escapedText = chunk.join(", ").replace(/'/g, "\\'");
+      row.innerHTML = `
+              <td>${index + 1}/${chunk.length}개</td>
+              <td>${chunk.join(", ")}</td>
+              <td><button class="chunk-button" onclick="handleCopy(this, '${escapedText}')">복사</button></td>
+          `;
+      outputTable.appendChild(row);
+    });
+  }
+
+  function handleCopy(button, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      button.textContent = "복사!";
+      button.classList.add('clicked');
+    }).catch(err => {
+      console.error("클립보드 복사 실패: ", err);
+      alert("복사에 실패했습니다.");
+    });
+  }
+
+  // 엑셀 다운로드 기능 추가
+  function downloadExcel() {
+    const table = document.querySelector('table');
+    if (!table) {
+      alert('다운로드할 데이터가 없습니다.');
+      return;
+    }
+
+    let csv = '묶음 번호,키워드\n';
+    const rows = table.querySelectorAll('tr');
+
+    rows.forEach((row, index) => {
+      if (index === 0) return; // 헤더 건너뛰기
+      const cells = row.querySelectorAll('td');
+      if (cells.length >= 2) {
+        csv += `${cells[0].textContent},${cells[1].textContent}\n`;
+      }
+    });
+
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('href', url);
+    a.setAttribute('download', '키워드_목록.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }
+
+  sequentialBtn.addEventListener('click', () => processKeywords(false));
+  randomBtn.addEventListener('click', () => processKeywords(true));
+</script>

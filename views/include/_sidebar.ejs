@@ -282,7 +282,6 @@
                     const reels = Array.from(document.getElementsByClassName("slot-reel"));
                     const spinCountElement = document.getElementById("spinCount");
                     const headerBarInner = document.getElementById("headerBarInner");
-                    const spinSound = new Audio("audio/spin-sound.mp3");
 
                     const symbolCounts = {
                         "🍒": 0, "🍋": 0, "🍉": 0, "🍀": 0,
@@ -370,7 +369,6 @@
                         spinButton.disabled = true;
                         result.textContent = "";
                         reels.forEach(reel => reel.classList.remove("slot-highlight"));
-                        spinSound.play();
 
                         animateHeaderBar();
                         await spinReels();
