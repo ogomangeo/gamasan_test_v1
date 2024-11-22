@@ -1,0 +1,313 @@
+<style>
+  /* 프로필 컨테이너 스타일 */
+  .memprof-container {
+    max-width: 900px;
+    margin: 1rem auto;
+    padding: 0 0.5rem;
+  }
+
+  .memprof-profile-card {
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+  }
+
+  /* 테이블 스타일 */
+  .memprof-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .memprof-table thead {
+    background-color: #fafafa;
+  }
+
+  .memprof-table th {
+    color: #333;
+    font-weight: 600;
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .memprof-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e5e5;
+    color: #333;
+  }
+
+  .memprof-table tr:hover {
+    background-color: #fafafa;
+  }
+
+  /* 헤더 영역 스타일 */
+  .memprof-header {
+    background-color: #fafafa;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .memprof-header-content {
+    display: flex;
+    align-items: center;
+  }
+
+  .memprof-username {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+  }
+
+  /* 운세 섹션 스타일 */
+  .memprof-fortune-section {
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+  }
+
+  .memprof-fortune-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .memprof-fortune-content {
+    background-color: #fafafa;
+    padding: 1rem;
+    border-radius: 4px;
+  }
+
+  /* 버튼 스타일 */
+  .memprof-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    border: 1px solid #e5e5e5;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .memprof-button:hover {
+    background-color: #f5f5f5;
+  }
+
+  .memprof-button-primary {
+    color: #fff;
+    border: 1px solid #333;
+  }
+
+  .memprof-button-primary:hover {
+    background-color: #404040;
+  }
+
+  /* 추가 스타일 */
+  .memprof-content {
+    padding: 1rem;
+  }
+
+  .memprof-label {
+    color: #666;
+    font-size: 0.85rem;
+  }
+
+  .memprof-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+  }
+
+  .memprof-fortune-type {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .memprof-fortune-description {
+    color: #333;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .memprof-fortune-advice {
+    background-color: #fff;
+    padding: 0.75rem;
+    border-radius: 4px;
+    border: 1px solid #e5e5e5;
+  }
+
+  .memprof-fortune-advice-label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  /* 반응형 디자인 */
+  @media (max-width: 640px) {
+    .memprof-table {
+      display: block;
+      overflow-x: auto;
+    }
+
+    .memprof-content {
+      padding: 0.75rem;
+    }
+
+    .memprof-username {
+      font-size: 1.25rem;
+    }
+  }
+</style>
+
+<div class="memprof-container">
+  <div class="memprof-profile-card">
+    <!-- 프로필 헤더 -->
+    <div class="memprof-header">
+      <div class="memprof-header-content">
+        <div class="memprof-header-info">
+          <p class="memprof-label">활동명</p>
+          <h1 class="memprof-username">
+            <%= profileUser.username %>
+          </h1>
+        </div>
+      </div>
+    </div>
+
+    <!-- 프로필 정보 -->
+    <div class="memprof-content">
+      <!-- 기본 정보 섹션 -->
+      <table class="memprof-table">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>내용</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>이메일 (ID)</td>
+            <td>
+              <%= profileUser.email %>
+            </td>
+          </tr>
+          <tr>
+            <td>활동명</td>
+            <td>
+              <%= profileUser.username %>
+            </td>
+          </tr>
+          <tr>
+            <td>성명</td>
+            <td>
+              <%= profileUser.name %>
+            </td>
+          </tr>
+          <tr>
+            <td>생년월일</td>
+            <td>
+              <%= new Date(profileUser.birthdate).toLocaleDateString() %>
+            </td>
+          </tr>
+          <% if (member && member.username===profileUser.username) { %>
+            <tr>
+              <td>전화번호</td>
+              <td>
+                <%= profileUser.phone %>
+              </td>
+            </tr>
+            <tr>
+              <td>주소</td>
+              <td>
+                <%= profileUser.address %>
+              </td>
+            </tr>
+            <% } %>
+              <tr>
+                <td>가입일자</td>
+                <td>
+                  <%= new Date(profileUser.createdAt).toLocaleDateString('ko-KR', { year: 'numeric' , month: 'long' ,
+                    day: 'numeric' , hour: '2-digit' , minute: '2-digit' }) %>
+                </td>
+              </tr>
+        </tbody>
+      </table>
+
+      <!-- 오늘의 운세 섹션 -->
+      <% if (member && member.username===profileUser.username) { %>
+        <div class="memprof-fortune-section">
+          <h2 class="memprof-fortune-title">
+            <% const today=new Date(); const weekDay=['일', '월' , '화' , '수' , '목' , '금' , '토' ]; const
+              dateStr=today.toISOString().split('T')[0]; const dayStr=weekDay[today.getDay()]; %>
+              <%= dateStr %> (<%= dayStr %>) 오늘의 운세
+          </h2>
+          <div class="memprof-fortune-content">
+            <% if (fortune) { %>
+              <div class="memprof-fortune-details">
+                <p class="memprof-fortune-type">
+                  <%= fortune.type %>
+                </p>
+                <p class="memprof-fortune-description">
+                  <%= fortune.description %>
+                </p>
+                <div class="memprof-fortune-advice">
+                  <p>
+                    <span class="memprof-fortune-advice-label">오늘의 조언:</span>
+                    <%= fortune.advice %>
+                  </p>
+                </div>
+              </div>
+              <% } else { %>
+                <button id="getFortune" class="memprof-button memprof-button-primary">
+                  오늘의 운세 확인하기
+                </button>
+                <% } %>
+          </div>
+        </div>
+        <% } %>
+
+          <!-- 프로필 편집 버튼 -->
+          <% if (member && member.username===profileUser.username) { %>
+            <div class="memprof-actions">
+              <a href="/edit-profile" class="memprof-button memprof-button-primary">
+                프로필 수정
+              </a>
+            </div>
+            <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- 운세 관련 JavaScript -->
+<% if (member && member.username===profileUser.username) { %>
+  <script>
+    document.getElementById('getFortune')?.addEventListener('click', async () => {
+      try {
+        const response = await fetch('/api/fortune', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          location.reload();
+        } else {
+          alert('운세를 가져오는데 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('오류가 발생했습니다.');
+      }
+    });
+  </script>
+  <% } %>

@@ -12,6 +12,7 @@ const Mart = require("../models/Mart");
 const Event = require("../models/Event");
 const asyncHandler = require("express-async-handler");
 const Member = require("../models/Member");
+const Fortune = require("../models/Fortune");
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -440,5 +441,144 @@ router.post("/join", asyncHandler(async (req, res) => {
     }
   }
 }));
+
+// 회원 마이페이지 라우트
+//★ ★ 항상 마지막에 위치시킬것~~
+// /:username 라우트 수정
+router.get('/:username', async (req, res) => {
+  try {
+    const username = req.params.username;
+    
+    // DB에서 해당 username을 가진 사용자 정보를 조회
+    const user = await Member.findOne({ username: username });
+    
+    if (!user) {
+      // 사용자를 찾을 수 없는 경우
+      return res.render("page/error", { 
+        locals: {
+          title: "Error",
+          description: "사용자를 찾을 수 없습니다."
+        },
+        layout: mainLayout,
+        member: res.locals.member
+      });
+    }
+
+    // 자신의 프로필을 보는 경우에만 오늘의 운세 조회
+    let fortune = null;
+    if (res.locals.member && res.locals.member.username === username) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      fortune = await Fortune.findOne({
+        username: username,
+        date: {
+          $gte: today,
+          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
+        }
+      });
+    }
+
+    // detail_profile.ejs를 사용하도록 수정
+    res.render("detail/detail_profile", {
+      title: `${username}의 프로필`,
+      member: res.locals.member,
+      profileUser: user,
+      fortune: fortune,
+      layout: mainLayout
+    });
+
+  } catch (error) {
+    console.error('프로필 조회 에러:', error);
+    res.render("page/error", {
+      locals: {
+        title: "Error",
+        description: "서버 오류가 발생했습니다."
+      },
+      layout: mainLayout,
+      member: res.locals.member
+    });
+  }
+});
+
+// 운세 API 라우트 수정
+router.get('/api/fortune', async (req, res) => {
+  try {
+    if (!res.locals.member) {
+      return res.status(401).json({ message: '로그인이 필요합니다.' });
+    }
+ 
+    const username = res.locals.member.username;
+    
+    // 오늘 날짜 범위 설정
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    // 이미 오늘의 운세가 있는지 확인
+    let todayFortune = await Fortune.findOne({
+      username: username,
+      date: {
+        $gte: today,
+        $lt: tomorrow
+      }
+    });
+ 
+    // 오늘의 운세가 없는 경우에만 새로 생성
+    if (!todayFortune) {
+      // 정규분포에 따른 레벨 결정
+      const levels = [
+        { level: 1, prob: 2.1 },  // 特大吉
+        { level: 2, prob: 6.8 },  // 大吉
+        { level: 3, prob: 16.1 }, // 中吉
+        { level: 4, prob: 23.9 }, // 小吉
+        { level: 5, prob: 27.0 }, // 平
+        { level: 6, prob: 13.6 }, // 小凶
+        { level: 7, prob: 6.8 },  // 中凶
+        { level: 8, prob: 2.1 },  // 大凶
+        { level: 9, prob: 1.6 }   // 特大凶
+      ];
+ 
+      // 랜덤 값 생성 (0-100)
+      const rand = Math.random() * 100;
+      let cumulative = 0;
+      let selectedLevel = 5; // 기본값
+ 
+      // 누적 확률로 레벨 선택
+      for (const { level, prob } of levels) {
+        cumulative += prob;
+        if (rand <= cumulative) {
+          selectedLevel = level;
+          break;
+        }
+      }
+ 
+      // 선택된 레벨에 해당하는 운세 가져오기
+      const fortunePool = await Fortune.find({ level: selectedLevel });
+      if (fortunePool.length > 0) {
+        const randomIndex = Math.floor(Math.random() * fortunePool.length);
+        const fortuneData = fortunePool[randomIndex];
+        
+        // 새로운 운세 객체 생성
+        todayFortune = new Fortune({
+          type: fortuneData.type,
+          description: fortuneData.description,
+          advice: fortuneData.advice,
+          level: fortuneData.level,
+          username: username,
+          date: new Date()
+        });
+ 
+        await todayFortune.save();
+      }
+    }
+ 
+    res.json(todayFortune);
+  } catch (error) {
+    console.error('운세 생성 에러:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+ });
 
 module.exports = router;
