@@ -2,12 +2,11 @@
 .mart-list-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
   box-sizing: border-box;
 }
 
 .mart-container {
-  width: 1000px;
+  width: 1200px;
   min-height: 270px;
   height: auto;
   display: flex;
@@ -15,7 +14,7 @@
   border-bottom: 1px solid #dfdfdf;
   padding: 10px;
   box-sizing: border-box;
-  margin-bottom: 20px;
+  margin: 0 auto;  /* top/bottom은 0과 20px, left/right는 auto */
   background-color: #fff;
 }
 
@@ -27,8 +26,8 @@
 }
 
 .mart-image-box img {
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 250px;
   object-fit: cover;
 }
 

@@ -102,12 +102,12 @@
   }
 
   .memprof-button-primary {
-    color: #fff;
     border: 1px solid #333;
   }
 
   .memprof-button-primary:hover {
-    background-color: #404040;
+    color: white;
+    background-color: #000080;
   }
 
   /* 추가 스타일 */
@@ -275,13 +275,13 @@
         <% } %>
 
           <!-- 프로필 편집 버튼 -->
-          <% if (member && member.username===profileUser.username) { %>
+          <!-- <% if (member && member.username===profileUser.username) { %>
             <div class="memprof-actions">
               <a href="/edit-profile" class="memprof-button memprof-button-primary">
                 프로필 수정
               </a>
             </div>
-            <% } %>
+            <% } %> -->
     </div>
   </div>
 </div>

@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const NoticeSchema = new mongoose.Schema({
     thumbnail: {
         type: String,
-        required: true
     },
     title: {
         type: String,

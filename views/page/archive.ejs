@@ -1,49 +1,65 @@
-<!-- GPT 오름차순 -->
-<% data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); %>
-<h1>Archive</h1>
-<div class="archive-header">
-  <div class="header-thumbnail">썸네일</div>
-  <div class="header-title">제목</div>
-  <div class="header-script">내용</div>
-  <div class="header-date">작성일시</div>
-</div>
+<div class="archive-container">
+  <div class="archive-header">
+    <h1>Archive</h1>
+  </div>
 
-<ul class="archive-list">
-  <% data.forEach(archive => { %>
-    <li class="archive-item">
-      <a href="/archive/<%= archive._id %>">
-        <img src="<%= archive.thumbnail %>" alt="Thumbnail" class="thumbnail">
-        <div class="title"><%= archive.title %></div>
-        <div class="script"><%= archive.script %></div>
-        <div class="timestamp"><%= formatDate(archive.createdAt) %></div>
-      </a>
-    </li>
-  <% }) %>
-</ul>
+  <ul class="archive-list">
+    <% data.sort((a, b)=> new Date(b.createdAt) - new Date(a.createdAt)); %>
+      <% data.forEach(archive=> { %>
+        <li class="archive-item">
+          <a href="/archive/<%= archive._id %>">
+            <div class="thumbnail-container">
+              <img src="<%= archive.thumbnails && archive.thumbnails.length > 0 ? archive.thumbnails[0] : '' %>"
+                alt="<%= archive.title %>" class="thumbnail">
+            </div>
+            <div class="card-content">
+              <% if (archive.category) { %>
+                <span class="category-tag">
+                  <%= archive.category %>
+                </span>
+                <% } %>
 
-<div class="pagination">
-  <% if (currentPage> 1) { %>
-    <a href="?page=<%= currentPage - 1 %>" class="page-link">&laquo; 이전</a>
-    <% } %>
+                  <h2 class="title">
+                    <%= archive.title %>
+                  </h2>
+                  <p class="script">
+                    <%= archive.script %>
+                  </p>
+                  <div class="timestamp">
+                    <%= formatDate(archive.createdAt) %>
+                  </div>
+            </div>
+          </a>
+        </li>
+        <% }) %>
+  </ul>
 
-      <% for (let i=1; i <=totalPages; i++) { %>
-        <% if (i===currentPage) { %>
-          <span class="page-link current">
-            <%= i %>
-          </span>
-          <% } else { %>
-            <a href="?page=<%= i %>" class="page-link">
-              <%= i %>
-            </a>
-            <% } %>
-              <% } %>
+  <% if (totalPages> 1) { %>
+    <div class="pagination">
+      <% if (currentPage> 1) { %>
+        <a href="?page=<%= currentPage - 1 %>" class="page-link">이전</a>
+        <% } %>
 
-                <% if (currentPage < totalPages) { %>
-                  <a href="?page=<%= currentPage + 1 %>" class="page-link">다음 &raquo;</a>
+          <% for (let i=1; i <=totalPages; i++) { %>
+            <% if (i===currentPage) { %>
+              <span class="page-link current">
+                <%= i %>
+              </span>
+              <% } else { %>
+                <a href="?page=<%= i %>" class="page-link">
+                  <%= i %>
+                </a>
+                <% } %>
                   <% } %>
+
+                    <% if (currentPage < totalPages) { %>
+                      <a href="?page=<%= currentPage + 1 %>" class="page-link">다음</a>
+                      <% } %>
+    </div>
+    <% } %>
 </div>
 
-<!-- 작성 일시 형식 변경 함수 -->
+<!-- 날짜 포맷팅 함수 -->
 <%
 function formatDate(dateString) {
   const date = new Date(dateString);

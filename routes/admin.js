@@ -9,9 +9,7 @@ const Notice = require("../models/Notice");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Program = require("../models/Program");
-const Blog = require("../models/Blog");
 const Archive = require("../models/Archive");
-const Event = require("../models/Event");
 const About = require("../models/About");
 const Mart = require("../models/Mart");
 const Member = require("../models/Member");
@@ -123,35 +121,6 @@ router.get(
 //Get all Posts
 //Get /allPosts
 router.get(
-  "/allBlogs",
-  checkLogin,
-  asyncHandler(async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 15;
-    const skip = (page - 1) * limit;
-
-    const totalItems = await Blog.countDocuments();
-    const totalPages = Math.ceil(totalItems / limit);
-
-    const data = await Blog.find()
-      .sort({ updatedAt: "desc", createdAt: "desc" })
-      .skip(skip)
-      .limit(limit);
-
-    const locals = { title: "블로깅" };
-    res.render("admin/allBlogs", {
-      locals,
-      data,
-      layout: adminLayout3,
-      currentPage: page,
-      totalPages,
-    });
-  })
-);
-
-//Get all Posts
-//Get /allPosts
-router.get(
   "/allArchive",
   checkLogin,
   asyncHandler(async (req, res) => {
@@ -201,19 +170,6 @@ router.get(
       title: "program 작성",
     };
     res.render("admin/add_program", { locals, layout: adminLayout3 });
-  })
-);
-
-//Admin - Add Post
-//GET /add
-router.get(
-  "/add_blog",
-  checkLogin,
-  asyncHandler(async (req, res) => {
-    const locals = {
-      title: "blog 작성",
-    };
-    res.render("admin/add_blog", { locals, layout: adminLayout3 });
   })
 );
 
@@ -285,22 +241,6 @@ router.post(
   })
 );
 
-//Admin - Add Post
-//Post /add
-router.post(
-  "/add_blog",
-  checkLogin,
-  asyncHandler(async (req, res) => {
-    const { thumbnail, title, script } = req.body;
-    const newBlog = new Blog({
-      thumbnail: thumbnail,
-      title: title,
-      script: script,
-    });
-    await Blog.create(newBlog);
-    res.redirect("/allBlogs");
-  })
-);
 
 //Admin - Add Post
 //Post /add
@@ -308,11 +248,12 @@ router.post(
   "/add_archive",
   checkLogin,
   asyncHandler(async (req, res) => {
-    const { thumbnail, title, script } = req.body;
+    const { thumbnails, title, category, script } = req.body;
     const newArchive = new Archive({
-      thumbnail: thumbnail,
-      title: title,
-      script: script,
+      thumbnails: Array.isArray(thumbnails) ? thumbnails : [thumbnails],
+      title,
+      category,
+      script,
     });
     await Archive.create(newArchive);
     res.redirect("/allArchive");
@@ -343,17 +284,6 @@ router.get(
   })
 );
 
-//Admin - edit post
-//GET /edit/:id
-router.get(
-  "/edit_blog/:id",
-  checkLogin,
-  asyncHandler(async (req, res) => {
-    const locals = { title: "게시물 편집" };
-    const blog = await Blog.findOne({ _id: req.params.id });
-    res.render("admin/edit_blog", { locals, blog, layout: adminLayout3 });
-  })
-);
 
 //Admin - edit post
 //GET /edit/:id
@@ -400,21 +330,6 @@ router.put(
   })
 );
 
-//Admin - edit post
-//PUT /edit/:id
-router.put(
-  "/edit_blog/:id",
-  checkLogin,
-  asyncHandler(async (req, res) => {
-    await Blog.findByIdAndUpdate(req.params.id, {
-      thumbnail: req.body.thumbnail,
-      title: req.body.title,
-      script: req.body.script,
-      createdAt: Date.now(),
-    });
-    res.redirect("/allBlogs");
-  })
-);
 
 //Admin - edit post
 //PUT /edit/:id
@@ -423,10 +338,11 @@ router.put(
   checkLogin,
   asyncHandler(async (req, res) => {
     await Archive.findByIdAndUpdate(req.params.id, {
-      thumbnail: req.body.thumbnail,
+      thumbnails: Array.isArray(req.body.thumbnails) ? req.body.thumbnails : [req.body.thumbnails],
       title: req.body.title,
+      category: req.body.category,
       script: req.body.script,
-      createdAt: Date.now(),
+      updatedAt: Date.now(),
     });
     res.redirect("/allArchive");
   })
@@ -454,16 +370,6 @@ router.delete(
   })
 );
 
-//admin delete Post
-//delete /delete/:id
-router.delete(
-  "/delete_blog/:id",
-  checkLogin,
-  asyncHandler(async (req, res) => {
-    await Blog.deleteOne({ _id: req.params.id });
-    res.redirect("/allBlogs");
-  })
-);
 
 //admin delete Post
 //delete /delete/:id
@@ -476,93 +382,6 @@ router.delete(
   })
 );
 
-//이벤트이벤트이벤트이벤트이벤트이벤트이벤트이벤트이벤트이벤트이벤트이벤트이벤트이벤트이벤트이벤트이벤트
-// 이벤트 목록 조회
-router.get(
-  "/allEvent",
-  checkLogin,
-  asyncHandler(async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 15;
-    const skip = (page - 1) * limit;
-
-    const totalItems = await Event.countDocuments();
-    const totalPages = Math.ceil(totalItems / limit);
-
-    const data = await Event.find()
-      .sort({ updatedAt: "desc", createdAt: "desc" })
-      .skip(skip)
-      .limit(limit);
-
-    const locals = { title: "이벤트" };
-    res.render("admin/allEvent", {
-      locals,
-      data,
-      layout: adminLayout3,
-      currentPage: page,
-      totalPages,
-    });
-  })
-);
-// 이벤트 작성 페이지
-router.get(
-  "/add_event",
-  checkLogin,
-  asyncHandler(async (req, res) => {
-    const locals = {
-      title: "이벤트 작성",
-    };
-    res.render("admin/add_event", { locals, layout: adminLayout3 });
-  })
-);
-// 이벤트 등록
-router.post(
-  "/add_event",
-  checkLogin,
-  asyncHandler(async (req, res) => {
-    const { thumbnail, title, script } = req.body;
-    const newEvent = new Event({
-      thumbnail: thumbnail,
-      title: title,
-      script: script,
-    });
-    await Event.create(newEvent);
-    res.redirect("/allEvent");
-  })
-);
-// 이벤트 수정 페이지
-router.get(
-  "/edit_event/:id",
-  checkLogin,
-  asyncHandler(async (req, res) => {
-    const locals = { title: "이벤트 편집" };
-    const event = await Event.findOne({ _id: req.params.id });
-    res.render("admin/edit_event", { locals, event, layout: adminLayout3 });
-  })
-);
-// 이벤트 수정 처리
-router.put(
-  "/edit_event/:id",
-  checkLogin,
-  asyncHandler(async (req, res) => {
-    await Event.findByIdAndUpdate(req.params.id, {
-      thumbnail: req.body.thumbnail,
-      title: req.body.title,
-      script: req.body.script,
-      createdAt: Date.now(),
-    });
-    res.redirect("/allEvent");
-  })
-);
-// 이벤트 삭제
-router.delete(
-  "/delete_event/:id",
-  checkLogin,
-  asyncHandler(async (req, res) => {
-    await Event.deleteOne({ _id: req.params.id });
-    res.redirect("/allEvent");
-  })
-);
 
 //AboutAboutAboutAboutAboutAboutAboutAboutAboutAboutAboutAboutAboutAboutAboutAboutAboutAboutAboutAboutAboutAbout
 // POST: 문의 접수 처리
@@ -1054,6 +873,15 @@ router.get(
       currentPage: page,
       totalPages,
     });
+  })
+);
+
+router.delete(
+  "/delete_member/:id",
+  checkLogin,
+  asyncHandler(async (req, res) => {
+    await Member.deleteOne({ _id: req.params.id });
+    res.redirect("/allMember");
   })
 );
 

@@ -24,3 +24,12 @@
     margin: 0 10px;
     color: white;
 }
+
+.latest-notice-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.latest-notice-link:hover {
+    text-decoration: underline;
+}

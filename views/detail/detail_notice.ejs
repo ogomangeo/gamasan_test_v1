@@ -18,9 +18,11 @@
         <a href="/notice" class="detail-nav-button">목록</a>
     </div>
     
-    <div class="detail-thumbnail-container">
-        <img src="<%= notice.thumbnail %>" alt="<%= notice.title %> Thumbnail" class="detail-thumbnail">
-    </div>
+    <% if (notice.thumbnail) { %>
+        <div class="detail-thumbnail-container">
+            <img src="<%= notice.thumbnail %>" alt="<%= notice.title %> Thumbnail" class="detail-thumbnail">
+        </div>
+    <% } %>
     <div class="detail-script">
         <%- notice.script %>
     </div>

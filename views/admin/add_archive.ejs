@@ -28,15 +28,39 @@
   </h2>
 </div>
 
+<script src="/js/DeleteCheck.js"></script>
 <form action="/add_archive" method="POST">
-  <label for="thumbnail"><b>썸네일</b></label>
-  <input type="text" placeholder="썸네일 이미지 URL" name="thumbnail" id="thumbnail">
+  <div id="thumbnails-container">
+    <label><b>썸네일 목록</b></label>
+    <div class="thumbnail-inputs">
+      <div class="thumbnail-input">
+        <input type="text" placeholder="썸네일 이미지 URL" name="thumbnails[]" required>
+      </div>
+    </div>
+    <button type="button" class="btn-add-thumbnail" onclick="addThumbnailInput()">+ 썸네일 추가</button>
+  </div>
   
   <label for="title"><b>제목</b></label>
   <input type="text" placeholder="게시물 제목" name="title" id="title">
+
+  <label for="category"><b>카테고리</b></label>
+  <input type="text" placeholder="카테고리" name="category" id="category">
 
   <label for="script"><b>내용</b></label>
   <textarea placeholder="게시물 내용" name="script" cols="50" rows="10"></textarea>
 
   <input type="submit" value="등록" class="btn">
 </form>
+
+<script>
+function addThumbnailInput() {
+    const container = document.querySelector('.thumbnail-inputs');
+    const newInput = document.createElement('div');
+    newInput.className = 'thumbnail-input';
+    newInput.innerHTML = `
+        <input type="text" placeholder="썸네일 이미지 URL" name="thumbnails[]">
+        <button type="button" onclick="this.parentElement.remove()">삭제</button>
+    `;
+    container.appendChild(newInput);
+}
+</script>

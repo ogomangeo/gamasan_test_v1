@@ -2,31 +2,40 @@
 <header class="header-container">
   <!-- 상단 유저 정보 영역 -->
   <div class="top-header">
-      <div class="header-content">
-          <div class="sale-banner">Welcome Gamasan page</div>
-          <div class="user-actions">
-              <% if (member) { %>
-                  <span class="user-info">
-                      <a href="/<%= member.username %>" class="username-link">
-                          <%= member.username %>
-                          (<%= member.email %>)
-                      </a>
-                  </span>
-                  <span>|</span>
-                  <a href="/logout">Logout</a>
-              <% } else { %>
-                  <a href="/login">Login</a>
-                  <span>|</span>
-                  <a href="/join">Join</a>
-              <% } %>
-          </div>
+    <div class="header-content">
+      <!-- 최근 공지사항이 있을 경우에만 표시 -->
+      <div class="sale-banner">
+        <% if (typeof latestNotice !== 'undefined' && latestNotice) { %>
+            <a href="/notice/<%= latestNotice._id %>" class="latest-notice-link">
+                <%= latestNotice.title %>
+            </a>
+        <% } else { %>
+            Welcome Avopic page
+        <% } %>
+    </div>
+      <div class="user-actions">
+        <% if (member) { %>
+          <span class="user-info">
+            <a href="/member/<%= member.username %>" class="username-link">
+              <%= member.username %>
+                (<%= member.email %>)
+            </a>
+          </span>
+          <span>|</span>
+          <a href="/logout">Logout</a>
+          <% } else { %>
+            <a href="/login">Login</a>
+            <span>|</span>
+            <a href="/join">Join</a>
+            <% } %>
       </div>
+    </div>
   </div>
 
   <!-- 메인 네비게이션 영역 -->
   <nav class="navbar">
       <div class="nav-brand">
-          <a href="/home">Gamasan</a>
+          <a href="/home">Avopic</a>
       </div>
       
       <button class="nav-toggle" aria-label="toggle navigation">
@@ -35,11 +44,9 @@
 
       <div class="nav-menu">
           <ul class="nav-list">
-              <li><a href="/program" class="nav-link <%= (locals.path?.startsWith('/program') || locals.title === 'Program') ? 'active' : '' %>">프로그램즈</a></li>
-              <li><a href="/mart" class="nav-link <%= (locals.path?.startsWith('/mart') || locals.title === 'Mart') ? 'active' : '' %>">가마산마트</a></li>
-              <li><a href="/archive" class="nav-link <%= (locals.path?.startsWith('/archive') || locals.title === 'Archive') ? 'active' : '' %>">아카이빙</a></li>
-              <li><a href="/event" class="nav-link <%= (locals.path?.startsWith('/event') || locals.title === 'Event') ? 'active' : '' %>">이벤트</a></li>
-              <li><a href="/blog" class="nav-link <%= (locals.path?.startsWith('/blog') || locals.title === 'Blog') ? 'active' : '' %>">블로깅</a></li>
+              <li><a href="/program" class="nav-link <%= (locals.path?.startsWith('/program') || locals.title === 'Program') ? 'active' : '' %>">프로그램</a></li>
+              <li><a href="/mart" class="nav-link <%= (locals.path?.startsWith('/mart') || locals.title === 'Mart') ? 'active' : '' %>">마트</a></li>
+              <li><a href="/archive" class="nav-link <%= (locals.path?.startsWith('/archive') || locals.title === 'Archive') ? 'active' : '' %>">아카이브</a></li>
               <li><a href="/notice" class="nav-link <%= (locals.path?.startsWith('/notice') || locals.title === 'Notice') ? 'active' : '' %>">공지사항</a></li>
               <li><a href="/about" class="nav-link <%= (locals.path?.startsWith('/about') || locals.title === 'About') ? 'active' : '' %>">ABOUT</a></li>
           </ul>

@@ -1,174 +1,82 @@
 <% function formatDate(date) { const d=new Date(date); const month=String(d.getMonth() + 1).padStart(2, '0' ); const
-    day=String(d.getDate()).padStart(2, '0' ); const hours=String(d.getHours()).padStart(2, '0' ); const
-    minutes=String(d.getMinutes()).padStart(2, '0' ); return `${month}/${day} ${hours}:${minutes}`; } %>
+  day=String(d.getDate()).padStart(2, '0' ); const hours=String(d.getHours()).padStart(2, '0' ); const
+  minutes=String(d.getMinutes()).padStart(2, '0' ); return `${month}/${day} ${hours}:${minutes}`; } %>
 
-    <div class="home_index_row">
-        <!-- 프로그래밍 게시판 -->
-        <div class="home_index_board_container board3">
-            <h2 class="home_index_board_title"><a href="/program">프로그램즈</a><a href="/program"
-                    class="home_more_info">더보기</a></h2>
-            <div class="home_index_board">
-                <% programs.forEach(program=> { %>
-                    <a href="/program/<%= program._id %>" class="home_index_board_item_link">
-                        <div class="home_index_board_item">
-                            <div class="home_index_thumbnail"
-                                style="background-image: url('<%= program.thumbnail %>');"></div>
-                            <div class="home_index_board_content">
-                                <div class="home_index_title">
-                                    <%= program.title %>
-                                </div>
-                                <div class="home_index_meta">
-                                    <%= formatDate(program.createdAt) %>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <% }); %>
-            </div>
-        </div>
+  <div class="home_index_row">
 
-        <!-- 가마산마트 게시판 -->
-        <div class="home_index_board_container board5">
-            <h2 class="home_index_board_title"><a href="/mart">가마산마트</a><a href="/mart" class="home_more_info">더보기</a>
-            </h2>
-            <div class="home_index_board">
-                <% marts.forEach(mart=> { %>
-                    <a href="/mart/<%= mart._id %>" class="home_index_board_item_link">
-                        <div class="home_index_board_item">
-                            <div class="home_index_thumbnail" style="background-image: url('<%= mart.thumbnail1 %>');">
-                            </div>
-                            <div class="home_index_board_content">
-                                <div class="home_index_title">
-                                    <%= mart.title %>
-                                </div>
-                                <div class="home_index_meta">
-                                    <%= formatDate(mart.createdAt) %>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <% }); %>
+    <!-- 프로그래밍 게시판 -->
+    <div class="home_index_board_container board3">
+      <h2 class="home_index_board_title"><a href="/program">프로그램</a><a href="/program" class="home_more_info">더보기</a>
+      </h2>
+      <div class="home_index_board">
+        <% programs.forEach(program=> { %>
+          <a href="/program/<%= program._id %>" class="home_index_board_item_link">
+            <div class="home_index_board_item">
+              <div class="home_index_thumbnail" style="background-image: url('<%= program.thumbnail %>');"></div>
+              <div class="home_index_board_content">
+                <div class="home_index_title">
+                  <%= program.title %>
+                </div>
+                <div class="home_index_meta">
+                  <%= formatDate(program.createdAt) %>
+                </div>
+              </div>
             </div>
-        </div>
+          </a>
+          <% }); %>
+      </div>
     </div>
 
+    <!-- 오른쪽 열 게시판들 -->
+    <div class="home_index_right_column">
 
-    <!-- 두 번째 배너 -->
-    <div class="detail-banner">
-        <a href="#">
-            <img src="/img/main-banner-3-1.png" alt="배너">
-        </a>
-    </div>
-
-
-    <div class="home_index_row">
-        <!-- 아카이빙 게시판 -->
-        <div class="home_index_board_container board1">
-            <h2 class="home_index_board_title"><a href="/archive">아카이빙</a><a href="/archive"
-                    class="home_more_info">더보기</a></h2>
-            <div class="home_index_board">
-                <% archives.forEach(archive=> { %>
-                    <a href="/archive/<%= archive._id %>" class="home_index_board_item_link">
-                        <div class="home_index_board_item">
-                            <div class="home_index_thumbnail"
-                                style="background-image: url('<%= archive.thumbnail %>');"></div>
-                            <div class="home_index_board_content">
-                                <div class="home_index_title">
-                                    <%= archive.title %>
-                                </div>
-                                <div class="home_index_meta">
-                                    <%= formatDate(archive.createdAt) %>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <% }); %>
-            </div>
+      <!-- 아카이빙 게시판 -->
+      <div class="home_index_board_container board1">
+        <h2 class="home_index_board_title"><a href="/archive">아카이브</a><a href="/archive" class="home_more_info">더보기</a>
+        </h2>
+        <div class="home_index_board">
+          <% archives.forEach(archive=> { %>
+            <a href="/archive/<%= archive._id %>" class="home_index_board_item_link">
+              <div class="home_index_board_item">
+                <div class="home_index_thumbnail" style="background-image: url('<%= archive.thumbnails[0] %>');"></div>
+                <div class="home_index_board_content">
+                  <div class="home_index_title">
+                    <%= archive.title %>
+                  </div>
+                  <div class="home_index_meta">
+                    <%= formatDate(archive.createdAt) %>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <% }); %>
         </div>
+      </div>
 
-        <!-- 이벤트 게시판 -->
-        <div class="home_index_board_container board2">
-            <h2 class="home_index_board_title"><a href="/event">이벤트</a><a href="/event" class="home_more_info">더보기</a>
-            </h2>
-            <div class="home_index_board">
-                <% events.forEach(event=> { %>
-                    <a href="/event/<%= event._id %>" class="home_index_board_item_link">
-                        <div class="home_index_board_item">
-                            <div class="home_index_thumbnail" style="background-image: url('<%= event.thumbnail %>');">
-                            </div>
-                            <div class="home_index_board_content">
-                                <div class="home_index_title">
-                                    <%= event.title %>
-                                </div>
-                                <div class="home_index_meta">
-                                    <%= formatDate(event.createdAt) %>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <% }); %>
-            </div>
+      <!-- 마트 게시판 -->
+      <div class="home_index_board_container board5">
+        <h2 class="home_index_board_title"><a href="/mart">마트</a><a href="/mart" class="home_more_info">더보기</a>
+        </h2>
+        <div class="home_index_board">
+          <% marts.forEach(mart=> { %>
+            <a href="/mart/<%= mart._id %>" class="home_index_board_item_link">
+              <div class="home_index_board_item">
+                <div class="home_index_thumbnail" style="background-image: url('<%= mart.thumbnail1 %>');">
+                </div>
+                <div class="home_index_board_content">
+                  <div class="home_index_title">
+                    <%= mart.title %>
+                  </div>
+                  <div class="home_index_meta">
+                    <%= formatDate(mart.createdAt) %>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <% }); %>
         </div>
-
+      </div>
 
     </div>
-
-
-    <!-- 두 번째 배너 -->
-    <div class="detail-banner">
-        <a href="#">
-            <img src="/img/main-banner-3-1.png" alt="배너">
-        </a>
-    </div>
-
-
-    <!-- 하단 행 -->
-    <div class="home_index_row">
-        <!-- 블로깅 게시판 -->
-        <div class="home_index_board_container board4">
-            <h2 class="home_index_board_title"><a href="/blog">블로깅</a><a href="/blog" class="home_more_info">더보기</a>
-            </h2>
-            <div class="home_index_board">
-                <% blogs.forEach(blog=> { %>
-                    <a href="/blog/<%= blog._id %>" class="home_index_board_item_link">
-                        <div class="home_index_board_item">
-                            <div class="home_index_thumbnail" style="background-image: url('<%= blog.thumbnail %>');">
-                            </div>
-                            <div class="home_index_board_content">
-                                <div class="home_index_title">
-                                    <%= blog.title %>
-                                </div>
-                                <div class="home_index_meta">
-                                    <%= formatDate(blog.createdAt) %>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <% }); %>
-            </div>
-        </div>
-
-        <!-- 공지사항 게시판 -->
-        <div class="home_index_board_container board6">
-            <h2 class="home_index_board_title"><a href="/notice">공지사항</a><a href="/notice"
-                    class="home_more_info">더보기</a></h2>
-            <div class="home_index_board">
-                <% notices.forEach(notice=> { %>
-                    <a href="/notice/<%= notice._id %>" class="home_index_board_item_link">
-                        <div class="home_index_board_item">
-                            <div class="home_index_thumbnail" style="background-image: url('<%= notice.thumbnail %>');">
-                            </div>
-                            <div class="home_index_board_content">
-                                <div class="home_index_title">
-                                    <%= notice.title %>
-                                </div>
-                                <div class="home_index_meta">
-                                    <%= formatDate(notice.createdAt) %>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <% }); %>
-            </div>
-        </div>
-    </div>
+    
+  </div>

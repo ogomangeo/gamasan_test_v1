@@ -13,6 +13,7 @@ const memberSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, '비밀번호는 필수 항목입니다'],
+    unique: true
   },
   username: {
     type: String,

@@ -3,12 +3,11 @@ const router = express.Router();
 const asyncHandler = require("express-async-handler");
 const Notice = require("../models/Notice");
 const Program = require("../models/Program");
-const Blog = require("../models/Blog");
 const Archive = require("../models/Archive");
 const Mart = require("../models/Mart");
-const Event = require("../models/Event");
 
 const homeLayout = "../views/layouts/home.ejs";
+const mainLayout = "../views/layouts/main.ejs";
 
 // 공지사항 상세 페이지 라우트
 router.get(
@@ -17,7 +16,7 @@ router.get(
     const notice = await Notice.findById(req.params.id);
     if (!notice) {
       return res.status(404).render("error", {
-        layout: homeLayout,
+        layout: mainLayout,
         message: "공지사항을 찾을 수 없습니다.",
       });
     }
@@ -33,7 +32,7 @@ router.get(
     }).sort({ createdAt: 1 });
 
     res.render("detail/detail_notice", {
-      layout: homeLayout,
+      layout: mainLayout,
       notice,
       previousNotice,
       nextNotice,
@@ -48,11 +47,10 @@ router.get(
     const program = await Program.findById(req.params.id);
     if (!program) {
       return res.status(404).render("error", {
-        layout: homeLayout,
+        layout: mainLayout,
         message: "프로그램을 찾을 수 없습니다.",
       });
     }
-
     // 모든 프로그램 목록 가져오기
     const programs = await Program.find().sort({ createdAt: -1 });
 
@@ -66,7 +64,7 @@ router.get(
     }).sort({ createdAt: 1 });
 
     res.render("detail/detail_program", {
-      layout: homeLayout,
+      layout: mainLayout,
       program,
       currentProgram: program,
       programs,
@@ -76,65 +74,64 @@ router.get(
   })
 );
 
-// 블로그 상세 페이지 라우트
-router.get(
-  "/blog/:id",
-  asyncHandler(async (req, res) => {
-    const blog = await Blog.findById(req.params.id);
-    if (!blog) {
-      return res.status(404).render("error", {
-        layout: homeLayout,
-        message: "블로그 글을 찾을 수 없습니다.",
-      });
-    }
 
-    // 이전 블로그 글 찾기
-    const previousBlog = await Blog.findOne({
-      createdAt: { $lt: blog.createdAt },
-    }).sort({ createdAt: -1 });
-
-    // 다음 블로그 글 찾기
-    const nextBlog = await Blog.findOne({
-      createdAt: { $gt: blog.createdAt },
-    }).sort({ createdAt: 1 });
-
-    res.render("detail/detail_blog", {
-      layout: homeLayout,
-      blog,
-      previousBlog,
-      nextBlog,
-    });
-  })
-);
 
 // 아카이빙 상세 페이지 라우트
 router.get(
   "/archive/:id",
   asyncHandler(async (req, res) => {
-    const archive = await Archive.findById(req.params.id);
-    if (!archive) {
-      return res.status(404).render("error", {
-        layout: homeLayout,
-        message: "아카이빙 항목을 찾을 수 없습니다.",
+    try {
+      const archive = await Archive.findById(req.params.id);
+      
+      if (!archive) {
+        return res.status(404).render("page/error", {
+          layout: mainLayout,
+          message: "아카이빙 항목을 찾을 수 없습니다.",
+          error: {
+            status: 404,
+            stack: process.env.NODE_ENV === 'development' ? '404 Not Found' : ''
+          }
+        });
+      }
+
+      // 이전 아카이브 찾기 (에러 처리 추가)
+      let previousArchive = null;
+      try {
+        previousArchive = await Archive.findOne({
+          createdAt: { $lt: archive.createdAt }
+        }).sort({ createdAt: -1 });
+      } catch (err) {
+        console.error('이전 아카이브 조회 실패:', err);
+      }
+
+      // 다음 아카이브 찾기 (에러 처리 추가)
+      let nextArchive = null;
+      try {
+        nextArchive = await Archive.findOne({
+          createdAt: { $gt: archive.createdAt }
+        }).sort({ createdAt: 1 });
+      } catch (err) {
+        console.error('다음 아카이브 조회 실패:', err);
+      }
+
+      res.render("detail/detail_archive", {
+        layout: mainLayout,
+        archive,
+        previousArchive,
+        nextArchive,
+      });
+      
+    } catch (error) {
+      console.error('아카이브 조회 중 에러 발생:', error);
+      res.status(500).render("page/error", {
+        layout: mainLayout,
+        message: "서버 오류가 발생했습니다.",
+        error: {
+          status: 500,
+          stack: process.env.NODE_ENV === 'development' ? error.stack : ''
+        }
       });
     }
-
-    // 이전 아카이브 찾기
-    const previousArchive = await Archive.findOne({
-      createdAt: { $lt: archive.createdAt },
-    }).sort({ createdAt: -1 });
-
-    // 다음 아카이브 찾기
-    const nextArchive = await Archive.findOne({
-      createdAt: { $gt: archive.createdAt },
-    }).sort({ createdAt: 1 });
-
-    res.render("detail/detail_archive", {
-      layout: homeLayout,
-      archive,
-      previousArchive,
-      nextArchive,
-    });
   })
 );
 
@@ -165,7 +162,7 @@ router.get(
 
     if (!mart) {
       return res.status(404).render("error", {
-        layout: homeLayout,
+        layout: mainLayout,
         message: "마트 상품을 찾을 수 없습니다.",
       });
     }
@@ -181,7 +178,7 @@ router.get(
     }).sort({ createdAt: 1 });
 
     res.render("detail/detail_mart", {
-      layout: homeLayout,
+      layout: mainLayout,
       mart,
       previousMart,
       nextMart,
@@ -189,34 +186,4 @@ router.get(
   })
 );
 
-// 공지사항 상세 페이지 라우트
-router.get(
-  "/event/:id",
-  asyncHandler(async (req, res) => {
-    const event = await Event.findById(req.params.id);
-    if (!event) {
-      return res.status(404).render("error", {
-        layout: homeLayout,
-        message: "공지사항을 찾을 수 없습니다.",
-      });
-    }
-
-    // 이전 공지사항 찾기
-    const previousEvent = await Event.findOne({
-      createdAt: { $lt: event.createdAt },
-    }).sort({ createdAt: -1 });
-
-    // 다음 공지사항 찾기
-    const nextEvent = await Event.findOne({
-      createdAt: { $gt: event.createdAt },
-    }).sort({ createdAt: 1 });
-
-    res.render("detail/detail_event", {
-      layout: homeLayout,
-      event,
-      previousEvent,
-      nextEvent,
-    });
-  })
-);
 module.exports = router;

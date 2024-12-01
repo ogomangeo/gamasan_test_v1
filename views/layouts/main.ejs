@@ -4,22 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%-locals.title %> Gamasan</title>
-    <link rel="stylesheet" href="/css/common.css">
-    <link rel="stylesheet" href="/css/mainpage/home_board.css">
+    <title><%-locals.title %> Avopic</title>    
+    <!-- 공통 스타일 -->
+    <link rel="stylesheet" href="/css/common.css">    
+    <!-- 메인페이지 관련 -->
+    <link rel="stylesheet" href="/css/mainpage/home_board.css">    
+    <!-- 공통 파트 요소들 -->
     <link rel="stylesheet" href="/css/parts/header.css">
     <link rel="stylesheet" href="/css/parts/sidebar.css">
     <link rel="stylesheet" href="/css/parts/footer.css">
     <link rel="stylesheet" href="/css/parts/adbanner.css">
-    <link rel="stylesheet" href="/css/parts/pagenation.css">
+    <link rel="stylesheet" href="/css/parts/pagenation.css">    
+    <!-- 상세 페이지 스타일 -->
+    <link rel="stylesheet" href="/css/detail.css">
+    <link rel="stylesheet" href="/css/detail/detail-mart.css">    
+    <!-- 각 페이지별 스타일 -->
     <link rel="stylesheet" href="/css/page/about.css">
-    <link rel="stylesheet" href="/css/page/blog.css">
     <link rel="stylesheet" href="/css/page/archive.css">
     <link rel="stylesheet" href="/css/page/notice.css">
     <link rel="stylesheet" href="/css/page/program.css">
     <link rel="stylesheet" href="/css/page/mart.css">
     <link rel="stylesheet" href="/css/page/event.css">
-    <link rel="stylesheet" href="/css/detail.css">
 </head>
 
 <body>
@@ -29,16 +34,19 @@
             <%- include('../include/_adbanner') %>
                 <!-- header header header header  -->
                 <%- include('../include/_header', { member: locals.member || member }) %>
-                <div class="main-content">
-                    <%- include('../include/_sidebar') %>
+                    <div class="main-content">
+                        <!-- sidebar sidebar sidebar sidebar  -->
+                        
                             <!-- product product product product  -->
                             <div class="content-wrapper">
                                 <div class="detail-banner">
-                                    <img src="/img/main-banner-2.png" alt="배너">
+                                    <a href="#">
+                                        <img src="/img/main-banner-2.png" alt="배너">
+                                    </a>
                                 </div>
-                                    <%- body %>
-                                <!-- footer footer footer footer  -->
-                                <%- include('../include/_footer') %>
+                                <%- body %>
+                                    <!-- footer footer footer footer  -->
+                                    <%- include('../include/_footer') %>
                             </div>
                     </div>
         </div>

@@ -6,10 +6,8 @@ const fs = require('fs');
 const mainLayout = "../views/layouts/main.ejs";
 const Notice = require("../models/Notice");
 const Program = require("../models/Program");
-const Blog = require("../models/Blog");
 const Archive = require("../models/Archive");
 const Mart = require("../models/Mart");
-const Event = require("../models/Event");
 const asyncHandler = require("express-async-handler");
 const Member = require("../models/Member");
 const Fortune = require("../models/Fortune");
@@ -52,33 +50,27 @@ router.use(async (req, res, next) => {
 router.get(
   ["/", "/home"],
   asyncHandler(async (req, res) => {
-    // console.log('Route handler member:', res.locals.member); // 디버깅용
-
     const locals = {
       title: "Home",
-      member: res.locals.member  // locals 객체에 member 추가
+      member: res.locals.member
     };
-    const notices = await Notice.find({}).sort({ createdAt: -1 }).limit(8);  // 최신순 정렬
-    const programs = await Program.find({}).sort({ createdAt: -1 }).limit(8);  // 최신순 정렬
-    const blogs = await Blog.find({}).sort({ createdAt: -1 }).limit(8);  // 최신순 정렬
-    const archives = await Archive.find({}).sort({ createdAt: -1 }).limit(8);  // 최신순 정렬
-    const marts = await Mart.find({}).sort({ createdAt: -1 }).limit(8);  // 최신순 정렬
-    const events = await Event.find({}).sort({ createdAt: -1 }).limit(8);  // 최신순 정렬
+
+    const notices = await Notice.find({}).sort({ createdAt: -1 }).limit(8);
+    const programs = await Program.find({}).sort({ createdAt: -1 }).limit(15);
+    const archives = await Archive.find({}).sort({ createdAt: -1 }).limit(8);
+    const marts = await Mart.find({}).sort({ createdAt: -1 }).limit(8);
 
     res.render("page/index", {
       locals,
       notices,
       programs,
-      blogs,
       archives,
       marts,
-      events,
       member: res.locals.member,
       layout: mainLayout
     });
   })
 );
-
 router.get("/program", asyncHandler(async (req, res) => {
   const locals = {
     title: "Program",
@@ -123,7 +115,6 @@ router.get("/program/:id", asyncHandler(async (req, res) => {
       // script 필드를 select에 추가
       const programs = await Program.find({})
           .sort({ createdAt: -1 })
-          .limit(10)
           .select('_id title script thumbnail createdAt'); // script 추가
 
       // 이전글, 다음글 찾기
@@ -203,38 +194,6 @@ router.get("/notice", asyncHandler(async (req, res) => {
 }));
 
 
-router.get("/blog", asyncHandler(async (req, res) => {
-  const locals = {
-    title: "Blog",
-  };
-
-  // 페이지 번호와 한 페이지당 표시할 아이템 수 설정
-  const page = parseInt(req.query.page) || 1;
-  const limit = 15;
-  const skip = (page - 1) * limit;
-
-  // 전체 블로그 포스트 수 조회
-  const totalPosts = await Blog.countDocuments();
-
-  // 전체 페이지 수 계산
-  const totalPages = Math.ceil(totalPosts / limit);
-
-  // 현재 페이지에 해당하는 블로그 데이터 조회
-  const data = await Blog.find({})
-    .sort({ createdAt: -1 }) // 최신 순으로 정렬
-    .skip(skip)
-    .limit(limit);
-
-  res.render("page/blog", { 
-    locals, 
-    data, 
-    layout: mainLayout,
-    currentPage: page,
-    totalPages: totalPages,
-    member: res.locals.member
-  });
-}));
-
 router.get("/archive", asyncHandler(async (req, res) => {
   const locals = {
     title: "Archive",
@@ -296,39 +255,6 @@ router.get("/mart", asyncHandler(async (req, res) => {
     currentPage: page,
     totalPages: totalPages,
     totalMarts: totalMarts,
-    member: res.locals.member
-  });
-}));
-
-router.get("/event", asyncHandler(async (req, res) => {
-  const locals = {
-    title: "Event",
-  };
-
-  // 페이지 번호 및 페이지 당 항목 수 설정
-  const page = parseInt(req.query.page) || 1;
-  const limit = 15;
-  const skip = (page - 1) * limit;
-
-  // 전체 프로그램 포스트 수 가져오기
-  const totalPosts = await Event.countDocuments();
-
-  // 총 페이지 수 계산
-  const totalPages = Math.ceil(totalPosts / limit);
-
-  // 현재 페이지에 해당하는 프로그램 데이터 가져오기
-  const data = await Event.find({})
-    .sort({ createdAt: -1 })  // 최신 순으로 정렬
-    .skip(skip)
-    .limit(limit);
-
-  // 클라이언트에 렌더링
-  res.render("page/event", { 
-    locals, 
-    data, 
-    layout: mainLayout,
-    currentPage: page,
-    totalPages: totalPages,
     member: res.locals.member
   });
 }));
@@ -445,45 +371,58 @@ router.post("/join", asyncHandler(async (req, res) => {
 // 회원 마이페이지 라우트
 //★ ★ 항상 마지막에 위치시킬것~~
 // /:username 라우트 수정
-router.get('/:username', async (req, res) => {
+router.get('/member/:username', async (req, res) => {
   try {
     const username = req.params.username;
+    const currentUser = res.locals.member;
+
+    // 로그인 체크
+    if (!currentUser) {
+      return res.redirect('/login');
+    }
+
+    // 요청된 프로필 사용자 조회
+    const profileUser = await Member.findOne({ username: username });
     
-    // DB에서 해당 username을 가진 사용자 정보를 조회
-    const user = await Member.findOne({ username: username });
-    
-    if (!user) {
-      // 사용자를 찾을 수 없는 경우
+    if (!profileUser) {
       return res.render("page/error", { 
         locals: {
           title: "Error",
           description: "사용자를 찾을 수 없습니다."
         },
         layout: mainLayout,
-        member: res.locals.member
+        member: currentUser
       });
     }
 
-    // 자신의 프로필을 보는 경우에만 오늘의 운세 조회
-    let fortune = null;
-    if (res.locals.member && res.locals.member.username === username) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      fortune = await Fortune.findOne({
-        username: username,
-        date: {
-          $gte: today,
-          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
-        }
+    // 자신의 프로필이 아닌 경우 접근 차단
+    if (currentUser.username !== username) {
+      return res.render("page/error", {
+        locals: {
+          title: "Error",
+          description: "접근 권한이 없습니다."
+        },
+        layout: mainLayout,
+        member: currentUser
       });
     }
 
-    // detail_profile.ejs를 사용하도록 수정
+    // 운세 정보 조회 (자신의 프로필인 경우에만)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const fortune = await Fortune.findOne({
+      username: username,
+      date: {
+        $gte: today,
+        $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
+      }
+    });
+
     res.render("detail/detail_profile", {
       title: `${username}의 프로필`,
-      member: res.locals.member,
-      profileUser: user,
+      member: currentUser,
+      profileUser: profileUser,
       fortune: fortune,
       layout: mainLayout
     });
@@ -496,7 +435,7 @@ router.get('/:username', async (req, res) => {
         description: "서버 오류가 발생했습니다."
       },
       layout: mainLayout,
-      member: res.locals.member
+      member: currentUser
     });
   }
 });

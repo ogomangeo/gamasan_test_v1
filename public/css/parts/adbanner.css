@@ -9,25 +9,29 @@
   font-size: 14px;
   line-height: 1.5;
   text-decoration: none;
-  width: 160px;
-  height: 300px;
+  width: 200px;
+  height: 400px;
 }
 
 .adbanner1 {
-  background-color: #FF6347;
-  top: 150px;
-  right: 50px;
+  background-color: #DC143C; /* Crimson */
+  top: 100px;
+  right: 100px;
 }
 
 .adbanner2 {
-  background-color: #4682B4;
-  top: 460px;
-  right: 50px;
+  background-color: #1E90FF; /* DodgerBlue */
+  top: 510px;
+  right: 100px;
 }
 
 .adbanner3 {
-  background-color: #32CD32;
-  height: 600px;
-  top: 150px;
-  left: 50px;
+  background-color: #00FF7F; /* SpringGreen */
+  top: 100px;
+  left: 100px;
+}
+
+.adbanner4 {
+  top: 510px;
+  left: 100px;
 }

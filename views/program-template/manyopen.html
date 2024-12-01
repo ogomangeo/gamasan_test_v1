@@ -8,12 +8,21 @@
   }
 
   .manyopen-content {
-    flex: 1;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 80px;
-    padding-bottom: 20px;
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .manyopen-left {
+    flex: 1;
+    max-width: 500px;
+  }
+
+  .manyopen-right {
+    flex: 1;
+    max-width: 500px;
   }
 
   .manyopen-h1 {
@@ -24,10 +33,8 @@
   }
 
   .manyopen-textarea {
-    width: 100%;        /* 전체 너비 설정 */
-    max-width: 500px;   /* 최대 너비 제한 */
+    width: 100%;
     height: 250px;
-    margin: 0 auto 20px auto;  /* 상하 0, 좌우 자동 마진으로 중앙 정렬 */
     padding: 10px;
     font-size: 16px;
     border: 1px solid #ccc;
@@ -35,16 +42,16 @@
     box-sizing: border-box;
     resize: both;
     overflow: auto;
-    text-align: center;  /* 내부 텍스트 중앙 정렬 */
-    display: block;      /* 블록 레벨 요소로 설정 */
-}
+    text-align: center;
+    display: block;
+  }
 
   .manyopen-info {    
-    margin: 20px 0;
-    font-size: 13px;
+    font-size: 16px;
     color: #555;
     transition: color 0.3s;
     text-align: center;
+    line-height: 2; /* 줄 간격을 2배로 설정 */
   }
 
   .manyopen-buttons {
@@ -106,6 +113,14 @@
   }
 
   @media (max-width: 768px) {
+    .manyopen-content {
+      flex-direction: column;
+    }
+    
+    .manyopen-left, .manyopen-right {
+      max-width: 100%;
+    }
+
     .manyopen-buttons {
       flex-direction: column;
       align-items: center;
@@ -118,18 +133,24 @@
   }
 </style>
 
-<h1 class="manyopen-h1">🏍️여러 URL 한 번에 열기~🚀</h1>
-<div class="manyopen-info" id="manyopen-infoText">
-  * 대부분의 브라우저는 한 번에 많은 새 탭을 여는 것을 제한합니다.<br>
-  * 2~30개 정도의 URL 수가 적당합니다.<br>
-  * 많은 URL을 한 번에 열면 시스템 성능이 저하될 수 있습니다.<br>
-  * 많은 URL을 열어야 한다면, 나누어 여는 것이 좋습니다.
+<div class="manyopen-content">
+  <div class="manyopen-left">
+    <h1 class="manyopen-h1">🏍️여러 URL 한 번에 열기🚀</h1>
+    <div class="manyopen-info" id="manyopen-infoText">
+      * 대부분의 브라우저는 한 번에 많은 새 탭을 여는 것을 제한합니다.<br>
+      * 2~30개 정도의 URL 수가 적당합니다.<br>
+      * 많은 URL을 한 번에 열면 시스템 성능이 저하될 수 있습니다.<br>
+      * 많은 URL을 열어야 한다면, 나누어 여는 것이 좋습니다.
+    </div>
+  </div>
+  <div class="manyopen-right">
+    <textarea id="manyopen-inputText" class="manyopen-textarea" placeholder="URL들을 여기에 입력하세요 (한 줄에 하나씩)" oninput="manyopenUpdateButtons()"></textarea>
+  </div>
 </div>
-<textarea id="manyopen-inputText" class="manyopen-textarea" placeholder="Enter URLs here, each on a new line..." oninput="manyopenUpdateButtons()"></textarea>
 
 <div class="manyopen-buttons">
-  <button id="manyopen-openTabButton" class="manyopen-button manyopen-open-tab" onclick="manyopenOpenUrls('tab')">Open URLs in<br>new Tab</button>
-  <button id="manyopen-openWindowButton" class="manyopen-button manyopen-open-window" onclick="manyopenOpenUrls('window')">Open URLs in<br>new Window</button>
+  <button id="manyopen-openTabButton" class="manyopen-button manyopen-open-tab" onclick="manyopenOpenUrls('tab')">Open URLs in<br>새 탭으로 열기</button>
+  <button id="manyopen-openWindowButton" class="manyopen-button manyopen-open-window" onclick="manyopenOpenUrls('window')">Open URLs in<br>새 창으로 열기</button>
   <button id="manyopen-clearButton" class="manyopen-button manyopen-clear" onclick="manyopenClearText()">Clear</button>
 </div>
 

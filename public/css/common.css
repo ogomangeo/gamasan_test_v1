@@ -47,7 +47,7 @@ li {
 }
 
 .content-wrapper {
-    max-width: 1000px;
+    max-width: 1200px;
     flex-grow: 1;
     flex-direction: column;
     justify-content: center;

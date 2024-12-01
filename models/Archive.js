@@ -1,17 +1,19 @@
 const mongoose = require("mongoose");
 
 const ArchiveSchema = new mongoose.Schema({
-    thumbnail: {
+    thumbnails: [{
         type: String,
         required: true
-    },
+    }],
     title: {
         type: String,
         required: true
     },
+    category: {
+        type: String
+    },
     script: {
         type: String,
-        required: true
     },
     createdAt: {
         type: Date,
@@ -20,4 +22,3 @@ const ArchiveSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("Archive", ArchiveSchema);
-

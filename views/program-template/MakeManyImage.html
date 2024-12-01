@@ -1,10 +1,6 @@
 <style>
-  .m-m-image-content-wrapper {
-  width: 980px;
-}
 
 .m-m-image-instructions {
-  width: 980px;
   margin-bottom: 20px;
   padding: 15px;
   background-color: #f9f9f9;
@@ -18,11 +14,9 @@
   display: flex;
   justify-content: space-between;
   align-items: stretch;
-  padding: 20px;
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 980px;
   height: 800px;   
 }
 
@@ -35,8 +29,7 @@
 .m-m-image-control-panel {
   flex: 0 0 40%;
   margin-right: 20px;
-  border: 1px solid #ccc;
-  padding: 15px;
+  padding: 5px;
   border-radius: 5px;
   display: flex;
   flex-direction: column;
@@ -100,7 +93,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .m-m-image-control-panel button {
@@ -113,7 +106,7 @@
   cursor: pointer;
   background-color: #f0f0f0;
   transition: background-color 0.1s, transform 0.1s;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .m-m-image-control-panel button.m-m-image-active {
@@ -214,18 +207,6 @@
 </style>
 <div class="main-content">
   <div class="content-wrapper">
-    <div class="m-m-image-instructions" aria-label="사용 안내">
-      <strong>* 사용안내</strong><br>
-      1) 필요수량을 입력해주세요<br>
-      2) 버튼을 클릭하면서, 색깔을 랜덤으로 세팅할수도 있고, 직접 입력할 수도 있습니다. <br>
-      3) 이미지 사이즈를 픽셀(px)기준 100*100, 150*100 형식으로 입력해주세요.<br>
-      4) 이미지 사이즈를 입력한 값으로 일괄 적용할수도, 개별적으로 설정할 수도 있습니다.<br>
-      5) 텍스트 있음 버튼을 클릭하면, 하단 텍스트 입력란에 이미지에 넣고 싶은 텍스트를 입력 할 수 있습니다<br>
-      6) 색상코드 입력 버튼을 누르면, 색깔의 헥스코드가 이미지에 입력됩니다.<br>
-      7) 넘버링은 텍스트_1, 텍스트_2.. 이렇게 _n 형식으로 텍스트 뒤에 숫자가 입력됩니다. <br>
-      8) 텍스트 위치 중 하나를 선택함으로 입력한 텍스트가 이미지 어느곳에 위치하는지를 정할 수 있습니다.<br>
-      9) 이미지 새로고침을 누르면 색이 랜덤으로 변하고, 이미지 다운로드를 누르면 만든 이미지들이 다운로드 됩니다.
-    </div>
     <div class="m-m-image-generator-container">
       <div class="m-m-image-control-panel">
         <div class="m-m-image-static-content">
@@ -240,19 +221,19 @@
             <div class="m-m-image-col"><button id="m-m-image-directButton" aria-pressed="false">색깔 직접 선택</button></div>
           </div>
           <div class="m-m-image-row m-m-image-image-size-row">
-            <label for="m-m-image-sizeInput" class="m-m-image-col m-m-image-center">이미지 사이즈 (가로*세로)</label>
+            <label for="m-m-image-sizeInput" class="m-m-image-col m-m-image-center">만들 이미지 사이즈 (가로*세로)</label>
             <div class="m-m-image-col"><input type="text" id="m-m-image-sizeInput" placeholder="사이즈 입력 가로px*세로px"
                 aria-label="이미지 크기"></div>
           </div>
           <div class="m-m-image-row m-m-image-apply-setting-row">
             <div class="m-m-image-col"><button id="m-m-image-bulkButton" class="m-m-image-toggle-apply m-m-image-active"
-                aria-pressed="true">일괄적용</button></div>
+                aria-pressed="true">사이즈 일괄적용</button></div>
             <div class="m-m-image-col"><button id="m-m-image-individualButton" class="m-m-image-toggle-apply"
-                aria-pressed="false">개별설정</button></div>
+                aria-pressed="false">사이즈 개별설정</button></div>
           </div>
           <div class="m-m-image-row m-m-image-text-toggle-row">
             <div class="m-m-image-col"><button id="m-m-image-textOnButton" class="m-m-image-toggle-text"
-                aria-pressed="false">텍스트 있음</button></div>
+                aria-pressed="false">이미지에 텍스트 입력</button></div>
             <div class="m-m-image-col"><button id="m-m-image-textOffButton"
                 class="m-m-image-toggle-text m-m-image-active" aria-pressed="true">텍스트 없음</button></div>
           </div>
@@ -290,8 +271,8 @@
           <div class="m-m-image-row m-m-image-action-buttons-row">
             <div class="m-m-image-col"><button id="m-m-image-generateImageButton" class="m-m-image-generate-button">이미지
                 생성하기</button></div>
-            <div class="m-m-image-col"><button id="m-m-image-refreshImageButton" class="m-m-image-refresh-button">이미지
-                새로고침</button></div>
+            <div class="m-m-image-col"><button id="m-m-image-refreshImageButton" class="m-m-image-refresh-button">색깔 랜덤 변경</button>
+            </div>
             <div class="m-m-image-col"><button id="m-m-image-downloadButton" class="m-m-image-download-button">이미지
                 다운로드</button></div>
           </div>
