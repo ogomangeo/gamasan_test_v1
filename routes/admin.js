@@ -66,7 +66,7 @@ const checkLogin = (req, res, next) => {
 
 //Admin Logout
 // GET /logout
-router.get("/logout", (req, res) => {
+router.get("/admin/logout", (req, res) => {
   res.clearCookie("token");
   res.redirect("/");
 });

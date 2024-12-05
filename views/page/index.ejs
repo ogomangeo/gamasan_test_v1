@@ -17,9 +17,6 @@
                 <div class="home_index_title">
                   <%= program.title %>
                 </div>
-                <div class="home_index_meta">
-                  <%= formatDate(program.createdAt) %>
-                </div>
               </div>
             </div>
           </a>
@@ -43,9 +40,6 @@
                   <div class="home_index_title">
                     <%= archive.title %>
                   </div>
-                  <div class="home_index_meta">
-                    <%= formatDate(archive.createdAt) %>
-                  </div>
                 </div>
               </div>
             </a>
@@ -65,10 +59,7 @@
                 </div>
                 <div class="home_index_board_content">
                   <div class="home_index_title">
-                    <%= mart.title %>
-                  </div>
-                  <div class="home_index_meta">
-                    <%= formatDate(mart.createdAt) %>
+                    [<%= mart.brand %>] <%= mart.title %>
                   </div>
                 </div>
               </div>

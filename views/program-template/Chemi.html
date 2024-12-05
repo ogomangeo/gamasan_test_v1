@@ -1,0 +1,352 @@
+<style>
+  .chemi-container {
+    margin: 15px auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    width: 95%;
+    max-width: 560px;
+  }
+
+  .chemi-container h1 {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    color: #ff69b4;
+    text-align: center;
+  }
+
+  .chemi-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 2px;
+    margin-bottom: 15px;
+  }
+
+  .chemi-table th,
+  .chemi-table td {
+    border: 1px solid #ffb6c1;
+    padding: 8px;
+    text-align: center;
+    border-radius: 5px;
+  }
+
+  .chemi-table th {
+    background-color: #ffe4e1;
+    font-size: 0.9em;
+  }
+
+  .chemi-input,
+  .chemi-button {
+    margin: 5px 0;
+    padding: 8px;
+    box-sizing: border-box;
+    font-size: 0.9em;
+    border-radius: 20px;
+    border: 1px solid #ffb6c1;
+  }
+
+  .chemi-button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .chemi-button-container button {
+    width: 48%;
+    background-color: #ff69b4;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .chemi-button-container button:hover {
+    background-color: #ff1493;
+  }
+
+  .chemi-result {
+    font-size: 16px;
+    margin-top: 5px;
+    font-weight: bold;
+  }
+
+  #chemi-allResults {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+  }
+
+  .chemi-resultColumn {
+    width: 48%;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .chemi-step {
+    margin: 3px 0;
+    font-size: 0.9em;
+  }
+
+  .chemi-interpretation {
+    font-size: 16px;
+    margin-top: 5px;
+    text-align: center;
+    color: #ff69b4;
+    font-weight: bold;
+  }
+
+  #chemi-copyFeedback {
+    display: none;
+    color: green;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 0.9em;
+  }
+
+  .chemi-description {
+    font-size: 14px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    text-align: center;
+    font-weight: bold;
+    color: #ff69b4;
+  }
+
+  @media (max-width: 600px) {
+    .chemi-container {
+      padding: 10px;
+    }
+
+    .chemi-container h1 {
+      font-size: 1.2em;
+    }
+
+    .chemi-table th,
+    .chemi-table td,
+    .chemi-input,
+    .chemi-button,
+    .chemi-result,
+    .chemi-step,
+    .chemi-interpretation {
+      font-size: 0.8em;
+    }
+  }
+</style>
+<div class="chemi-container">
+  <h1>이름 궁합 테스트 : 의사결정을 중심으로</h1>
+  <table class="chemi-table">
+    <tr>
+      <th>리드 하는 쪽🐓</th>
+      <th>팔로우 하는 쪽🐤</th>
+    </tr>
+    <tr>
+      <td><input type="text" id="chemi-nameInput1" class="chemi-input" placeholder="이름을 입력하세요"></td>
+      <td><input type="text" id="chemi-nameInput2" class="chemi-input" placeholder="이름을 입력하세요"></td>
+    </tr>
+    <tr>
+      <td>
+        <div id="chemi-result1" class="chemi-result"></div>
+      </td>
+      <td>
+        <div id="chemi-result2" class="chemi-result"></div>
+      </td>
+    </tr>
+  </table>
+  <div class="chemi-button-container">
+    <button class="chemi-button" onclick="calculateNames()">관계 측정🔎</button>
+    <button class="chemi-button" onclick="copyResults()">텍스트 복사📄</button>
+  </div>
+  <div id="chemi-copyFeedback"></div>
+  <div id="chemi-allResults">
+    <div class="chemi-resultColumn">
+      <div id="chemi-leftDescription" class="chemi-description"></div>
+      <div id="chemi-leftResults"></div>
+    </div>
+    <div class="chemi-resultColumn">
+      <div id="chemi-rightDescription" class="chemi-description"></div>
+      <div id="chemi-rightResults"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const jamoValues = {
+    'ㄱ': 1, 'ㄲ': 2, 'ㄴ': 1, 'ㄷ': 2, 'ㄸ': 4, 'ㄹ': 3, 'ㅁ': 3, 'ㅂ': 4, 'ㅃ': 8, 'ㅅ': 2, 'ㅆ': 4, 'ㅇ': 2,
+    'ㅈ': 3, 'ㅉ': 6, 'ㅊ': 4, 'ㅋ': 2, 'ㅌ': 3, 'ㅍ': 4, 'ㅎ': 4,
+    'ㅏ': 2, 'ㅐ': 3, 'ㅑ': 3, 'ㅒ': 4, 'ㅓ': 2, 'ㅔ': 3, 'ㅕ': 3, 'ㅖ': 4, 'ㅗ': 2, 'ㅘ': 4, 'ㅙ': 5, 'ㅚ': 3,
+    'ㅛ': 3, 'ㅜ': 2, 'ㅝ': 4, 'ㅞ': 5, 'ㅟ': 3, 'ㅠ': 3, 'ㅡ': 1, 'ㅢ': 2, 'ㅣ': 1
+  };
+
+  function decomposeHangul(char) {
+    const cho = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+    const jung = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'];
+    const jong = ['', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+
+    const code = char.charCodeAt(0) - 0xAC00;
+    if (code > -1 && code < 11172) {
+      const jongIndex = code % 28;
+      const jungIndex = (code - jongIndex) / 28 % 21;
+      const choIndex = ((code - jongIndex) / 28 - jungIndex) / 21;
+
+      return [cho[choIndex], jung[jungIndex], jong[jongIndex]].filter(Boolean);
+    }
+    return [char];
+  }
+
+  function calculateName(name) {
+    let results = [];
+    for (let char of name) {
+      const decomposed = decomposeHangul(char);
+      let charTotal = 0;
+      for (let jamo of decomposed) {
+        if (jamoValues[jamo]) {
+          charTotal += jamoValues[jamo];
+        }
+      }
+      results.push(charTotal);
+    }
+    return results;
+  }
+
+  function calculateSteps(combined) {
+    let steps = [combined];
+    while (combined.length > 2) {
+      let newCombined = [];
+      for (let i = 0; i < combined.length - 1; i++) {
+        newCombined.push((combined[i] + combined[i + 1]) % 10);
+      }
+      combined = newCombined;
+      steps.push(combined);
+    }
+    return steps;
+  }
+
+  function interpretResult(percentage) {
+    if (percentage <= 20) return "원수";
+    if (percentage <= 40) return "악연";
+    if (percentage <= 60) return "보통";
+    if (percentage <= 80) return "호감";
+    return "신혼";
+  }
+
+  function displayResults(results, elementId, descriptionId, name1, name2) {
+    const resultsDiv = document.getElementById(elementId);
+    const descriptionDiv = document.getElementById(descriptionId);
+    resultsDiv.innerHTML = '';
+
+    if (descriptionId === 'chemi-leftDescription') {
+      descriptionDiv.textContent = `${name1} 리드, ${name2} 팔로우 둘의 케미`;
+    } else {
+      descriptionDiv.textContent = `${name2} 리드, ${name1} 팔로우 둘의 케미`;
+    }
+
+    results.forEach((step, index) => {
+      const stepDiv = document.createElement('div');
+      stepDiv.className = 'chemi-step';
+      if (index === results.length - 1) {
+        const percentage = parseInt(step.join(''));
+        stepDiv.textContent = percentage + '%';
+        resultsDiv.appendChild(stepDiv);
+
+        const interpretationDiv = document.createElement('div');
+        interpretationDiv.className = 'chemi-interpretation';
+        interpretationDiv.textContent = interpretResult(percentage);
+        resultsDiv.appendChild(interpretationDiv);
+      } else {
+        stepDiv.textContent = step.join(' ');
+        resultsDiv.appendChild(stepDiv);
+      }
+    });
+  }
+
+  function calculateNames() {
+    const name1 = document.getElementById('chemi-nameInput1').value;
+    const name2 = document.getElementById('chemi-nameInput2').value;
+
+    if (!name1 || !name2) {
+      alert("두 이름을 모두 입력해주세요.");
+      return;
+    }
+
+    const result1 = calculateName(name1);
+    const result2 = calculateName(name2);
+
+    document.getElementById('chemi-result1').textContent = result1.join(' ');
+    document.getElementById('chemi-result2').textContent = result2.join(' ');
+
+    let combinedResult1 = [];
+    let combinedResult2 = [];
+    for (let i = 0; i < Math.max(result1.length, result2.length); i++) {
+      if (result1[i] !== undefined) combinedResult1.push(result1[i]);
+      if (result2[i] !== undefined) combinedResult1.push(result2[i]);
+      if (result2[i] !== undefined) combinedResult2.push(result2[i]);
+      if (result1[i] !== undefined) combinedResult2.push(result1[i]);
+    }
+
+    const steps1 = calculateSteps(combinedResult1);
+    const steps2 = calculateSteps(combinedResult2);
+
+    displayResults(steps1, 'chemi-leftResults', 'chemi-leftDescription', name1, name2);
+    displayResults(steps2, 'chemi-rightResults', 'chemi-rightDescription', name1, name2);
+  }
+
+  function copyResults() {
+    const name1 = document.getElementById('chemi-nameInput1').value;
+    const name2 = document.getElementById('chemi-nameInput2').value;
+    const result1 = document.getElementById('chemi-result1').textContent;
+    const result2 = document.getElementById('chemi-result2').textContent;
+    const leftDescription = document.getElementById('chemi-leftDescription').textContent;
+    const rightDescription = document.getElementById('chemi-rightDescription').textContent;
+    const leftResults = document.getElementById('chemi-leftResults').innerText.split('\n');
+    const rightResults = document.getElementById('chemi-rightResults').innerText.split('\n');
+
+    const leftInterpretation = leftResults.pop();
+    const rightInterpretation = rightResults.pop();
+
+    const textToCopy = `${leftDescription}\n${name1} ${result1} + ${name2} ${result2} 결과 :${leftInterpretation}\n${leftResults.join('\n')}\n\n${rightDescription}\n${name2} ${result2} + ${name1} ${result1} 결과: ${rightInterpretation}\n${rightResults.join('\n')}`;
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showFeedback("결과가 클립보드에 복사되었습니다.");
+      }).catch(() => {
+        fallbackCopyTextToClipboard(textToCopy);
+      });
+    } else {
+      fallbackCopyTextToClipboard(textToCopy);
+    }
+  }
+
+  function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand('copy');
+      const msg = successful ? '결과가 클립보드에 복사되었습니다.' : '클립보드 복사에 실패했습니다. 수동으로 복사해주세요.';
+      showFeedback(msg);
+    } catch (err) {
+      showFeedback('클립보드 복사에 실패했습니다. 수동으로 복사해주세요.');
+    }
+
+    document.body.removeChild(textArea);
+  }
+
+  function showFeedback(message) {
+    const feedback = document.getElementById('chemi-copyFeedback');
+    feedback.textContent = message;
+    feedback.style.display = 'block';
+    setTimeout(() => {
+      feedback.style.display = 'none';
+    }, 3000);
+  }
+</script>
