@@ -1,0 +1,390 @@
+<style>
+    .utmb-container {
+        margin: 10px auto;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .utmb-box {
+        width: 48%;
+        height: auto;
+        min-height: 100px;
+        background-color: #f2f2f2;
+        border: 1px solid #ddd;
+        padding: 10px;
+        font-size: 12px;
+        line-height: 1;
+        overflow-y: auto;
+    }
+
+    .utmb-table {
+        margin: 10px auto 20px auto;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .utmb-th,
+    .utmb-td {
+        border: 1px solid #ddd;
+        padding: 3px;
+        text-align: center;
+        font-size: 14px;
+        overflow: hidden;
+        height: 30px;
+    }
+
+    .utmb-th {
+        background-color: #f2f2f2;
+    }
+
+    .utmb-tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .utmb-scrollable {
+        max-width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        display: block;
+        height: 100%;
+        line-height: 24px;
+    }
+
+    .utmb-textarea,
+    .utmb-input[type="text"] {
+        width: 100%;
+        box-sizing: border-box;
+        border: none;
+        padding: 3px;
+        height: 30px;
+        text-align: center;
+        font-size: 12px;
+        resize: none;
+    }
+
+    .utmb-button {
+        cursor: pointer;
+        width: 100%;
+        height: 30px;
+        text-align: center;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        /* 부드러운 전환 효과 */
+        border-radius: 4px;
+        /* 모서리 둥글게 */
+    }
+
+    .utmb-button:hover {
+        filter: brightness(0.9);
+        /* 호버 시 밝기 90%로 감소 */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        /* 그림자 효과 */
+        transform: translateY(-1px);
+        /* 살짝 위로 떠오르는 효과 */
+    }
+
+    .utmb-button:active {
+        transform: translateY(1px);
+        /* 클릭 시 살짝 아래로 내려가는 효과 */
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        /* 그림자 줄이기 */
+    }
+
+    .utmb-wide-column {
+        width: 200px;
+    }
+
+    .utmb-strike-through {
+        text-decoration: line-through;
+    }
+
+    .utmb-highlight {
+        background-color: #c2e5fc;
+    }
+</style>
+
+<div class="utmb-container">
+    <div class="utmb-box" id="utmb-box1">
+        <p>※ 구글,네이버 대량 utm/nt 파라미터 빌더 입니다.</p>
+        <p>※ 구글의 utm 파라미터와 네이버(스마트스토어)의 nt 파라미터를 한번에 여러개 만들 수 있습니다.</p>
+        <p><span class="utmb-highlight">※ UTM/Google 버튼을 누르면, NT/Naver로, NT/Naver 일 때 버튼을 누르면 UTM/Google 로
+                변합니다.</span>
+        </p>
+        <p>※ 버튼의 상태에 따라, utm/nt 파라미터가 번갈아가며 적용됩니다.</p>
+        <p>※ 버튼의 상태에 따라, '도움말 보기' 버튼을 통해 구글/네이버 파라미터 관련 페이지로 이동합니다 </p>
+    </div>
+    <div class="utmb-box" id="utmb-box2">
+        <p><span class="utmb-highlight">※ '키워드 적용'을 누르면 입력한 키워드 term/keyword 파라미터에 적용되고, 한번 더 누르면 입력한 파라미터로
+                적용됩니다.</span>
+        </p>
+        <p>※ '엑셀 다운로드'를 누르면 Combined url의 결과값들이 엑셀로 다운로드 됩니다.</p>
+        <p>※ '클립보드 복사'를 누르면 Combined url의 결과값들이 클립보드에 복사되어 붙여넣기 할 수 있습니다.</p>
+        <p>※ 처리 수량의 제한은 없으나 메모리 제한과 성능 문제가 발생할 수 있으니 적당히 나누어 처리하는 것을 추천합니다.</p>
+        <p>※ 실제 랜딩페이지 세팅 전 꼭 한번 체크하고 설정하세요.</p>
+    </div>
+</div>
+
+<table id="utmb-myTable" class="utmb-table">
+    <thead>
+        <tr class="utmb-tr">
+            <th class="utmb-th" style="width: 2%" rowspan="2">No</th>
+            <th class="utmb-th" style="width: 10%" rowspan="2">여러 키워드 입력</th>
+            <th class="utmb-th" style="width: 10%">여러 Url 입력</th>
+            <th class="utmb-th" style="width: 20%" colspan="2"><button class="utmb-button" id="utmb-utmNtButton"
+                    onclick="toggleUTMNT()">클릭선택▶UTM/Google</button></th>
+            <th class="utmb-th" style="width: 10%"><button class="utmb-button" onclick="clearAll()">전체 지우기</button>
+            </th>
+            <th class="utmb-th" style="width: 10%"><button class="utmb-button" id="utmb-keywordApplyButton"
+                    onclick="applyKeyword()">입력 키워드 적용</button></th>
+            <th class="utmb-th" style="width: 10%"><button class="utmb-button" onclick="showHelp()">도움말 보기</button>
+            </th>
+            <th class="utmb-th" style="width: 18%"><button class="utmb-button" onclick="copyToClipboard()">클립보드
+                    복사</button></th>
+        </tr>
+        <tr class="utmb-tr">
+            <th class="utmb-th"><button class="utmb-button" id="utmb-urlApplyButton" onclick="applyUrl()">Url 전체
+                    적용</button></th>
+            <th class="utmb-th">source</th>
+            <th class="utmb-th">medium</th>
+            <th class="utmb-th">campaign/detail</th>
+            <th class="utmb-th">term/keyword</th>
+            <th class="utmb-th">content</th>
+            <th class="utmb-th"><button class="utmb-button" onclick="downloadExcel()">엑셀 다운로드</button></th>
+        </tr>
+        <tr id="utmb-inputRow" class="utmb-tr">
+            <th class="utmb-th"></th>
+            <th class="utmb-th"><textarea class="utmb-textarea" id="utmb-inputRow1Col2" rows="1" oninput="splitText1()"
+                    placeholder="엔터, 쉼표, 띄어쓰기 구분"></textarea>
+            </th>
+            <th class="utmb-th"><textarea class="utmb-textarea" id="utmb-inputRow1Col3" rows="1" oninput="splitText2()"
+                    placeholder="엔터, 쉼표, 띄어쓰기 구분"></textarea>
+            </th>
+            <th class="utmb-th"><input type="text" class="utmb-input" id="utmb-sourceInput" placeholder="source"
+                    oninput="updateTable()"></th>
+            <th class="utmb-th"><input type="text" class="utmb-input" id="utmb-mediumInput" placeholder="medium"
+                    oninput="updateTable()"></th>
+            <th class="utmb-th"><input type="text" class="utmb-input" id="utmb-campaignTermDetailInput"
+                    placeholder="campaign" oninput="updateTable()"></th>
+            <th class="utmb-th"><input type="text" class="utmb-input" id="utmb-termKeywordInput" placeholder="term"
+                    oninput="updateTable()"></th>
+            <th class="utmb-th"><input type="text" class="utmb-input" id="utmb-contentInput" placeholder="content"
+                    oninput="updateTable()"></th>
+            <th class="utmb-th utmb-wide-column">Combined url</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    let column2Data = [];
+    let column3Data = [];
+    let isUTM = true;
+    let isKeywordApplied = false;
+    let isUrlApplied = true;
+    const googleColors = ['#4285F4', '#EA4335', '#FBBC05'];
+    const naverColors = ['#2DB400', '#43cb17', '#2b820e'];
+
+    function initializeButtonColors() {
+        const buttons = document.querySelectorAll('.utmb-button');
+        const colors = isUTM ? googleColors : naverColors;
+        buttons.forEach((btn) => {
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            btn.style.backgroundColor = randomColor;
+        });
+        const combinedUrlCell = document.querySelector('#utmb-inputRow .utmb-wide-column');
+        combinedUrlCell.style.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeButtonColors();
+    });
+
+    function splitText1() {
+        const input = document.getElementById('utmb-inputRow1Col2').value;
+        column2Data = input.split(/[\n\s,]+/).filter(item => item.trim() !== '');
+        updateTable();
+    }
+
+    function splitText2() {
+        const input = document.getElementById('utmb-inputRow1Col3').value;
+        column3Data = input.split(/[\n\s,]+/).filter(item => item.trim() !== '');
+        updateTable();
+    }
+
+    function updateTable() {
+        const tableBody = document.querySelector('#utmb-myTable tbody');
+        tableBody.innerHTML = '';
+
+        const source = document.getElementById('utmb-sourceInput').value;
+        const medium = document.getElementById('utmb-mediumInput').value;
+        const campaignTermDetail = document.getElementById('utmb-campaignTermDetailInput').value;
+        const termKeyword = document.getElementById('utmb-termKeywordInput').value;
+        const content = document.getElementById('utmb-contentInput').value;
+
+        const maxLength = Math.max(column2Data.length, column3Data.length);
+
+        for (let i = 0; i < maxLength; i++) {
+            const newRow = document.createElement('tr');
+            newRow.className = 'utmb-tr';
+            const currentTermKeyword = isKeywordApplied ? (column2Data[i] || '') : termKeyword;
+            const currentUrl = isUrlApplied ? (column3Data[i] || '') : (column3Data[0] || '');
+            const combinedUrl = generateCombinedUrl(
+                currentUrl,
+                source,
+                medium,
+                campaignTermDetail,
+                currentTermKeyword,
+                content
+            );
+            newRow.innerHTML = `
+                    <td class="utmb-td">${i + 1}</td>
+                    <td class="utmb-td"><div class="utmb-scrollable">${column2Data[i] || ''}</div></td>
+                    <td class="utmb-td"><div class="utmb-scrollable">${currentUrl}</div></td>
+                    <td class="utmb-td"><div class="utmb-scrollable">${source}</div></td>
+                    <td class="utmb-td"><div class="utmb-scrollable">${medium}</div></td>
+                    <td class="utmb-td"><div class="utmb-scrollable">${campaignTermDetail}</div></td>
+                    <td class="utmb-td"><div class="utmb-scrollable">${currentTermKeyword}</div></td>
+                    <td class="utmb-td ${!isUTM ? 'utmb-strike-through' : ''}"><div class="utmb-scrollable">${content}</div></td>
+                    <td class="utmb-td utmb-wide-column"><div class="utmb-scrollable">${combinedUrl}</div></td>
+                `;
+            tableBody.appendChild(newRow);
+        }
+    }
+
+    function generateCombinedUrl(url, source, medium, campaignTermDetail, termKeyword, content) {
+        if (!url) return '';
+
+        let params = [];
+        if (isUTM) {
+            if (source) params.push(['utm_source', source]);
+            if (medium) params.push(['utm_medium', medium]);
+            if (campaignTermDetail) params.push(['utm_campaign', campaignTermDetail]);
+            if (termKeyword) params.push(['utm_term', termKeyword]);
+            if (content) params.push(['utm_content', content]);
+        } else {
+            if (source) params.push(['nt_source', source]);
+            if (medium) params.push(['nt_medium', medium]);
+            if (campaignTermDetail) params.push(['nt_detail', campaignTermDetail]);
+            if (termKeyword) params.push(['nt_keyword', termKeyword]);
+        }
+
+        if (params.length === 0) return url;
+
+        let queryString = params.map((param, index) => {
+            return `${index === 0 ? '?' : '&'}${param[0]}=${encodeURIComponent(param[1])}`;
+        }).join('');
+
+        return `${url}${queryString}`;
+    }
+
+    function toggleUTMNT() {
+        const button = document.getElementById('utmb-utmNtButton');
+        const keywordApplyButton = document.getElementById('utmb-keywordApplyButton');
+        isUTM = !isUTM;
+        button.textContent = isUTM ? '클릭선택▶UTM/Google' : '클릭선택▶NT/Naver';
+        keywordApplyButton.textContent = '키워드로 적용';
+        keywordApplyButton.style.width = '100%';
+
+        const buttons = document.querySelectorAll('.utmb-button');
+        const combinedUrlCell = document.querySelector('#utmb-inputRow .utmb-wide-column');
+        const colors = isUTM ? googleColors : naverColors;
+
+        buttons.forEach((btn) => {
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            btn.style.backgroundColor = randomColor;
+        });
+        combinedUrlCell.textContent = isUTM ? 'Google UTM' : 'Naver NT';
+        combinedUrlCell.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+        document.getElementById('utmb-sourceInput').placeholder = 'source';
+        document.getElementById('utmb-mediumInput').placeholder = 'medium';
+        document.getElementById('utmb-campaignTermDetailInput').placeholder = isUTM ? 'campaign' : 'detail';
+        document.getElementById('utmb-termKeywordInput').placeholder = isUTM ? 'term' : 'keyword';
+
+        const contentInput = document.getElementById('utmb-contentInput');
+        if (isUTM) {
+            contentInput.removeAttribute('disabled');
+            contentInput.placeholder = 'content';
+            contentInput.classList.remove('utmb-strike-through');
+        } else {
+            contentInput.setAttribute('disabled', 'true');
+            contentInput.placeholder = '';
+            contentInput.classList.add('utmb-strike-through');
+        }
+
+        const contentCells = document.querySelectorAll('#utmb-myTable tbody td:nth-child(8)');
+        contentCells.forEach(cell => {
+            cell.classList.toggle('utmb-strike-through', !isUTM);
+        });
+
+        isKeywordApplied = false;
+        updateTable();
+    }
+
+    function applyUrl() {
+        isUrlApplied = !isUrlApplied;
+        const urlApplyButton = document.getElementById('utmb-urlApplyButton');
+        urlApplyButton.textContent = isUrlApplied ? 'Url 전체 적용' : 'Url 개별 적용';
+        updateTable();
+    }
+
+    function applyKeyword() {
+        isKeywordApplied = !isKeywordApplied;
+        const keywordApplyButton = document.getElementById('utmb-keywordApplyButton');
+        keywordApplyButton.textContent = isKeywordApplied ? '적용 취소' : '입력 키워드로 적용';
+        updateTable();
+    }
+
+    function clearAll() {
+        document.getElementById('utmb-inputRow1Col2').value = '';
+        document.getElementById('utmb-inputRow1Col3').value = '';
+        document.getElementById('utmb-sourceInput').value = '';
+        document.getElementById('utmb-mediumInput').value = '';
+        document.getElementById('utmb-campaignTermDetailInput').value = '';
+        document.getElementById('utmb-termKeywordInput').value = '';
+        document.getElementById('utmb-contentInput').value = '';
+        column2Data = [];
+        column3Data = [];
+        isKeywordApplied = false;
+        isUrlApplied = true;
+        document.getElementById('utmb-keywordApplyButton').textContent = '입력 키워드로 적용';
+        document.getElementById('utmb-urlApplyButton').textContent = 'Url 개별적용';
+        updateTable();
+    }
+
+    function copyToClipboard() {
+        const combinedUrls = Array.from(document.querySelectorAll('#utmb-myTable tbody .utmb-wide-column .utmb-scrollable'))
+            .map(cell => cell.textContent)
+            .join('\n');
+        navigator.clipboard.writeText(combinedUrls).then(() => {
+            alert('Combined URLs가 클립보드에 복사되었습니다.');
+        }).catch(err => {
+            console.error('클립보드 복사 중 오류 발생:', err);
+        });
+    }
+
+    function downloadExcel() {
+        const combinedUrls = Array.from(document.querySelectorAll('#utmb-myTable tbody .utmb-wide-column .utmb-scrollable'))
+            .map(cell => cell.textContent);
+        let csvContent = "data:text/csv;charset=utf-8,";
+        combinedUrls.forEach(url => {
+            csvContent += url + "\r\n";
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "combined_urls.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function showHelp() {
+        const url = isUTM
+            ? 'https://support.google.com/analytics/answer/10917952'
+            : 'https://help.naver.com/service/19459/contents/11885';
+        window.open(url, '_blank');
+    }
+</script>

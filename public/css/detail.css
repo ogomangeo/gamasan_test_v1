@@ -35,7 +35,7 @@
 }
 
 .detail-thumbnail {
-    width: 70%;
+    width: 50%;
     height: 100%;
     object-fit: cover;
     display: block;  /* block 요소로 설정 */

@@ -16,22 +16,22 @@
 .adbanner1 {
   background-color: #DC143C; /* Crimson */
   top: 100px;
-  right: 100px;
+  right: 70px;
 }
 
 .adbanner2 {
   background-color: #1E90FF; /* DodgerBlue */
   top: 510px;
-  right: 100px;
+  right: 70px;
 }
 
 .adbanner3 {
   background-color: #00FF7F; /* SpringGreen */
   top: 100px;
-  left: 100px;
+  left: 70px;
 }
 
 .adbanner4 {
   top: 510px;
-  left: 100px;
+  left: 70px;
 }

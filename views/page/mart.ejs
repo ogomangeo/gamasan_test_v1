@@ -35,7 +35,7 @@
             <span class="mart-link-buttons">
               <% if (mart.market_link && mart.market_link.length > 0) { %>
                 <% mart.market_link.slice(0, 2).forEach(function(link) { %>
-                  <a href="<%= link.market_url %>" class="mart-link-button" target="_blank">
+                  <a href="<%= link.market_url.startsWith('http') ? link.market_url : 'https://' + link.market_url %>" class="mart-link-button" target="_blank">
                     <%= link.market_name %>
                   </a>
                 <% }); %>

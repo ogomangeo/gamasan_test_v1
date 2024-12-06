@@ -1,8 +1,7 @@
 /* 전체 페이지 스타일 */
-.container {
+.detail-container {
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 20px auto;
 }
 
 h1 {

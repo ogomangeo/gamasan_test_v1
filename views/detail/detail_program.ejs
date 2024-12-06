@@ -35,7 +35,6 @@
     </div>
 
     <div class="detail-script"><%- program.script %></div>
-    <div class="template-container"><%- templateContent %></div>
     <div class="detail-media-container">
         <div class="video-container">
             <iframe
@@ -46,6 +45,7 @@
             </iframe>
         </div>
     </div>
+    <div class="template-container"><%- templateContent %></div>
 </div>
 
 <% function formatDate(dateString) { const date=new Date(dateString); const month=String(date.getMonth() +
@@ -117,6 +117,7 @@
         }
 
         .video-container {
+            margin: 10px auto;
             width: 50%;
         }
 

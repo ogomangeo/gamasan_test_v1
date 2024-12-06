@@ -24,6 +24,14 @@ a:active {
     /* 링크 클릭, 호버 시에도 밑줄 제거 */
 }
 
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #333;
+    text-align: center;
+  }
+
 .container {
     width: 100%;
     display: flex;
@@ -41,7 +49,6 @@ li {
 .main-content {
     max-width: 1200px;
     display: flex;
-    padding: 20px 0;
     margin: 0 auto;      /* 좌우 여백을 자동으로 설정하여 가운데 정렬 */
     justify-content: center;  /* flex 아이템들을 가운데 정렬 */
 }
