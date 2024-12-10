@@ -55,7 +55,7 @@
     width: 1200px;
     height: 150px;
     overflow: hidden; /* 이미지가 컨테이너를 벗어나지 않도록 */
-    margin: 0 0 10px 0; /* 상 우 하 좌 순서로, 아래쪽만 10px */
+    margin: 20px 0 0;
 }
 
 .detail-banner img {
