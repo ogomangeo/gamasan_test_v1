@@ -22,6 +22,10 @@
         margin: 10px auto 20px auto;
         border-collapse: collapse;
         table-layout: fixed;
+        width: 100%;
+        /* 전체 너비 설정 */
+        max-width: 100%;
+        /* 최대 너비 제한 */
     }
 
     .utmb-th,
@@ -32,6 +36,8 @@
         font-size: 14px;
         overflow: hidden;
         height: 30px;
+        max-width: 0;
+        /* 중요: 셀 내용 줄바꿈을 위해 필요 */
     }
 
     .utmb-th {
@@ -49,6 +55,10 @@
         display: block;
         height: 100%;
         line-height: 24px;
+        text-overflow: ellipsis;
+        /* 길어진 텍스트는 ...으로 표시 */
+        padding: 0 5px;
+        /* 내용이 잘리지 않도록 패딩 추가 */
     }
 
     .utmb-textarea,
@@ -92,7 +102,7 @@
     }
 
     .utmb-wide-column {
-        width: 200px;
+        width: 18%;
     }
 
     .utmb-strike-through {
@@ -102,6 +112,53 @@
     .utmb-highlight {
         background-color: #c2e5fc;
     }
+
+    /* 각 열의 너비 비율 설정 */
+    .utmb-table th:nth-child(1) {
+        width: 2%;
+    }
+
+    /* No */
+    .utmb-table th:nth-child(2) {
+        width: 10%;
+    }
+
+    /* 키워드 */
+    .utmb-table th:nth-child(3) {
+        width: 10%;
+    }
+
+    /* URL */
+    .utmb-table th:nth-child(4) {
+        width: 10%;
+    }
+
+    /* source */
+    .utmb-table th:nth-child(5) {
+        width: 10%;
+    }
+
+    /* medium */
+    .utmb-table th:nth-child(6) {
+        width: 10%;
+    }
+
+    /* campaign/detail */
+    .utmb-table th:nth-child(7) {
+        width: 10%;
+    }
+
+    /* term/keyword */
+    .utmb-table th:nth-child(8) {
+        width: 10%;
+    }
+
+    /* content */
+    .utmb-table th:nth-child(9) {
+        width: 18%;
+    }
+
+    /* Combined url */
 </style>
 
 <div class="utmb-container">

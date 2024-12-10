@@ -114,6 +114,32 @@
   width: 16px;
   height: 16px;
 }
+
+.join-optional-notice {
+  background-color: #f8f8f8;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+
+.join-optional-notice div {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.join-optional-title {
+  font-weight: bold;
+  color: #000080;
+  font-size: 1.1em;
+}
+
+.join-optional-desc {
+  color: #666;
+}
+
+.join-optional-warning {
+  color: #ff4444;
+  font-weight: 500;
+}
 </style>
 
 <div class="join-container">
@@ -290,6 +316,12 @@
         <input type="text" id="join-username" required>
       </div>
       
+      <div class="join-optional-notice">
+        <div class="join-optional-title">📋 선택사항</div>
+        <div class="join-optional-desc">📦 추후 이벤트, 경품 발송 및 구매 상품 배송에 입력된 정보를 활용합니다.</div>
+        <div class="join-optional-warning">❌ 다른 용도로 절대 써서도, 쓸 생각도, 쓸 일도 없습니다!</div>
+      </div>
+
       <div class="join-form-group">
         <label for="join-name">(선택)이름:</label>
         <input type="text" id="join-name" required>

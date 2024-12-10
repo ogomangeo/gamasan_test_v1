@@ -48,35 +48,41 @@
 
 <!-- getYoutubeThumbnail 함수 추가 -->
 <script>
-function getYoutubeThumbnail(url) {
-  // 유튜브 URL에서 비디오 ID 추출
-  let videoId = '';
-  
-  // 일반적인 유튜브 URL 패턴 처리
-  if (url.includes('youtube.com/watch?v=')) {
-      videoId = url.split('v=')[1];
-  } 
-  // 짧은 URL (youtu.be) 패턴 처리
-  else if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1];
-  }
-  
-  // URL에 추가 파라미터가 있는 경우 처리
-  if (videoId.includes('&')) {
-      videoId = videoId.split('&')[0];
-  }
-  
-  if (videoId) {
-      // 고품질 썸네일 URL 생성 (maxresdefault)
-      const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-      
-      // hidden input의 값을 썸네일 URL로 업데이트
-      document.getElementById('thumbnail').value = thumbnailUrl;
-      
-      // 선택적: 사용자에게 썸네일이 설정되었음을 알림
-      alert('썸네일이 설정되었습니다!');
-  } else {
-      alert('올바른 유튜브 URL을 입력해주세요.');
-  }
+  function getYoutubeThumbnail(url) {
+    // URL이 비어있는지 확인
+    if (!url) {
+        alert('URL을 입력해주세요.');
+        return;
+    }
+
+    // 이미지 URL인지 확인
+    const imageExtensions = /\.(jpg|jpeg|png|gif|bmp)$/i;
+    if (imageExtensions.test(url)) {
+        // 이미지 URL인 경우
+        document.getElementById('thumbnail').value = url;
+        alert('이미지 썸네일이 설정되었습니다!');
+        return;
+    }
+
+    // 유튜브 URL 처리 (기존 코드)
+    let videoId = '';
+    if (url.includes('youtube.com/watch?v=')) {
+        videoId = url.split('v=')[1];
+    } 
+    else if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1];
+    }
+    
+    if (videoId && videoId.includes('&')) {
+        videoId = videoId.split('&')[0];
+    }
+    
+    if (videoId) {
+        const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+        document.getElementById('thumbnail').value = thumbnailUrl;
+        alert('유튜브 썸네일이 설정되었습니다!');
+    } else {
+        alert('올바른 URL을 입력해주세요. (유튜브 URL 또는 이미지 URL)');
+    }
 }
 </script>
