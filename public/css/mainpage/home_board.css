@@ -10,10 +10,11 @@
 .home_index_right_column {
  width: 30%;
  flex: 0 0 auto;
- display: flex;
- flex-direction: column;
- gap: 20px;
-}
+ }
+
+ .board5 {  /* 마트 게시판의 클래스 */
+  margin-top: 10px;
+ }
 
 /* 게시판 공통 스타일 */
 .home_index_board_container {
@@ -77,7 +78,6 @@
 .home_index_board_item {
  display: flex;
  gap: 12px;
- align-items: center;
  width: 100%;
  overflow: hidden;
  box-sizing: border-box;
@@ -93,23 +93,11 @@
  flex-shrink: 0;
 }
 
-/* 내용 영역 스타일 */
-.home_index_board_content {
- flex: 1;
- min-width: 0;
- display: flex;
- align-items: center;
-}
-
 .home_index_title {
  font-size: 14px;
  font-weight: bold;
- color: #444;
- overflow: hidden;
- text-overflow: ellipsis;
+ align-items: flex-start;
  white-space: nowrap;
- width: 100%;
- margin: 0;
 }
 
 /* 프로그램 섹션(board3) 그리드 레이아웃 수정 */
