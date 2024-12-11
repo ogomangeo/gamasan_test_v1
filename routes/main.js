@@ -56,7 +56,7 @@ router.get(
     };
 
     const programs = await Program.find({}).sort({ createdAt: -1 }).limit(15);
-    const archives = await Archive.find({}).sort({ createdAt: -1 }).limit(10);
+    const archives = await Archive.find({}).sort({ createdAt: -1 }).limit(12);
     const marts = await Mart.find({}).sort({ createdAt: -1 }).limit(3);
 
     res.render("page/index", {
